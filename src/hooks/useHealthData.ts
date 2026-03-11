@@ -95,6 +95,10 @@ export function useHealthData() {
         sleepHours: lifestyle.sleep_hours,
         smokingStatus: lifestyle.smoking_status as LifestyleData['smokingStatus'],
         alcoholWeekly: lifestyle.alcohol_weekly,
+        dailySteps: (lifestyle as any).daily_steps ?? 0,
+        avgHeartRate: (lifestyle as any).avg_heart_rate ?? 0,
+        activityMinutes: (lifestyle as any).activity_minutes ?? 0,
+        weight: (lifestyle as any).weight ?? null,
       } : EMPTY_DATA.lifestyle;
 
       const { data: profile } = await supabase
