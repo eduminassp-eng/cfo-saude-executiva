@@ -14,6 +14,8 @@ import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
 import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
+import { LongevityForecast } from '@/components/LongevityForecast';
+import { generateForecast } from '@/lib/forecast';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
