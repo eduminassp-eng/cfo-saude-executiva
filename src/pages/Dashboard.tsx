@@ -241,6 +241,9 @@ const Dashboard = () => {
       {/* What-If Simulator */}
       <WhatIfSimulator />
 
+      {/* Health Risk Map */}
+      <HealthRiskMap data={data} />
+
       {/* Preventive Compliance & Balance Sheet */}
       <PreventiveComplianceScore data={data} />
       <HealthBalanceSheet data={data} />
