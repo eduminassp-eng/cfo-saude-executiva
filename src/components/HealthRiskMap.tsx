@@ -214,11 +214,14 @@ interface Props {
 export function HealthRiskMap({ data }: Props) {
   const domains = useMemo(() => buildRiskDomains(data), [data]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<Status | null>(null);
 
   const greenCount = domains.filter(d => d.status === 'green').length;
   const yellowCount = domains.filter(d => d.status === 'yellow').length;
   const redCount = domains.filter(d => d.status === 'red').length;
   const grayCount = domains.filter(d => d.status === 'unknown').length;
+
+  const filteredDomains = activeFilter ? domains.filter(d => d.status === activeFilter) : domains;
 
   return (
     <div className="space-y-4">
