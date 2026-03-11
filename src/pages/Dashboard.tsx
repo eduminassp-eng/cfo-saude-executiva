@@ -8,6 +8,7 @@ import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
 import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
 import { DomainDetailPanel } from '@/components/DomainDetailPanel';
+import { HealthRadar } from '@/components/HealthRadar';
 
 const Dashboard = () => {
   const { data } = useHealth();
