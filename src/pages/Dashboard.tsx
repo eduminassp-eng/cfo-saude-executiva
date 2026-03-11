@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker } from '@/types/health';
 import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
+import { DomainDetailPanel } from '@/components/DomainDetailPanel';
 
 const Dashboard = () => {
   const { data } = useHealth();
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const domainScores = useMemo(() => calcDomainScores(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
+  const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
 
   const overdueCount = data.exams.filter(e => e.status === 'Atrasado').length;
   const yellowCount = data.biomarkers.filter(b => b.status === 'yellow').length;
