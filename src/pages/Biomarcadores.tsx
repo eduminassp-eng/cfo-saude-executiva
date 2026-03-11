@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Biomarker, Status } from '@/types/health';
+import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
-import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
