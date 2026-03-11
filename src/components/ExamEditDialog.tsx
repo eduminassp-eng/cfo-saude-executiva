@@ -108,7 +108,10 @@ export function ExamEditDialog({ exam, onClose }: Props) {
             <input type="text" value={notes} onChange={e => setNotes(e.target.value)} maxLength={200}
               className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
           </div>
-          <div className="flex gap-3 pt-2">
+          <div className="flex items-center gap-3 pt-2">
+            <button onClick={() => setShowDeleteConfirm(true)} className="p-2.5 rounded-lg bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors" title="Excluir exame">
+              <Trash2 className="w-4 h-4" />
+            </button>
             <button onClick={onClose} className="flex-1 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">Cancelar</button>
             <button onClick={handleSave} className="flex-1 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">Salvar</button>
           </div>
