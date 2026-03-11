@@ -215,7 +215,7 @@ const Configuracoes = () => {
               updateData(prev => ({
                 biomarkers: (parsed.biomarkers as Biomarker[]) ?? prev.biomarkers,
                 exams: (parsed.exams as Exam[]) ?? prev.exams,
-                lifestyle: parsed.lifestyle ?? prev.lifestyle,
+                lifestyle: parsed.lifestyle ? { ...prev.lifestyle, ...parsed.lifestyle } : prev.lifestyle,
                 lastUpdated: parsed.lastUpdated ?? new Date().toISOString().split('T')[0],
               }));
               toast.success('Dados importados com sucesso!');
