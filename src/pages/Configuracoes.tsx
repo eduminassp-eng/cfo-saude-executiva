@@ -1,10 +1,61 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet } from 'lucide-react';
-import { useMemo, useCallback } from 'react';
+import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload } from 'lucide-react';
+import { useMemo, useCallback, useRef, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
+import { HealthData, Biomarker, Exam } from '@/types/health';
+import { toast } from 'sonner';
+import { z } from 'zod';
+
+const biomarkerSchema = z.object({
+  id: z.string().min(1).max(100),
+  name: z.string().min(1).max(200),
+  value: z.number().nullable(),
+  unit: z.string().max(50),
+  targetMin: z.number().nullable(),
+  targetMax: z.number().nullable(),
+  status: z.enum(['green', 'yellow', 'red', 'unknown']),
+  lastDate: z.string().nullable(),
+  note: z.string().max(500).default(''),
+  category: z.string().max(100).default(''),
+  history: z.array(z.object({
+    value: z.number(),
+    date: z.string(),
+    note: z.string().max(500).default(''),
+  })).default([]),
+});
+
+const examSchema = z.object({
+  id: z.string().min(1).max(100),
+  category: z.string().max(100).default(''),
+  name: z.string().min(1).max(200),
+  type: z.string().max(100).default(''),
+  mainRisk: z.string().max(200).default(''),
+  importance: z.enum(['Alta', 'Média', 'Baixa']),
+  suggestedFrequency: z.string().max(100).default(''),
+  lastDate: z.string().nullable(),
+  nextDate: z.string().nullable(),
+  status: z.enum(['Em dia', 'Próximo', 'Atrasado', 'Pendente']),
+  doctor: z.string().max(200).default(''),
+  resultSummary: z.string().max(1000).default(''),
+  notes: z.string().max(1000).default(''),
+});
+
+const importSchema = z.object({
+  biomarkers: z.array(biomarkerSchema).optional(),
+  exams: z.array(examSchema).optional(),
+  lifestyle: z.object({
+    exerciseFrequency: z.number().min(0).max(7),
+    sleepHours: z.number().min(0).max(24),
+    smokingStatus: z.enum(['never', 'former', 'current']),
+    alcoholWeekly: z.number().min(0).max(100),
+  }).optional(),
+  lastUpdated: z.string().optional(),
+});
 
 const Configuracoes = () => {
   const { data, updateData, resetData, exportJSON, exportCSV } = useHealth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
 
   const scores = useMemo(() => ({
     cardiac: calcCardiacScore(data),
@@ -126,6 +177,71 @@ const Configuracoes = () => {
             />
           </div>
         </div>
+      </div>
+
+      {/* Import */}
+      <div className="glass-card rounded-xl p-5">
+        <h2 className="font-semibold mb-2">Importar Dados</h2>
+        <p className="text-sm text-muted-foreground mb-3">
+          Importe um arquivo JSON exportado anteriormente. Os dados importados <strong>substituirão</strong> os dados atuais.
+          O arquivo deve conter pelo menos <code>biomarkers</code> ou <code>exams</code>.
+        </p>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          className="hidden"
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+              toast.error('Arquivo muito grande (máx. 5 MB)');
+              return;
+            }
+            setImporting(true);
+            try {
+              const text = await file.text();
+              const raw = JSON.parse(text);
+              const parsed = importSchema.parse(raw);
+              
+              if (!parsed.biomarkers?.length && !parsed.exams?.length) {
+                throw new Error('O arquivo deve conter pelo menos biomarcadores ou exames.');
+              }
+
+              if (!confirm(`Importar ${parsed.biomarkers?.length ?? 0} biomarcador(es) e ${parsed.exams?.length ?? 0} exame(s)? Os dados atuais serão substituídos.`)) {
+                return;
+              }
+
+              updateData(prev => ({
+                biomarkers: (parsed.biomarkers as Biomarker[]) ?? prev.biomarkers,
+                exams: (parsed.exams as Exam[]) ?? prev.exams,
+                lifestyle: parsed.lifestyle ? { ...prev.lifestyle, ...parsed.lifestyle } : prev.lifestyle,
+                lastUpdated: parsed.lastUpdated ?? new Date().toISOString().split('T')[0],
+              }));
+              toast.success('Dados importados com sucesso!');
+            } catch (err: any) {
+              if (err instanceof z.ZodError) {
+                const issues = err.issues.map(i => `${i.path.join('.')}: ${i.message}`).join('\n');
+                toast.error(`Formato inválido:\n${issues}`);
+              } else if (err instanceof SyntaxError) {
+                toast.error('Arquivo JSON inválido');
+              } else {
+                toast.error(err.message || 'Erro ao importar');
+              }
+            } finally {
+              setImporting(false);
+              if (fileInputRef.current) fileInputRef.current.value = '';
+            }
+          }}
+        />
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
+        >
+          <Upload className="w-4 h-4" />
+          {importing ? 'Importando...' : 'Importar JSON'}
+        </button>
       </div>
 
       {/* Export */}
