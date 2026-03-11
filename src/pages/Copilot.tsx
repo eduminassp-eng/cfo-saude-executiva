@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 
 const Copilot = () => {
   const { data } = useHealth();
-  const [tab, setTab] = useState<'summary' | 'biomarkers' | 'exams'>('summary');
+  const [tab, setTab] = useState<'summary' | 'trends' | 'biomarkers' | 'exams'>('summary');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
