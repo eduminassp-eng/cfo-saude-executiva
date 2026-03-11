@@ -26,6 +26,7 @@ const App = () => (
           <AppLayout>
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/biomarcadores" element={<Biomarcadores />} />
               <Route path="/exames" element={<Exames />} />
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/riscos" element={<Riscos />} />

@@ -1,5 +1,11 @@
 export type Status = 'green' | 'yellow' | 'red' | 'unknown';
 
+export interface BiomarkerHistoryEntry {
+  value: number;
+  date: string;
+  note: string;
+}
+
 export interface Biomarker {
   id: string;
   name: string;
@@ -11,6 +17,7 @@ export interface Biomarker {
   lastDate: string | null;
   note: string;
   category: string;
+  history: BiomarkerHistoryEntry[];
 }
 
 export interface Exam {
