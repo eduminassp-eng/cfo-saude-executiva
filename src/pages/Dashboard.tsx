@@ -9,6 +9,8 @@ import { Biomarker, HealthData } from '@/types/health';
 import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
 import { DomainDetailPanel } from '@/components/DomainDetailPanel';
 import { HealthRadar } from '@/components/HealthRadar';
+import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
+import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
 
 const Dashboard = () => {
   const { data } = useHealth();
