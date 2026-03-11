@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
+import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { KPICard } from '@/components/KPICard';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
