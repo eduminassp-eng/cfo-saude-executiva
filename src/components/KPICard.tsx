@@ -1,4 +1,5 @@
 import { Biomarker, Status } from '@/types/health';
+import { ResponsiveContainer, LineChart, Line } from 'recharts';
 
 function statusBadge(status: Status) {
   const map = {
@@ -25,6 +26,18 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
     ? `> ${biomarker.targetMin}`
     : '';
 
+  // Build sparkline data: history (oldest→newest) + current
+  const history = biomarker.history ?? [];
+  const sparkData = [
+    ...history.slice().reverse().map(h => ({ v: h.value })),
+    ...(biomarker.value !== null ? [{ v: biomarker.value }] : []),
+  ];
+
+  const statusColor = biomarker.status === 'green' ? 'hsl(var(--status-green))'
+    : biomarker.status === 'yellow' ? 'hsl(var(--status-yellow))'
+    : biomarker.status === 'red' ? 'hsl(var(--status-red))'
+    : 'hsl(var(--muted-foreground))';
+
   return (
     <button
       onClick={onClick}
@@ -38,6 +51,26 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
         <span className="text-2xl font-bold font-mono">{biomarker.value ?? '—'}</span>
         <span className="text-xs text-muted-foreground">{biomarker.unit}</span>
       </div>
+
+      {/* Sparkline */}
+      {sparkData.length >= 2 && (
+        <div className="h-8 w-full my-1.5">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={sparkData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
+              <Line
+                type="monotone"
+                dataKey="v"
+                stroke={statusColor}
+                strokeWidth={1.5}
+                dot={false}
+                activeDot={false}
+                isAnimationActive={false}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
       {rangeText && <p className="text-xs text-muted-foreground">Ref: {rangeText} {biomarker.unit}</p>}
       {biomarker.lastDate && (
         <p className="text-xs text-muted-foreground mt-1.5">
