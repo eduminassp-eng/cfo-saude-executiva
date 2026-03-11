@@ -208,6 +208,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         </div>
       )}
 
+      {tab === 'trends' && (
+        <CopilotTrendPatterns patterns={trendPatterns} />
+      )}
+
       {tab === 'biomarkers' && (
         <div className="space-y-4">
           {filteredBiomarkers.map((insight, i) => (
