@@ -196,7 +196,13 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
       )}
 
       {/* Content */}
-      {tab === 'summary' && <CopilotExecutiveSummary summary={summary} scores={scores} />}
+      {tab === 'summary' && (
+        <div className="space-y-4">
+          <CopilotExecutiveSummary summary={summary} scores={scores} />
+          <CopilotDoctorQuestions data={data} />
+          <CopilotActionPlan data={data} />
+        </div>
+      )}
 
       {tab === 'biomarkers' && (
         <div className="space-y-4">

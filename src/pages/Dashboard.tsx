@@ -188,15 +188,18 @@ const Dashboard = () => {
         />
       )}
 
-      {/* Domain Health Summary */}
+      {/* Health Radar + Domain Grid */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
-        <DomainGrid
-          domainScores={domainScores}
-          showDomainDetail={showDomainDetail}
-          setShowDomainDetail={setShowDomainDetail}
-          data={data}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
+          <HealthRadar domainScores={domainScores} />
+          <DomainGrid
+            domainScores={domainScores}
+            showDomainDetail={showDomainDetail}
+            setShowDomainDetail={setShowDomainDetail}
+            data={data}
+          />
+        </div>
       </div>
 
       {/* KPIs */}
