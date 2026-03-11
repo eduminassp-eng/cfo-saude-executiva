@@ -130,7 +130,7 @@ const Biomarcadores = () => {
 
           // Build chart data: history (oldest first) + current
           const chartData = [
-            ...b.history.slice().reverse().map(h => ({ date: h.date, value: h.value })),
+            ...(b.history ?? []).slice().reverse().map(h => ({ date: h.date, value: h.value })),
             ...(b.value !== null && b.lastDate ? [{ date: b.lastDate, value: b.value }] : []),
           ];
 
