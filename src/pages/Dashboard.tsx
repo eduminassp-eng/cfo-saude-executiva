@@ -163,6 +163,9 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Health Alerts */}
+      <HealthAlerts alerts={healthAlerts} maxVisible={4} />
+
       {/* Scores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <button onClick={() => setShowScoreDetail('cardiac')} className="text-left">
