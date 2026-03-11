@@ -1,6 +1,7 @@
 import { BiomarkerInsight } from '@/lib/copilot';
 import { ChevronDown, ChevronUp, Heart, Zap, Clock, MessageCircleQuestion, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const statusConfig: Record<string, { label: string; bg: string; text: string; dot: string }> = {
   green: { label: 'Normal', bg: 'bg-status-green/10', text: 'text-status-green', dot: 'bg-status-green' },
