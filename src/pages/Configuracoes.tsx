@@ -131,12 +131,19 @@ const Configuracoes = () => {
       {/* Export */}
       <div className="glass-card rounded-xl p-5">
         <h2 className="font-semibold mb-4">Exportar Dados</h2>
+        <p className="text-sm text-muted-foreground mb-3">Exportação simples (biomarcadores) ou completa (com scores, exames e compliance).</p>
         <div className="flex flex-wrap gap-3">
           <button onClick={exportJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileJson className="w-4 h-4" /> Exportar JSON
+            <FileJson className="w-4 h-4" /> JSON Básico
           </button>
           <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileText className="w-4 h-4" /> Exportar CSV
+            <FileText className="w-4 h-4" /> CSV Básico
+          </button>
+          <button onClick={exportFullJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <FileJson className="w-4 h-4" /> JSON Completo
+          </button>
+          <button onClick={exportFullCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <FileSpreadsheet className="w-4 h-4" /> CSV Completo
           </button>
         </div>
       </div>
