@@ -106,9 +106,18 @@ const Exames = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Exames e Avaliações</h1>
-        <p className="text-muted-foreground mt-1">Acompanhamento completo de exames preventivos</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Exames e Avaliações</h1>
+          <p className="text-muted-foreground mt-1">Acompanhamento completo de exames preventivos</p>
+        </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity no-print"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Novo Exame</span>
+        </button>
       </div>
 
       {/* Stats */}
