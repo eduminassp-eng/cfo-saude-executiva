@@ -119,15 +119,15 @@ export function calcLongevityScore(data: HealthData): HealthScore {
     items.push({ name, score: Math.round(score01 * weight), maxPoints: weight, detail });
   };
 
-  addItem('Score Cardíaco', 20, cardiac.value / 100, `${cardiac.value}/100`);
-  addItem('Score Metabólico', 20, metabolic.value / 100, `${metabolic.value}/100`);
+  addItem('Score Cardíaco', 18, cardiac.value / 100, `${cardiac.value}/100`);
+  addItem('Score Metabólico', 18, metabolic.value / 100, `${metabolic.value}/100`);
   
   // Preventive adherence
   const overdueExams = data.exams.filter(e => e.status === 'Atrasado').length;
   const pendingExams = data.exams.filter(e => e.status === 'Pendente').length;
   const totalExams = data.exams.length;
   const adherence = 1 - (overdueExams + pendingExams * 0.5) / totalExams;
-  addItem('Adesão Preventiva', 15, clamp(adherence, 0, 1), `${overdueExams} atrasados, ${pendingExams} pendentes`);
+  addItem('Adesão Preventiva', 12, clamp(adherence, 0, 1), `${overdueExams} atrasados, ${pendingExams} pendentes`);
 
   // Sleep
   const sleep = data.lifestyle.sleepHours;
@@ -135,21 +135,36 @@ export function calcLongevityScore(data: HealthData): HealthScore {
   
   // Exercise
   const ex = data.lifestyle.exerciseFrequency;
-  addItem('Exercício', 10, ex >= 5 ? 1 : ex >= 3 ? 0.7 : ex >= 1 ? 0.4 : 0, `${ex}x/semana`);
+  addItem('Exercício', 8, ex >= 5 ? 1 : ex >= 3 ? 0.7 : ex >= 1 ? 0.4 : 0, `${ex}x/semana`);
+
+  // Daily Steps (new from Apple Health)
+  const steps = data.lifestyle.dailySteps;
+  const stepsScore = steps >= 10000 ? 1 : steps >= 7500 ? 0.8 : steps >= 5000 ? 0.6 : steps >= 2500 ? 0.3 : steps > 0 ? 0.1 : 0;
+  addItem('Passos Diários', 8, stepsScore, steps > 0 ? `${steps.toLocaleString('pt-BR')} passos/dia` : 'Sem dados');
+
+  // Heart Rate (resting avg from Apple Health)
+  const hr = data.lifestyle.avgHeartRate;
+  const hrScore = hr > 0 ? (hr < 60 ? 1 : hr <= 70 ? 0.8 : hr <= 80 ? 0.5 : 0.2) : 0;
+  addItem('Freq. Cardíaca', 6, hrScore, hr > 0 ? `${hr} bpm` : 'Sem dados');
+
+  // Activity Minutes
+  const actMin = data.lifestyle.activityMinutes;
+  const actScore = actMin >= 30 ? 1 : actMin >= 20 ? 0.7 : actMin >= 10 ? 0.4 : actMin > 0 ? 0.2 : 0;
+  addItem('Min. Atividade', 6, actScore, actMin > 0 ? `${actMin} min/dia` : 'Sem dados');
   
   // Smoking
-  addItem('Tabagismo', 8, data.lifestyle.smokingStatus === 'never' ? 1 : data.lifestyle.smokingStatus === 'former' ? 0.7 : 0, data.lifestyle.smokingStatus === 'never' ? 'Nunca fumou' : data.lifestyle.smokingStatus === 'former' ? 'Ex-fumante' : 'Fumante');
+  addItem('Tabagismo', 5, data.lifestyle.smokingStatus === 'never' ? 1 : data.lifestyle.smokingStatus === 'former' ? 0.7 : 0, data.lifestyle.smokingStatus === 'never' ? 'Nunca fumou' : data.lifestyle.smokingStatus === 'former' ? 'Ex-fumante' : 'Fumante');
   
   // Alcohol
   const alc = data.lifestyle.alcoholWeekly;
-  addItem('Álcool', 7, alc <= 3 ? 1 : alc <= 7 ? 0.7 : alc <= 14 ? 0.4 : 0, `${alc} doses/semana`);
+  addItem('Álcool', 4, alc <= 3 ? 1 : alc <= 7 ? 0.7 : alc <= 14 ? 0.4 : 0, `${alc} doses/semana`);
   
   // Vit D
-  addItem('Vitamina D', 5, statusScore(getBiomarkerStatus(data, 'vitd')), `${getBiomarkerValue(data, 'vitd') ?? '?'} ng/mL`);
+  addItem('Vitamina D', 3, statusScore(getBiomarkerStatus(data, 'vitd')), `${getBiomarkerValue(data, 'vitd') ?? '?'} ng/mL`);
   
   // Derma + Oftalmo
-  addItem('Dermatologia', 2.5, examDone(data, 'Consulta Dermatológica') ? 1 : 0, examDone(data, 'Consulta Dermatológica') ? 'Em dia' : 'Atrasado');
-  addItem('Oftalmologia', 2.5, examDone(data, 'Consulta Oftalmológica') ? 1 : 0, examDone(data, 'Consulta Oftalmológica') ? 'Em dia' : 'Atrasado');
+  addItem('Dermatologia', 1, examDone(data, 'Consulta Dermatológica') ? 1 : 0, examDone(data, 'Consulta Dermatológica') ? 'Em dia' : 'Atrasado');
+  addItem('Oftalmologia', 1, examDone(data, 'Consulta Oftalmológica') ? 1 : 0, examDone(data, 'Consulta Oftalmológica') ? 'Em dia' : 'Atrasado');
 
   const total = items.reduce((s, i) => s + i.score, 0);
   const status: Status = total >= 75 ? 'green' : total >= 50 ? 'yellow' : 'red';
