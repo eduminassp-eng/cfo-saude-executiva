@@ -231,6 +231,11 @@ const RelatorioExecutivo = () => {
           ))}
         </div>
       </div>
+
+      <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground text-center print:border print:border-gray-200">
+        Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
+      </div>
+    </div>
   );
 };
 
