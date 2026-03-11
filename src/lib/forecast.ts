@@ -26,6 +26,84 @@ export interface ForecastFactor {
   description: string;
 }
 
+export interface ForecastSummary {
+  trajectory: 'improving' | 'stable' | 'declining';
+  trajectoryLabel: string;
+  trajectoryDescription: string;
+  mainRisk: string;
+  mainOpportunity: string;
+  topNegativeDrivers: string[];
+  topPositiveDrivers: string[];
+}
+
+export function buildForecastSummary(forecast: ForecastResult): ForecastSummary {
+  const scores = [forecast.cardiac, forecast.metabolic, forecast.longevity, forecast.compliance];
+  const avgDelta = scores.reduce((s, f) => s + (f.month12 - f.current), 0) / scores.length;
+
+  const trajectory: ForecastSummary['trajectory'] =
+    avgDelta > 2 ? 'improving' : avgDelta < -2 ? 'declining' : 'stable';
+
+  const trajectoryMap = {
+    improving: {
+      label: 'Em melhora',
+      description: 'Seus indicadores apontam para uma trajetória positiva nos próximos 12 meses. Manter os hábitos atuais é fundamental para consolidar essa evolução.',
+    },
+    stable: {
+      label: 'Estável',
+      description: 'Sua saúde projeta estabilidade para os próximos meses. Pequenos ajustes em hábitos podem transformar estabilidade em melhora consistente.',
+    },
+    declining: {
+      label: 'Atenção necessária',
+      description: 'Alguns indicadores mostram tendência de declínio. Intervenções pontuais agora podem reverter essa trajetória antes que se consolide.',
+    },
+  };
+
+  // Identify main risk: the score with worst 12m projection
+  const scoreLabels = { cardiac: 'Cardíaco', metabolic: 'Metabólico', longevity: 'Longevidade', compliance: 'Compliance Preventivo' } as const;
+  const worstScore = (['cardiac', 'metabolic', 'longevity', 'compliance'] as const)
+    .map(k => ({ key: k, val: forecast[k].month12 }))
+    .sort((a, b) => a.val - b.val)[0];
+
+  const riskMessages: Record<string, string> = {
+    cardiac: 'O perfil cardiovascular é o ponto que mais demanda atenção. Priorize controle pressórico e lipídico.',
+    metabolic: 'O metabolismo apresenta os indicadores mais sensíveis. Foco em alimentação equilibrada e atividade física regular.',
+    longevity: 'O score de longevidade é o mais pressionado. Revisar hábitos de sono, exercício e adesão preventiva.',
+    compliance: 'A adesão aos exames preventivos está abaixo do ideal. Agendar exames atrasados trará ganho imediato.',
+  };
+
+  // Best improvement opportunity: score with most room to grow
+  const bestOpportunity = (['cardiac', 'metabolic', 'longevity', 'compliance'] as const)
+    .map(k => ({ key: k, gap: 100 - forecast[k].current, delta: forecast[k].month12 - forecast[k].current }))
+    .sort((a, b) => b.gap - a.gap)[0];
+
+  const opportunityMessages: Record<string, string> = {
+    cardiac: 'Melhorias no perfil lipídico e controle pressórico oferecem o maior potencial de ganho no score cardíaco.',
+    metabolic: 'Ajustes em dieta e aumento de atividade física podem elevar significativamente o score metabólico.',
+    longevity: 'Otimizar sono, exercício e manter exames em dia são as alavancas mais eficazes para longevidade.',
+    compliance: 'Regularizar exames pendentes é a forma mais rápida de elevar seus scores gerais.',
+  };
+
+  const negDrivers = forecast.factors
+    .filter(f => f.impact === 'negative')
+    .slice(0, 3)
+    .map(f => f.label);
+
+  const posDrivers = forecast.factors
+    .filter(f => f.impact === 'positive')
+    .slice(0, 3)
+    .map(f => f.label);
+
+  return {
+    trajectory,
+    trajectoryLabel: trajectoryMap[trajectory].label,
+    trajectoryDescription: trajectoryMap[trajectory].description,
+    mainRisk: riskMessages[worstScore.key],
+    mainOpportunity: opportunityMessages[bestOpportunity.key],
+    topNegativeDrivers: negDrivers,
+    topPositiveDrivers: posDrivers,
+  };
+}
+
 function clamp(v: number, min: number, max: number) {
   return Math.round(Math.max(min, Math.min(max, v)));
 }
