@@ -88,6 +88,7 @@ const Dashboard = () => {
             })}
           </div>
         </div>
+      )}
 
       {yellowCount > 0 && redCount === 0 && (
         <div className="glass-card rounded-xl p-4 flex items-start gap-3 border-l-4" style={{ borderLeftColor: 'hsl(var(--status-yellow))' }}>
