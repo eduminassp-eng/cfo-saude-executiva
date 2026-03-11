@@ -1,5 +1,189 @@
-import { HealthData, Biomarker, Exam } from '@/types/health';
+import { HealthData, Biomarker, Exam, Status } from '@/types/health';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from './scoring';
+
+// ── Trend Pattern Detection ──
+
+export type TrendDirection = 'rising' | 'falling' | 'stable';
+export type TrendSeverity = 'positive' | 'negative' | 'neutral';
+
+export interface TrendPattern {
+  biomarkerId: string;
+  biomarkerName: string;
+  direction: TrendDirection;
+  severity: TrendSeverity;
+  changePercent: number;
+  currentValue: number;
+  previousValue: number;
+  unit: string;
+  insight: string;
+  dataPoints: number;
+}
+
+// Biomarkers where lower is better (rising = bad)
+const LOWER_IS_BETTER = new Set([
+  'pa-sys', 'pa-dia', 'ldl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ureia',
+  'tgo', 'tgp', 'ggt', 'pcr', 'apob', 'insulina', 'psa', 'imc', 'cintura', 'acido-urico',
+]);
+
+// Biomarkers where higher is better (falling = bad)
+const HIGHER_IS_BETTER = new Set([
+  'hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona', 'ferro', 't4-livre',
+]);
+
+const trendInsights: Record<string, { rising: string; falling: string; stable: string }> = {
+  'ldl': {
+    rising: 'LDL em tendência de alta — risco aterosclerótico crescente. Considere ajustes na dieta (menos gordura saturada) e avaliação de estatinas.',
+    falling: 'LDL em queda — ótimo progresso no controle lipídico. Mantenha as mudanças que estão funcionando.',
+    stable: 'LDL estável — controle lipídico consistente. Continue monitorando semestralmente.',
+  },
+  'glicemia': {
+    rising: 'Glicemia em tendência de alta — alerta para progressão rumo à pré-diabetes. Priorize redução de carboidratos refinados e atividade física.',
+    falling: 'Glicemia melhorando — indicativo de melhor sensibilidade insulínica. Mudanças de estilo de vida estão surtindo efeito.',
+    stable: 'Glicemia estável — bom controle glicêmico mantido ao longo do tempo.',
+  },
+  'hba1c': {
+    rising: 'HbA1c subindo — controle glicêmico dos últimos 3 meses piorando. Revisão urgente de dieta e atividade.',
+    falling: 'HbA1c em queda — excelente melhora no controle glicêmico de longo prazo.',
+    stable: 'HbA1c estável — controle glicêmico consistente.',
+  },
+  'hdl': {
+    rising: 'HDL em alta — fator protetor cardiovascular se fortalecendo. O exercício aeróbico está fazendo diferença.',
+    falling: 'HDL em queda — perda de proteção cardiovascular. Intensifique exercícios aeróbicos e avalie a dieta.',
+    stable: 'HDL estável — proteção cardiovascular mantida.',
+  },
+  'trig': {
+    rising: 'Triglicerídeos em alta — pode indicar consumo excessivo de carboidratos ou álcool. Risco de síndrome metabólica.',
+    falling: 'Triglicerídeos em queda — metabolismo lipídico melhorando. Dieta e exercício estão funcionando.',
+    stable: 'Triglicerídeos estáveis — metabolismo lipídico sem alterações significativas.',
+  },
+  'pa-sys': {
+    rising: 'Pressão sistólica em tendência de alta — risco cardiovascular crescente. Reduzir sódio e estresse.',
+    falling: 'Pressão sistólica em queda — bom controle pressórico. Mudanças de hábito estão funcionando.',
+    stable: 'Pressão sistólica estável — controle pressórico mantido.',
+  },
+  'pa-dia': {
+    rising: 'Pressão diastólica subindo — atenção à saúde cardiovascular.',
+    falling: 'Pressão diastólica melhorando — resposta positiva ao tratamento ou mudanças de estilo de vida.',
+    stable: 'Pressão diastólica estável.',
+  },
+  'creatinina': {
+    rising: 'Creatinina em alta — possível declínio da função renal. Monitorar de perto.',
+    falling: 'Creatinina em queda — função renal melhorando ou estabilizando.',
+    stable: 'Creatinina estável — função renal preservada.',
+  },
+  'tsh': {
+    rising: 'TSH em alta — possível hipotireoidismo em progressão. Avaliar com endocrinologista.',
+    falling: 'TSH em queda — pode indicar hipertireoidismo. Correlacionar com sintomas.',
+    stable: 'TSH estável — função tireoidiana equilibrada.',
+  },
+  'vitd': {
+    rising: 'Vitamina D subindo — suplementação e exposição solar estão funcionando.',
+    falling: 'Vitamina D em queda — reavaliar suplementação e exposição solar.',
+    stable: 'Vitamina D estável — níveis mantidos adequadamente.',
+  },
+  'pcr': {
+    rising: 'PCR em alta — inflamação sistêmica aumentando. Risco cardiovascular residual.',
+    falling: 'PCR em queda — redução da inflamação sistêmica. Ótimo sinal.',
+    stable: 'PCR estável — perfil inflamatório sem mudanças.',
+  },
+  'insulina': {
+    rising: 'Insulina em jejum subindo — possível piora da resistência insulínica.',
+    falling: 'Insulina em queda — sensibilidade insulínica melhorando.',
+    stable: 'Insulina estável — sem progressão de resistência insulínica.',
+  },
+  'ferritina': {
+    rising: 'Ferritina subindo — reservas de ferro se recuperando.',
+    falling: 'Ferritina em queda — avaliar dieta e possíveis perdas de ferro.',
+    stable: 'Ferritina estável — reservas de ferro mantidas.',
+  },
+  'testosterona': {
+    rising: 'Testosterona em alta — equilíbrio hormonal melhorando.',
+    falling: 'Testosterona em queda — avaliar causas e considerar acompanhamento hormonal.',
+    stable: 'Testosterona estável — equilíbrio hormonal mantido.',
+  },
+};
+
+function getDefaultInsight(name: string, direction: TrendDirection, severity: TrendSeverity, pct: number): string {
+  const absPct = Math.abs(pct).toFixed(0);
+  if (direction === 'stable') return `${name} estável ao longo das medições recentes.`;
+  const dirText = direction === 'rising' ? 'aumento' : 'redução';
+  const qualText = severity === 'positive' ? 'tendência positiva' :
+    severity === 'negative' ? 'requer atenção' : 'sem impacto clínico relevante';
+  return `${name} com ${dirText} de ${absPct}% — ${qualText}.`;
+}
+
+export function detectTrendPatterns(data: HealthData): TrendPattern[] {
+  const patterns: TrendPattern[] = [];
+
+  for (const b of data.biomarkers) {
+    if (b.value === null || b.history.length === 0) continue;
+
+    // Use last value from history as comparison
+    const prev = b.history[0].value;
+    const current = b.value;
+    if (prev === 0 && current === 0) continue;
+
+    const base = prev || 1;
+    const changePct = ((current - prev) / Math.abs(base)) * 100;
+
+    // Ignore tiny changes (< 3%)
+    if (Math.abs(changePct) < 3) {
+      // Only include stable patterns for important markers
+      const importantMarkers = ['ldl', 'glicemia', 'hba1c', 'hdl', 'pa-sys'];
+      if (!importantMarkers.includes(b.id)) continue;
+
+      const insight = trendInsights[b.id]?.stable ?? getDefaultInsight(b.name, 'stable', 'neutral', 0);
+      patterns.push({
+        biomarkerId: b.id,
+        biomarkerName: b.name,
+        direction: 'stable',
+        severity: 'neutral',
+        changePercent: Math.round(changePct * 10) / 10,
+        currentValue: current,
+        previousValue: prev,
+        unit: b.unit,
+        insight,
+        dataPoints: b.history.length + 1,
+      });
+      continue;
+    }
+
+    const direction: TrendDirection = changePct > 0 ? 'rising' : 'falling';
+
+    // Determine if this direction is good or bad
+    let severity: TrendSeverity = 'neutral';
+    if (LOWER_IS_BETTER.has(b.id)) {
+      severity = direction === 'rising' ? 'negative' : 'positive';
+    } else if (HIGHER_IS_BETTER.has(b.id)) {
+      severity = direction === 'rising' ? 'positive' : 'negative';
+    }
+
+    const insight = trendInsights[b.id]?.[direction] ?? getDefaultInsight(b.name, direction, severity, changePct);
+
+    patterns.push({
+      biomarkerId: b.id,
+      biomarkerName: b.name,
+      direction,
+      severity,
+      changePercent: Math.round(changePct * 10) / 10,
+      currentValue: current,
+      previousValue: prev,
+      unit: b.unit,
+      insight,
+      dataPoints: b.history.length + 1,
+    });
+  }
+
+  // Sort: negative first, then positive, then neutral; within each group sort by abs change
+  const severityOrder: Record<TrendSeverity, number> = { negative: 0, positive: 1, neutral: 2 };
+  patterns.sort((a, b) => {
+    const diff = severityOrder[a.severity] - severityOrder[b.severity];
+    if (diff !== 0) return diff;
+    return Math.abs(b.changePercent) - Math.abs(a.changePercent);
+  });
+
+  return patterns;
+}
 
 export interface BiomarkerInsight {
   biomarker: Biomarker;
