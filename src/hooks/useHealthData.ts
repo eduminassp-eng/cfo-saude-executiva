@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const EMPTY_DATA: HealthData = {
   biomarkers: [],
   exams: [],
-  lifestyle: { exerciseFrequency: 0, sleepHours: 7, smokingStatus: 'never', alcoholWeekly: 0 },
+  lifestyle: { exerciseFrequency: 0, sleepHours: 7, smokingStatus: 'never', alcoholWeekly: 0, dailySteps: 0, avgHeartRate: 0, activityMinutes: 0, weight: null },
   lastUpdated: new Date().toISOString().split('T')[0],
 };
 
