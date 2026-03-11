@@ -19,6 +19,14 @@ const navItems = [
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('health-cfo-theme') as 'dark' | 'light') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', theme === 'light');
+    localStorage.setItem('health-cfo-theme', theme);
+  }, [theme]);
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
