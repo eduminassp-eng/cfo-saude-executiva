@@ -16,6 +16,7 @@ const RelatorioExecutivo = () => {
   const domains = useMemo(() => calcDomainScores(data), [data]);
   const summary = useMemo(() => generateExecutiveSummary(data), [data]);
   const insights = useMemo(() => generateBiomarkerInsights(data), [data]);
+  const actionPlan = useMemo(() => generateActionPlan(data), [data]);
 
   const compliance = useMemo(() => {
     const total = data.exams.length;
