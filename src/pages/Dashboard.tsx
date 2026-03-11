@@ -237,6 +237,9 @@ const Dashboard = () => {
       {/* Longevity Forecast */}
       <LongevityForecast forecast={forecast} />
 
+      {/* What-If Simulator */}
+      <WhatIfSimulator />
+
       {/* Preventive Compliance & Balance Sheet */}
       <PreventiveComplianceScore data={data} />
       <HealthBalanceSheet data={data} />
