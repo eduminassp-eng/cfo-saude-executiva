@@ -150,69 +150,13 @@ const Dashboard = () => {
       {/* Domain Health Summary */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {domainScores.map(d => {
-            const icons: Record<string, typeof Heart> = {
-              cardiovascular: Heart, metabolic: Flame, liver: Droplets,
-              kidney: Bean, hormonal: Zap, nutrition: Apple, preventive: ShieldCheck,
-            };
-            const Icon = icons[d.id] || Heart;
-            return (
-              <button
-                key={d.id}
-                onClick={() => setShowDomainDetail(showDomainDetail === d.id ? null : d.id)}
-                className="glass-card rounded-xl p-4 text-left hover:bg-accent/30 transition-colors"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-secondary">
-                      <Icon className="w-4 h-4" style={{ color: `hsl(var(--status-${d.status === 'unknown' ? 'yellow' : d.status}))` }} />
-                    </div>
-                    <span className="text-sm font-medium">{d.label}</span>
-                  </div>
-                  <span
-                    className="px-2 py-0.5 rounded-full text-xs font-bold font-mono"
-                    style={{
-                      color: `hsl(var(--status-${d.status}))`,
-                      backgroundColor: `hsl(var(--status-${d.status}) / 0.15)`,
-                    }}
-                  >
-                    {d.score}
-                  </span>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full h-1.5 rounded-full bg-secondary mb-2.5">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: `${d.score}%`,
-                      backgroundColor: `hsl(var(--status-${d.status}))`,
-                    }}
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed">{d.summary}</p>
-              </button>
-            );
-          })}
-        </div>
+        <DomainGrid
+          domainScores={domainScores}
+          showDomainDetail={showDomainDetail}
+          setShowDomainDetail={setShowDomainDetail}
+          data={data}
+        />
       </div>
-
-      {/* Domain detail panel */}
-      {showDomainDetail && (() => {
-        const d = domainScores.find(ds => ds.id === showDomainDetail);
-        if (!d) return null;
-        return (
-          <DomainDetailPanel
-            domainId={d.id}
-            label={d.label}
-            score={d.score}
-            status={d.status}
-            summary={d.summary}
-            data={data}
-            onClose={() => setShowDomainDetail(null)}
-          />
-        );
-      })()}
 
       {/* KPIs */}
       <div>
