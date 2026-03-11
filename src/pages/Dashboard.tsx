@@ -14,7 +14,7 @@ import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
 
 const Dashboard = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
   const cardiac = calcCardiacScore(data);
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
@@ -47,6 +47,14 @@ const Dashboard = () => {
   const keyBiomarkers = data.biomarkers.filter(b => 
     ['pa-sys', 'glicemia', 'hba1c', 'ldl', 'hdl', 'trig', 'creatinina', 'tsh', 'tgo', 'tgp', 'ggt', 'vitd', 'ferritina', 'imc', 'cintura', 'psa'].includes(b.id)
   );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-pulse text-muted-foreground">Carregando dados...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">

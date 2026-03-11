@@ -4,6 +4,7 @@ import { HealthData } from '@/types/health';
 
 interface HealthContextType {
   data: HealthData;
+  loading: boolean;
   updateData: (updater: (prev: HealthData) => HealthData) => void;
   resetData: () => void;
   exportJSON: () => void;
