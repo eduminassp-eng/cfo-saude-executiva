@@ -29,6 +29,67 @@ const Copilot = () => {
     longevity: calcLongevityScore(data),
   }), [data]);
 
+  // Toast notifications for overdue/upcoming exams
+  useEffect(() => {
+    const overdue = data.exams.filter(e => e.status === 'Atrasado');
+    const upcoming = data.exams.filter(e => e.status === 'Próximo');
+    if (overdue.length > 0) {
+      toast.error(`${overdue.length} exame(s) atrasado(s)`, {
+        description: overdue.map(e => e.name).join(', '),
+        duration: 6000,
+      });
+    }
+    if (upcoming.length > 0) {
+      toast.warning(`${upcoming.length} exame(s) próximo(s) do vencimento`, {
+        description: upcoming.map(e => e.name).join(', '),
+        duration: 5000,
+      });
+    }
+  }, [data.exams]);
+
+  // PDF Export
+  const exportPDF = useCallback(() => {
+    const w = window.open('', '_blank');
+    if (!w) { toast.error('Não foi possível abrir a janela de impressão.'); return; }
+    const html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Resumo Executivo – Health CFO</title>
+<style>
+  body{font-family:system-ui,sans-serif;max-width:700px;margin:40px auto;color:#1a1a1a;line-height:1.6}
+  h1{font-size:22px;border-bottom:2px solid #2563eb;padding-bottom:8px;margin-bottom:24px}
+  h2{font-size:16px;color:#2563eb;margin-top:28px;margin-bottom:10px}
+  .item{padding:6px 0;border-bottom:1px solid #eee;font-size:14px}
+  .scores{display:flex;gap:24px;margin:16px 0}
+  .score-box{text-align:center;padding:12px 20px;background:#f0f4ff;border-radius:8px}
+  .score-val{font-size:28px;font-weight:700}
+  .disclaimer{margin-top:32px;padding:12px;background:#fef3c7;border-radius:8px;font-size:12px;color:#92400e}
+  .date{font-size:12px;color:#888;margin-bottom:20px}
+</style></head><body>
+<h1>Resumo Executivo de Saúde</h1>
+<p class="date">Gerado em ${new Date().toLocaleDateString('pt-BR')} • Health CFO AI Copilot</p>
+<div class="scores">
+  <div class="score-box"><div class="score-val">${scores.cardiac.value}</div><div>Cardíaco</div></div>
+  <div class="score-box"><div class="score-val">${scores.metabolic.value}</div><div>Metabólico</div></div>
+  <div class="score-box"><div class="score-val">${scores.longevity.value}</div><div>Longevidade</div></div>
+</div>
+<h2>✅ Pontos Fortes</h2>
+${summary.strengths.map(s => `<div class="item">${s}</div>`).join('')}
+${summary.strengths.length === 0 ? '<div class="item">Nenhum ponto forte identificado.</div>' : ''}
+<h2>⚠️ Pontos de Atenção</h2>
+${summary.attentionPoints.map(s => `<div class="item">${s}</div>`).join('')}
+${summary.attentionPoints.length === 0 ? '<div class="item">Nenhum ponto de atenção.</div>' : ''}
+<h2>🔴 Exames Atrasados</h2>
+${summary.overdueExams.map(e => `<div class="item">${e.name} — ${e.category} (${e.mainRisk})</div>`).join('')}
+${summary.overdueExams.length === 0 ? '<div class="item">Nenhum exame atrasado.</div>' : ''}
+<h2>📋 Próximas Consultas Sugeridas</h2>
+${summary.suggestedAppointments.map(s => `<div class="item">${s}</div>`).join('')}
+${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consulta adicional sugerida.</div>' : ''}
+<div class="disclaimer">Este documento é apenas para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.</div>
+</body></html>`;
+    w.document.write(html);
+    w.document.close();
+    w.onload = () => { w.print(); };
+    toast.success('PDF gerado — use a opção "Salvar como PDF" na janela de impressão.');
+  }, [summary, scores]);
+
   const filteredBiomarkers = useMemo(() => {
     return biomarkerInsights.filter(i => {
       if (search && !i.biomarker.name.toLowerCase().includes(search.toLowerCase())) return false;
