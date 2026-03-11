@@ -117,8 +117,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
     });
   }, [examInsights, search, statusFilter]);
 
+  const alertCount = healthAlerts.filter(a => a.severity === 'critical').length;
   const tabs = [
     { id: 'summary' as const, label: 'Resumo', icon: ShieldAlert },
+    { id: 'alerts' as const, label: `Alertas${alertCount > 0 ? ` (${alertCount})` : ''}`, icon: Bell },
     { id: 'trends' as const, label: 'Tendências', icon: TrendingUp },
     { id: 'biomarkers' as const, label: 'Biomarcadores', icon: Activity },
     { id: 'exams' as const, label: 'Exames', icon: ClipboardList },
