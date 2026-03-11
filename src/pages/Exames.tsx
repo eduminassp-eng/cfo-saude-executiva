@@ -1,8 +1,10 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Exam } from '@/types/health';
 import { ExamEditDialog } from '@/components/ExamEditDialog';
+import { ExamCreateDialog } from '@/components/ExamCreateDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const statusColors: Record<string, string> = {
   'Em dia': 'bg-status-green status-green',
@@ -25,8 +27,11 @@ const Exames = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('category');
   const [sortAsc, setSortAsc] = useState(true);
+  const { toast } = useToast();
+  const toastFired = useRef(false);
 
   const categories = [...new Set(data.exams.map(e => e.category))].sort();
   const statuses = ['Em dia', 'Próximo', 'Atrasado', 'Pendente'];
@@ -66,6 +71,29 @@ const Exames = () => {
     pendente: data.exams.filter(e => e.status === 'Pendente').length,
   }), [data.exams]);
 
+  // Toast notifications for overdue/upcoming exams
+  useEffect(() => {
+    if (toastFired.current) return;
+    toastFired.current = true;
+    const overdue = data.exams.filter(e => e.status === 'Atrasado');
+    const upcoming = data.exams.filter(e => e.status === 'Próximo');
+    if (overdue.length > 0) {
+      toast({
+        variant: 'destructive',
+        title: `${overdue.length} exame(s) atrasado(s)`,
+        description: overdue.map(e => e.name).join(', '),
+      });
+    }
+    if (upcoming.length > 0) {
+      setTimeout(() => {
+        toast({
+          title: `${upcoming.length} exame(s) próximo(s) do vencimento`,
+          description: upcoming.map(e => e.name).join(', '),
+        });
+      }, overdue.length > 0 ? 1500 : 0);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc);
     else { setSortKey(key); setSortAsc(true); }
@@ -78,9 +106,18 @@ const Exames = () => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Exames e Avaliações</h1>
-        <p className="text-muted-foreground mt-1">Acompanhamento completo de exames preventivos</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Exames e Avaliações</h1>
+          <p className="text-muted-foreground mt-1">Acompanhamento completo de exames preventivos</p>
+        </div>
+        <button
+          onClick={() => setShowCreate(true)}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity no-print"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Novo Exame</span>
+        </button>
       </div>
 
       {/* Stats */}
@@ -214,6 +251,7 @@ const Exames = () => {
       <p className="text-xs text-muted-foreground">{filtered.length} exame(s) • Clique para editar • Colunas ordenáveis</p>
 
       {editingExam && <ExamEditDialog exam={editingExam} onClose={() => setEditingExam(null)} />}
+      {showCreate && <ExamCreateDialog onClose={() => setShowCreate(false)} />}
     </div>
   );
 };
