@@ -38,6 +38,9 @@ export function LongevityForecast({ forecast }: Props) {
         </div>
       </div>
 
+      {/* Forecast Summary Card */}
+      <ForecastSummaryCard summary={summary} />
+
       {/* Score Projections */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {scoreConfig.map(({ key, label, icon: Icon, colorVar }, idx) => {
