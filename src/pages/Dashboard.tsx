@@ -2,8 +2,8 @@ import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from '@/lib/scoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { KPICard } from '@/components/KPICard';
-import { AlertTriangle, CheckCircle2, Info } from 'lucide-react';
-import { useState } from 'react';
+import { AlertTriangle, CheckCircle2, Info, TrendingUp, TrendingDown } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker } from '@/types/health';
 import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
@@ -19,6 +19,22 @@ const Dashboard = () => {
   const overdueCount = data.exams.filter(e => e.status === 'Atrasado').length;
   const yellowCount = data.biomarkers.filter(b => b.status === 'yellow').length;
   const redCount = data.biomarkers.filter(b => b.status === 'red').length;
+
+  // Markers where higher = better (worsening = going down)
+  const upIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
+
+  const worsenedBiomarkers = useMemo(() => {
+    return data.biomarkers.filter(b => {
+      if (b.value === null || b.history.length === 0) return false;
+      const prev = b.history[0].value;
+      const diff = b.value - prev;
+      if (Math.abs(diff) < Math.abs(prev) * 0.02) return false; // ignore tiny changes
+      const isUp = diff > 0;
+      // For most markers, going up is bad; for upIsGood set, going down is bad
+      if (upIsGood.has(b.id)) return !isUp; // dropped = worsened
+      return isUp; // increased = worsened
+    });
+  }, [data.biomarkers]);
 
   const keyBiomarkers = data.biomarkers.filter(b => 
     ['pa-sys', 'glicemia', 'hba1c', 'ldl', 'hdl', 'trig', 'creatinina', 'tsh', 'tgo', 'tgp', 'ggt', 'vitd', 'ferritina', 'imc', 'cintura', 'psa'].includes(b.id)
@@ -39,6 +55,37 @@ const Dashboard = () => {
           <div className="text-sm">
             {overdueCount > 0 && <p><strong>{overdueCount} exame(s) atrasado(s)</strong> necessitam agendamento.</p>}
             {redCount > 0 && <p><strong>{redCount} indicador(es)</strong> requerem ação imediata.</p>}
+          </div>
+        </div>
+      )}
+
+      {/* Worsened biomarkers alert */}
+      {worsenedBiomarkers.length > 0 && (
+        <div className="glass-card rounded-xl p-4 border-l-4" style={{ borderLeftColor: 'hsl(var(--destructive))' }}>
+          <div className="flex items-start gap-3 mb-3">
+            <TrendingDown className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <p className="text-sm font-medium"><strong>{worsenedBiomarkers.length} indicador(es)</strong> pioraram em relação ao último registro</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-8">
+            {worsenedBiomarkers.map(b => {
+              const prev = b.history[0].value;
+              const diff = b.value! - prev;
+              const pct = ((diff / prev) * 100).toFixed(1);
+              const isUp = diff > 0;
+              return (
+                <div key={b.id} className="flex items-center justify-between text-xs bg-secondary/50 rounded-lg px-3 py-2">
+                  <span className="text-muted-foreground truncate mr-2">{b.name}</span>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="font-mono font-medium">{prev}</span>
+                    <span className="text-muted-foreground">→</span>
+                    <span className="font-mono font-bold">{b.value}</span>
+                    <span className={`text-xs font-medium ${isUp ? 'status-red' : 'status-red'}`}>
+                      ({isUp ? '+' : ''}{pct}%)
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
