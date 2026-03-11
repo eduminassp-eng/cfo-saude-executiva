@@ -35,10 +35,34 @@ function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoo
 const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const Biomarcadores = () => {
-  const { data } = useHealth();
+  const { data, updateData } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
+  const [editingHistory, setEditingHistory] = useState<{ biomarkerId: string; index: number; entry: BiomarkerHistoryEntry } | null>(null);
+
+  const handleDeleteHistory = (biomarkerId: string, index: number) => {
+    updateData(prev => ({
+      ...prev,
+      biomarkers: prev.biomarkers.map(b =>
+        b.id === biomarkerId
+          ? { ...b, history: b.history.filter((_, i) => i !== index) }
+          : b
+      ),
+    }));
+  };
+
+  const handleSaveHistory = (biomarkerId: string, index: number, entry: BiomarkerHistoryEntry) => {
+    updateData(prev => ({
+      ...prev,
+      biomarkers: prev.biomarkers.map(b =>
+        b.id === biomarkerId
+          ? { ...b, history: b.history.map((h, i) => i === index ? entry : h) }
+          : b
+      ),
+    }));
+    setEditingHistory(null);
+  };
 
   const filtered = useMemo(() => {
     if (categoryFilter === 'Todos') return data.biomarkers;
