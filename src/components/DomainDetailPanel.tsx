@@ -63,7 +63,7 @@ export function DomainDetailPanel({ domainId, label, score, status, summary, dat
     : detail.examNames.map(name => data.exams.find(e => e.name === name)).filter(Boolean);
 
   return (
-    <div className="glass-card rounded-xl p-5 animate-slide-up">
+    <div className="glass-card rounded-xl p-5 animate-enter">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h3 className="font-semibold">{label}</h3>
