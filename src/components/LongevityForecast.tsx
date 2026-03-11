@@ -1,6 +1,6 @@
-import { ForecastResult, ScoreForecast } from '@/lib/forecast';
-import { TrendingUp, TrendingDown, Minus, ArrowRight, Activity, Heart, Flame, ShieldCheck } from 'lucide-react';
-import { useState } from 'react';
+import { ForecastResult, ScoreForecast, buildForecastSummary } from '@/lib/forecast';
+import { TrendingUp, TrendingDown, Minus, ArrowRight, Activity, Heart, Flame, ShieldCheck, AlertTriangle, Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useMemo } from 'react';
 
 interface Props {
   forecast: ForecastResult;
