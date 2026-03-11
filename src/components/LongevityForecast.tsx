@@ -146,10 +146,63 @@ export function LongevityForecast({ forecast }: Props) {
         )}
       </div>
 
-      {/* Disclaimer */}
-      <p className="text-[10px] text-muted-foreground/60 text-center leading-relaxed">
-        Projeções heurísticas baseadas em dados atuais. Não constituem previsão médica.
-      </p>
+      {/* Forecast Logic Explanation */}
+      <ForecastExplanation />
+    </div>
+  );
+}
+
+function ForecastExplanation() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="rounded-xl border border-border/30 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <span>Como funciona esta projeção?</span>
+        <ArrowRight className={`w-3 h-3 transition-transform duration-200 ${open ? 'rotate-90' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="px-4 pb-4 space-y-3 animate-fade-in text-xs text-muted-foreground leading-relaxed">
+          <div className="space-y-2">
+            <p className="font-medium text-foreground">Modelo de Planejamento Preventivo</p>
+            <p>
+              Esta projeção é um <strong>modelo de planejamento</strong>, não uma previsão médica. 
+              Ela estima como seus scores de saúde podem evoluir nos próximos meses com base em três pilares:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[
+              { title: 'Dados Atuais', desc: 'Seus biomarcadores, estilo de vida e exames preventivos de hoje formam a base de cálculo.' },
+              { title: 'Tendências Históricas', desc: 'A direção e velocidade de mudança dos seus indicadores ao longo do tempo são usadas para projetar o futuro.' },
+              { title: 'Regras Preventivas', desc: 'Heurísticas baseadas em diretrizes de saúde preventiva estimam o impacto de hábitos e adesão a exames.' },
+            ].map((item, i) => (
+              <div key={i} className="rounded-lg border border-border/20 p-3 space-y-1" style={{ backgroundColor: 'hsl(var(--secondary) / 0.4)' }}>
+                <p className="font-medium text-foreground text-[11px]">{item.title}</p>
+                <p className="text-[10px]">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="rounded-lg p-3 space-y-1.5" style={{ backgroundColor: 'hsl(var(--status-yellow) / 0.06)', border: '1px solid hsl(var(--status-yellow) / 0.15)' }}>
+            <p className="font-medium text-foreground text-[11px]">⚠️ Limitações Importantes</p>
+            <ul className="space-y-1 text-[10px] list-disc list-inside">
+              <li>As projeções <strong>não diagnosticam</strong> doenças nem preveem resultados clínicos.</li>
+              <li>Fatores genéticos, ambientais e eventos imprevistos não são considerados.</li>
+              <li>Os scores são aproximações simplificadas e podem não refletir toda a complexidade do seu quadro de saúde.</li>
+              <li>Esta ferramenta <strong>não substitui</strong> avaliação, diagnóstico ou acompanhamento médico profissional.</li>
+            </ul>
+          </div>
+
+          <p className="text-[10px] text-center text-muted-foreground/60">
+            Use estas projeções como apoio ao planejamento de saúde, sempre em conjunto com orientação do seu médico.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
