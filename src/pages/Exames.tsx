@@ -27,8 +27,11 @@ const Exames = () => {
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>('category');
   const [sortAsc, setSortAsc] = useState(true);
+  const { toast } = useToast();
+  const toastFired = useRef(false);
 
   const categories = [...new Set(data.exams.map(e => e.category))].sort();
   const statuses = ['Em dia', 'Próximo', 'Atrasado', 'Pendente'];
