@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X, Activity, BrainCircuit 
+  FileText, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon 
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
