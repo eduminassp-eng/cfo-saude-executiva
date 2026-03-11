@@ -16,6 +16,7 @@ import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { LongevityForecast } from '@/components/LongevityForecast';
 import { generateForecast } from '@/lib/forecast';
+import { WhatIfSimulator } from '@/components/WhatIfSimulator';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
