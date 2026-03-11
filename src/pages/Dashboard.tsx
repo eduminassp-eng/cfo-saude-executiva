@@ -17,6 +17,7 @@ import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { LongevityForecast } from '@/components/LongevityForecast';
 import { generateForecast } from '@/lib/forecast';
 import { WhatIfSimulator } from '@/components/WhatIfSimulator';
+import { HealthRiskMap } from '@/components/HealthRiskMap';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
@@ -239,6 +240,9 @@ const Dashboard = () => {
 
       {/* What-If Simulator */}
       <WhatIfSimulator />
+
+      {/* Health Risk Map */}
+      <HealthRiskMap data={data} />
 
       {/* Preventive Compliance & Balance Sheet */}
       <PreventiveComplianceScore data={data} />
