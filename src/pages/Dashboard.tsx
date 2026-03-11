@@ -14,7 +14,7 @@ import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
 
 const Dashboard = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
   const cardiac = calcCardiacScore(data);
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
