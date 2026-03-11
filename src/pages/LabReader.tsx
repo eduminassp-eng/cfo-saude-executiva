@@ -346,20 +346,36 @@ const LabReader = () => {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv') {
-      processCSV(file);
-    } else {
-      processFile(file);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // If single CSV, use CSV flow
+    if (files.length === 1 && (files[0].name.toLowerCase().endsWith('.csv') || files[0].type === 'text/csv')) {
+      processCSV(files[0]);
+      return;
     }
-  }, [processFile, processCSV]);
+
+    // Filter valid files
+    const validFiles = files.filter(f => ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(f.type));
+    if (validFiles.length === 0) { toast.error('Nenhum arquivo válido (PDF, JPG, PNG)'); return; }
+
+    if (validFiles.length === 1) {
+      handleSingleFile(validFiles[0]);
+    } else {
+      processBatch(validFiles);
+    }
+  }, [handleSingleFile, processBatch, processCSV]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    if (files.length === 1) {
+      handleSingleFile(files[0]);
+    } else {
+      processBatch(files);
+    }
     e.target.value = '';
-  }, [processFile]);
+  }, [handleSingleFile, processBatch]);
 
   const handleCsvSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
