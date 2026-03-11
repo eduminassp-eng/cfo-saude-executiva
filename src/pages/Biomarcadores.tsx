@@ -15,7 +15,7 @@ const statusConfig: Record<Status, { bg: string; text: string; label: string }> 
 const categories = ['Todos', 'Cardiovascular', 'Metabolismo', 'Fígado', 'Rins', 'Hormonal', 'Composição Corporal', 'Urologia'];
 
 function getTrend(b: Biomarker): 'up' | 'down' | 'stable' {
-  if (!b.value || b.history.length === 0) return 'stable';
+  if (!b.value || !b.history || b.history.length === 0) return 'stable';
   const prev = b.history[0].value;
   const diff = b.value - prev;
   if (Math.abs(diff) < prev * 0.02) return 'stable';
