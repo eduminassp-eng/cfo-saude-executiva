@@ -63,9 +63,19 @@ export function CopilotActionPlan({ data }: Props) {
 
   return (
     <div className="glass-card rounded-xl p-5">
-      <div className="flex items-center gap-2 mb-5">
-        <Target className="w-5 h-5 text-primary" />
-        <h3 className="font-semibold">Plano de Ação</h3>
+    <div className="glass-card rounded-xl p-5" ref={contentRef}>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Target className="w-5 h-5 text-primary" />
+          <h3 className="font-semibold">Plano de Ação</h3>
+        </div>
+        <button
+          onClick={handlePrint}
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">PDF</span>
+        </button>
       </div>
       <div className="space-y-5">
         {horizons.map((h, hi) => (
