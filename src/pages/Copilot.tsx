@@ -115,7 +115,8 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   }, [examInsights, search, statusFilter]);
 
   const tabs = [
-    { id: 'summary' as const, label: 'Resumo Executivo', icon: ShieldAlert },
+    { id: 'summary' as const, label: 'Resumo', icon: ShieldAlert },
+    { id: 'trends' as const, label: 'Tendências', icon: TrendingUp },
     { id: 'biomarkers' as const, label: 'Biomarcadores', icon: Activity },
     { id: 'exams' as const, label: 'Exames', icon: ClipboardList },
   ];
