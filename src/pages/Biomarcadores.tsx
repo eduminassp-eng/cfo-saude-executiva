@@ -243,7 +243,7 @@ const Biomarcadores = () => {
                   )}
 
                   {/* History table */}
-                  {b.history.length > 0 && (
+                  {b.history && b.history.length > 0 && (
                     <div>
                       <p className="text-xs font-medium text-muted-foreground mb-2">Histórico</p>
                       <div className="space-y-1">
