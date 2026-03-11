@@ -4,6 +4,7 @@ import {
   generateBiomarkerInsights,
   generateExamInsights,
   generateExecutiveSummary,
+  detectTrendPatterns,
   BiomarkerInsight,
   ExamInsight,
 } from '@/lib/copilot';
@@ -13,18 +14,20 @@ import { CopilotBiomarkerCard } from '@/components/copilot/BiomarkerCard';
 import { CopilotExamCard } from '@/components/copilot/ExamCard';
 import { CopilotDoctorQuestions } from '@/components/copilot/DoctorQuestions';
 import { CopilotActionPlan } from '@/components/copilot/ActionPlan';
-import { ShieldAlert, Search, Activity, ClipboardList, Download } from 'lucide-react';
+import { CopilotTrendPatterns } from '@/components/copilot/TrendPatterns';
+import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Copilot = () => {
   const { data } = useHealth();
-  const [tab, setTab] = useState<'summary' | 'biomarkers' | 'exams'>('summary');
+  const [tab, setTab] = useState<'summary' | 'trends' | 'biomarkers' | 'exams'>('summary');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
   const biomarkerInsights = useMemo(() => generateBiomarkerInsights(data), [data]);
   const examInsights = useMemo(() => generateExamInsights(data), [data]);
   const summary = useMemo(() => generateExecutiveSummary(data), [data]);
+  const trendPatterns = useMemo(() => detectTrendPatterns(data), [data]);
   const scores = useMemo(() => ({
     cardiac: calcCardiacScore(data),
     metabolic: calcMetabolicScore(data),
@@ -112,7 +115,8 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   }, [examInsights, search, statusFilter]);
 
   const tabs = [
-    { id: 'summary' as const, label: 'Resumo Executivo', icon: ShieldAlert },
+    { id: 'summary' as const, label: 'Resumo', icon: ShieldAlert },
+    { id: 'trends' as const, label: 'Tendências', icon: TrendingUp },
     { id: 'biomarkers' as const, label: 'Biomarcadores', icon: Activity },
     { id: 'exams' as const, label: 'Exames', icon: ClipboardList },
   ];
@@ -202,6 +206,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
           <CopilotDoctorQuestions data={data} />
           <CopilotActionPlan data={data} />
         </div>
+      )}
+
+      {tab === 'trends' && (
+        <CopilotTrendPatterns patterns={trendPatterns} />
       )}
 
       {tab === 'biomarkers' && (
