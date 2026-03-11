@@ -12,6 +12,7 @@ import Timeline from "./pages/Timeline";
 import Riscos from "./pages/Riscos";
 import Resumo from "./pages/Resumo";
 import Configuracoes from "./pages/Configuracoes";
+import Copilot from "./pages/Copilot";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/exames" element={<Exames />} />
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/riscos" element={<Riscos />} />
+              <Route path="/copilot" element={<Copilot />} />
               <Route path="/resumo" element={<Resumo />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="*" element={<NotFound />} />

@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X, Activity 
+  FileText, Settings, Menu, X, Activity, BrainCircuit 
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -9,6 +9,7 @@ const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/biomarcadores', label: 'Biomarcadores', icon: Activity },
   { path: '/exames', label: 'Exames', icon: ClipboardList },
+  { path: '/copilot', label: 'AI Copilot', icon: BrainCircuit },
   { path: '/timeline', label: 'Timeline', icon: Calendar },
   { path: '/riscos', label: 'Riscos', icon: AlertTriangle },
   { path: '/resumo', label: 'Resumo', icon: FileText },
