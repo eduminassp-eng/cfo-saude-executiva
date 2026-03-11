@@ -22,6 +22,7 @@ const Dashboard = () => {
   const longevity = calcLongevityScore(data);
   const domainScores = useMemo(() => calcDomainScores(data), [data]);
   const previousDomainScores = useMemo(() => calcPreviousDomainScores(data), [data]);
+  const healthAlerts = useMemo(() => generateHealthAlerts(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
