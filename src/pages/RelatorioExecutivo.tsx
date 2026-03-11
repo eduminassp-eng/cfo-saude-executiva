@@ -2,6 +2,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useMemo, useCallback } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
+import { generateActionPlan } from '@/lib/actionPlan';
 import { Printer, Download } from 'lucide-react';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
