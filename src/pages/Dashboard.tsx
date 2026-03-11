@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
+import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { KPICard } from '@/components/KPICard';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
   const domainScores = useMemo(() => calcDomainScores(data), [data]);
+  const previousDomainScores = useMemo(() => calcPreviousDomainScores(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
@@ -194,7 +196,7 @@ const Dashboard = () => {
       <div>
         <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
-          <HealthRadar domainScores={domainScores} />
+          <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
