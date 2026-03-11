@@ -30,6 +30,37 @@ export function ExamEditDialog({ exam, onClose }: Props) {
     onClose();
   };
 
+  const handleDelete = () => {
+    updateData(prev => ({
+      ...prev,
+      exams: prev.exams.filter(e => e.id !== exam.id),
+    }));
+    onClose();
+  };
+
+  if (showDeleteConfirm) {
+    return (
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="glass-card rounded-xl p-6 w-full max-w-sm animate-slide-up" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+              <Trash2 className="w-5 h-5 text-destructive" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Excluir exame</h3>
+              <p className="text-sm text-muted-foreground">Esta ação não pode ser desfeita</p>
+            </div>
+          </div>
+          <p className="text-sm mb-5">Tem certeza que deseja excluir <strong>{exam.name}</strong>?</p>
+          <div className="flex gap-3">
+            <button onClick={() => setShowDeleteConfirm(false)} className="flex-1 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">Cancelar</button>
+            <button onClick={handleDelete} className="flex-1 px-4 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity">Excluir</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div className="glass-card rounded-xl p-6 w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
