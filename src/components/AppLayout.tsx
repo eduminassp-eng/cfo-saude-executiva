@@ -9,6 +9,7 @@ const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
   { path: '/biomarcadores', label: 'Biomarcadores', icon: Activity },
   { path: '/exames', label: 'Exames', icon: ClipboardList },
+  { path: '/copilot', label: 'AI Copilot', icon: BrainCircuit },
   { path: '/timeline', label: 'Timeline', icon: Calendar },
   { path: '/riscos', label: 'Riscos', icon: AlertTriangle },
   { path: '/resumo', label: 'Resumo', icon: FileText },
