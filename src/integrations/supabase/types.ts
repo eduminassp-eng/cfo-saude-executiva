@@ -14,7 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      biomarker_history: {
+        Row: {
+          biomarker_id: string
+          created_at: string
+          date: string
+          id: string
+          note: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          biomarker_id: string
+          created_at?: string
+          date: string
+          id?: string
+          note?: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          biomarker_id?: string
+          created_at?: string
+          date?: string
+          id?: string
+          note?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
+      biomarkers: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          last_date: string | null
+          name: string
+          note: string
+          status: string
+          target_max: number | null
+          target_min: number | null
+          unit: string
+          updated_at: string
+          user_id: string
+          value: number | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          id: string
+          last_date?: string | null
+          name: string
+          note?: string
+          status?: string
+          target_max?: number | null
+          target_min?: number | null
+          unit?: string
+          updated_at?: string
+          user_id: string
+          value?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          last_date?: string | null
+          name?: string
+          note?: string
+          status?: string
+          target_max?: number | null
+          target_min?: number | null
+          unit?: string
+          updated_at?: string
+          user_id?: string
+          value?: number | null
+        }
+        Relationships: []
+      }
+      exams: {
+        Row: {
+          category: string
+          created_at: string
+          doctor: string
+          id: string
+          importance: string
+          last_date: string | null
+          main_risk: string
+          name: string
+          next_date: string | null
+          notes: string
+          result_summary: string
+          status: string
+          suggested_frequency: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          doctor?: string
+          id: string
+          importance?: string
+          last_date?: string | null
+          main_risk?: string
+          name: string
+          next_date?: string | null
+          notes?: string
+          result_summary?: string
+          status?: string
+          suggested_frequency?: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          doctor?: string
+          id?: string
+          importance?: string
+          last_date?: string | null
+          main_risk?: string
+          name?: string
+          next_date?: string | null
+          notes?: string
+          result_summary?: string
+          status?: string
+          suggested_frequency?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lifestyle_data: {
+        Row: {
+          alcohol_weekly: number
+          created_at: string
+          exercise_frequency: number
+          id: string
+          sleep_hours: number
+          smoking_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alcohol_weekly?: number
+          created_at?: string
+          exercise_frequency?: number
+          id?: string
+          sleep_hours?: number
+          smoking_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alcohol_weekly?: number
+          created_at?: string
+          exercise_frequency?: number
+          id?: string
+          sleep_hours?: number
+          smoking_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          last_updated: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_updated?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_updated?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
