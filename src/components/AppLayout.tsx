@@ -1,9 +1,9 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X, Activity, BrainCircuit 
+  FileText, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon 
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -19,6 +19,14 @@ const navItems = [
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('health-cfo-theme') as 'dark' | 'light') || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('light', theme === 'light');
+    localStorage.setItem('health-cfo-theme', theme);
+  }, [theme]);
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
@@ -31,7 +39,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Sidebar */}
-      <aside className={`${mobileOpen ? 'block' : 'hidden'} lg:block w-full lg:w-56 shrink-0 border-r border-border bg-sidebar p-4 no-print`}>
+      <aside className={`${mobileOpen ? 'flex' : 'hidden'} lg:flex flex-col w-full lg:w-56 shrink-0 border-r border-border bg-sidebar p-4 no-print`}>
         <h1 className="hidden lg:block text-xl font-bold tracking-tight mb-8 px-2">
           Health<span className="text-primary">CFO</span>
         </h1>
@@ -55,6 +63,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+        <div className="mt-auto pt-4 border-t border-sidebar-border">
+          <button
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors w-full"
+          >
+            {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+          </button>
+        </div>
       </aside>
 
       {/* Main */}
