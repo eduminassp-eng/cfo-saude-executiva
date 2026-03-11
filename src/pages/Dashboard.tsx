@@ -12,6 +12,8 @@ import { DomainDetailPanel } from '@/components/DomainDetailPanel';
 import { HealthRadar } from '@/components/HealthRadar';
 import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
+import { HealthAlerts } from '@/components/HealthAlerts';
+import { generateHealthAlerts } from '@/lib/healthAlerts';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
@@ -20,6 +22,7 @@ const Dashboard = () => {
   const longevity = calcLongevityScore(data);
   const domainScores = useMemo(() => calcDomainScores(data), [data]);
   const previousDomainScores = useMemo(() => calcPreviousDomainScores(data), [data]);
+  const healthAlerts = useMemo(() => generateHealthAlerts(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
@@ -159,6 +162,9 @@ const Dashboard = () => {
           <p className="text-sm">Todos os indicadores estão dentro da faixa adequada.</p>
         </div>
       )}
+
+      {/* Health Alerts */}
+      <HealthAlerts alerts={healthAlerts} maxVisible={4} />
 
       {/* Scores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
