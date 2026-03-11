@@ -186,3 +186,73 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+// Inline grid that inserts detail panel below the clicked card's row
+import type { DomainScore } from '@/lib/scoring';
+
+function DomainGrid({ domainScores, showDomainDetail, setShowDomainDetail, data }: {
+  domainScores: DomainScore[];
+  showDomainDetail: string | null;
+  setShowDomainDetail: (id: string | null) => void;
+  data: HealthData;
+}) {
+  const icons: Record<string, typeof Heart> = {
+    cardiovascular: Heart, metabolic: Flame, liver: Droplets,
+    kidney: Bean, hormonal: Zap, nutrition: Apple, preventive: ShieldCheck,
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+      {domainScores.map(d => {
+        const Icon = icons[d.id] || Heart;
+        const isActive = showDomainDetail === d.id;
+        return (
+          <div key={d.id} className="contents">
+            <button
+              onClick={() => setShowDomainDetail(isActive ? null : d.id)}
+              className={`glass-card rounded-xl p-4 text-left hover:bg-accent/30 transition-all ${isActive ? 'ring-1 ring-primary' : ''}`}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-secondary">
+                    <Icon className="w-4 h-4" style={{ color: `hsl(var(--status-${d.status === 'unknown' ? 'yellow' : d.status}))` }} />
+                  </div>
+                  <span className="text-sm font-medium">{d.label}</span>
+                </div>
+                <span
+                  className="px-2 py-0.5 rounded-full text-xs font-bold font-mono"
+                  style={{
+                    color: `hsl(var(--status-${d.status}))`,
+                    backgroundColor: `hsl(var(--status-${d.status}) / 0.15)`,
+                  }}
+                >
+                  {d.score}
+                </span>
+              </div>
+              <div className="w-full h-1.5 rounded-full bg-secondary mb-2.5">
+                <div
+                  className="h-full rounded-full transition-all duration-500"
+                  style={{ width: `${d.score}%`, backgroundColor: `hsl(var(--status-${d.status}))` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">{d.summary}</p>
+            </button>
+            {isActive && (
+              <div className="col-span-full">
+                <DomainDetailPanel
+                  domainId={d.id}
+                  label={d.label}
+                  score={d.score}
+                  status={d.status}
+                  summary={d.summary}
+                  data={data}
+                  onClose={() => setShowDomainDetail(null)}
+                />
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
