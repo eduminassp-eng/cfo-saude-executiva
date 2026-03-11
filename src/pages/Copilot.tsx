@@ -14,7 +14,8 @@ import { CopilotBiomarkerCard } from '@/components/copilot/BiomarkerCard';
 import { CopilotExamCard } from '@/components/copilot/ExamCard';
 import { CopilotDoctorQuestions } from '@/components/copilot/DoctorQuestions';
 import { CopilotActionPlan } from '@/components/copilot/ActionPlan';
-import { ShieldAlert, Search, Activity, ClipboardList, Download } from 'lucide-react';
+import { CopilotTrendPatterns } from '@/components/copilot/TrendPatterns';
+import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Copilot = () => {
