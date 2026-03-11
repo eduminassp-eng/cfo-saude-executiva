@@ -63,7 +63,7 @@ export function DomainDetailPanel({ domainId, label, score, status, summary, dat
     : detail.examNames.map(name => data.exams.find(e => e.name === name)).filter(Boolean);
 
   return (
-    <div className="glass-card rounded-xl p-5 animate-slide-up">
+    <div className="glass-card rounded-xl p-5 animate-enter">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <h3 className="font-semibold">{label}</h3>
@@ -89,8 +89,8 @@ export function DomainDetailPanel({ domainId, label, score, status, summary, dat
         <div className="mb-4">
           <p className="text-xs font-medium text-muted-foreground mb-2">Biomarcadores</p>
           <div className="space-y-1.5">
-            {biomarkers.map(b => b && (
-              <div key={b.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2">
+            {biomarkers.map((b, i) => b && (
+              <div key={b.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2 animate-fade-in" style={{ animationDelay: `${i * 60}ms`, animationFillMode: 'backwards' }}>
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: statusDot(b.status) }} />
                   <span className="text-muted-foreground">{b.name}</span>
@@ -118,8 +118,8 @@ export function DomainDetailPanel({ domainId, label, score, status, summary, dat
             {isPreventive ? 'Todos os Exames' : 'Exames Relacionados'}
           </p>
           <div className="space-y-1.5">
-            {exams.map(e => e && (
-              <div key={e.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2">
+            {exams.map((e, i) => e && (
+              <div key={e.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2 animate-fade-in" style={{ animationDelay: `${(biomarkers.length + i) * 60}ms`, animationFillMode: 'backwards' }}>
                 <span className="text-muted-foreground truncate mr-2">{e.name}</span>
                 <span className={`text-xs px-1.5 py-0.5 rounded shrink-0 ${
                   e.status === 'Em dia' ? 'bg-status-green status-green' :
