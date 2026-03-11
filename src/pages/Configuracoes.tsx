@@ -1,8 +1,72 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { Download, RotateCcw, FileJson, FileText } from 'lucide-react';
+import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet } from 'lucide-react';
+import { useMemo, useCallback } from 'react';
+import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 
 const Configuracoes = () => {
   const { data, updateData, resetData, exportJSON, exportCSV } = useHealth();
+
+  const scores = useMemo(() => ({
+    cardiac: calcCardiacScore(data),
+    metabolic: calcMetabolicScore(data),
+    longevity: calcLongevityScore(data),
+    domains: calcDomainScores(data),
+  }), [data]);
+
+  const compliance = useMemo(() => {
+    const total = data.exams.length;
+    if (total === 0) return 0;
+    const upToDate = data.exams.filter(e => e.status === 'Em dia').length;
+    const upcoming = data.exams.filter(e => e.status === 'Próximo').length;
+    return Math.round(((upToDate + upcoming * 0.75) / total) * 100);
+  }, [data.exams]);
+
+  const exportFullJSON = useCallback(() => {
+    const exportData = {
+      ...data,
+      scores: {
+        cardiac: scores.cardiac.value,
+        metabolic: scores.metabolic.value,
+        longevity: scores.longevity.value,
+        preventiveCompliance: compliance,
+        domains: scores.domains.map(d => ({ id: d.id, label: d.label, score: d.score, status: d.status })),
+      },
+      exportDate: new Date().toISOString(),
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `health-cfo-completo-${data.lastUpdated}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data, scores, compliance]);
+
+  const exportFullCSV = useCallback(() => {
+    const lines: string[][] = [];
+    lines.push(['=== SCORES ===', '', '', '', '']);
+    lines.push(['Score', 'Valor', 'Status', '', '']);
+    lines.push(['Cardíaco', String(scores.cardiac.value), scores.cardiac.status, '', '']);
+    lines.push(['Metabólico', String(scores.metabolic.value), scores.metabolic.status, '', '']);
+    lines.push(['Longevidade', String(scores.longevity.value), scores.longevity.status, '', '']);
+    lines.push(['Compliance Preventivo', String(compliance), '', '', '']);
+    lines.push(['', '', '', '', '']);
+    lines.push(['=== BIOMARCADORES ===', '', '', '', '']);
+    lines.push(['Nome', 'Valor', 'Unidade', 'Status', 'Última Data']);
+    data.biomarkers.forEach(b => lines.push([b.name, String(b.value ?? ''), b.unit, b.status, b.lastDate ?? '']));
+    lines.push(['', '', '', '', '']);
+    lines.push(['=== EXAMES ===', '', '', '', '']);
+    lines.push(['Nome', 'Categoria', 'Status', 'Importância', 'Próxima Data']);
+    data.exams.forEach(e => lines.push([e.name, e.category, e.status, e.importance, e.nextDate ?? '']));
+    const csv = lines.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `health-cfo-completo-${data.lastUpdated}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [data, scores, compliance]);
 
   const handleLifestyleChange = (field: string, value: string | number) => {
     updateData(prev => ({
@@ -67,12 +131,19 @@ const Configuracoes = () => {
       {/* Export */}
       <div className="glass-card rounded-xl p-5">
         <h2 className="font-semibold mb-4">Exportar Dados</h2>
+        <p className="text-sm text-muted-foreground mb-3">Exportação simples (biomarcadores) ou completa (com scores, exames e compliance).</p>
         <div className="flex flex-wrap gap-3">
           <button onClick={exportJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileJson className="w-4 h-4" /> Exportar JSON
+            <FileJson className="w-4 h-4" /> JSON Básico
           </button>
           <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileText className="w-4 h-4" /> Exportar CSV
+            <FileText className="w-4 h-4" /> CSV Básico
+          </button>
+          <button onClick={exportFullJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <FileJson className="w-4 h-4" /> JSON Completo
+          </button>
+          <button onClick={exportFullCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <FileSpreadsheet className="w-4 h-4" /> CSV Completo
           </button>
         </div>
       </div>
