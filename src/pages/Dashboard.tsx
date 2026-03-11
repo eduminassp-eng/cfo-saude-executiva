@@ -12,6 +12,8 @@ import { DomainDetailPanel } from '@/components/DomainDetailPanel';
 import { HealthRadar } from '@/components/HealthRadar';
 import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
+import { HealthAlerts } from '@/components/HealthAlerts';
+import { generateHealthAlerts } from '@/lib/healthAlerts';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
