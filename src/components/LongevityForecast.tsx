@@ -172,3 +172,86 @@ function ScoreNode({ label, value, colorVar, highlight = false }: {
     </div>
   );
 }
+
+function ForecastSummaryCard({ summary }: { summary: ReturnType<typeof buildForecastSummary> }) {
+  const trajectoryStyle = {
+    improving: { colorVar: '--status-green', icon: TrendingUp },
+    stable: { colorVar: '--status-yellow', icon: Minus },
+    declining: { colorVar: '--status-red', icon: TrendingDown },
+  }[summary.trajectory];
+
+  const TrajectoryIcon = trajectoryStyle.icon;
+
+  return (
+    <div
+      className="rounded-xl border border-border/40 p-5 space-y-4 animate-fade-in"
+      style={{ background: `linear-gradient(135deg, hsl(var(${trajectoryStyle.colorVar}) / 0.05), transparent)` }}
+    >
+      {/* Trajectory */}
+      <div className="flex items-start gap-3">
+        <div
+          className="p-2 rounded-lg shrink-0"
+          style={{ backgroundColor: `hsl(var(${trajectoryStyle.colorVar}) / 0.12)` }}
+        >
+          <TrajectoryIcon className="w-5 h-5" style={{ color: `hsl(var(${trajectoryStyle.colorVar}))` }} />
+        </div>
+        <div>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold">Trajetória:</h3>
+            <span
+              className="text-sm font-bold"
+              style={{ color: `hsl(var(${trajectoryStyle.colorVar}))` }}
+            >
+              {summary.trajectoryLabel}
+            </span>
+          </div>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{summary.trajectoryDescription}</p>
+        </div>
+      </div>
+
+      {/* Risk & Opportunity */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="rounded-lg border border-border/30 p-3 space-y-1.5" style={{ backgroundColor: 'hsl(var(--status-red) / 0.04)' }}>
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-3.5 h-3.5" style={{ color: 'hsl(var(--status-red))' }} />
+            <span className="text-xs font-semibold">Principal Risco Futuro</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">{summary.mainRisk}</p>
+        </div>
+        <div className="rounded-lg border border-border/30 p-3 space-y-1.5" style={{ backgroundColor: 'hsl(var(--status-green) / 0.04)' }}>
+          <div className="flex items-center gap-2">
+            <Lightbulb className="w-3.5 h-3.5" style={{ color: 'hsl(var(--status-green))' }} />
+            <span className="text-xs font-semibold">Maior Oportunidade</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">{summary.mainOpportunity}</p>
+        </div>
+      </div>
+
+      {/* Drivers */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {summary.topNegativeDrivers.length > 0 && (
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Fatores de Risco</span>
+            {summary.topNegativeDrivers.map((d, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs">
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: 'hsl(var(--status-red))' }} />
+                <span>{d}</span>
+              </div>
+            ))}
+          </div>
+        )}
+        {summary.topPositiveDrivers.length > 0 && (
+          <div className="space-y-1.5">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">Fatores Protetores</span>
+            {summary.topPositiveDrivers.map((d, i) => (
+              <div key={i} className="flex items-center gap-2 text-xs">
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: 'hsl(var(--status-green))' }} />
+                <span>{d}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
