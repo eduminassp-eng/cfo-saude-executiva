@@ -13,6 +13,7 @@ const Dashboard = () => {
   const cardiac = calcCardiacScore(data);
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
+  const domainScores = useMemo(() => calcDomainScores(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
 
