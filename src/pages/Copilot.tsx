@@ -117,13 +117,22 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
-          AI Health <span className="text-primary">Copilot</span>
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Interpretação inteligente dos seus biomarcadores e exames preventivos
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
+            AI Health <span className="text-primary">Copilot</span>
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Interpretação inteligente dos seus biomarcadores e exames preventivos
+          </p>
+        </div>
+        <button
+          onClick={exportPDF}
+          className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          <span className="hidden sm:inline">Exportar PDF</span>
+        </button>
       </div>
 
       {/* Score summary bar */}
