@@ -30,6 +30,7 @@ const Copilot = () => {
   const examInsights = useMemo(() => generateExamInsights(data), [data]);
   const summary = useMemo(() => generateExecutiveSummary(data), [data]);
   const trendPatterns = useMemo(() => detectTrendPatterns(data), [data]);
+  const healthAlerts = useMemo(() => generateHealthAlerts(data), [data]);
   const scores = useMemo(() => ({
     cardiac: calcCardiacScore(data),
     metabolic: calcMetabolicScore(data),
