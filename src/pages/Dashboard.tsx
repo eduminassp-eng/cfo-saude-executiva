@@ -196,7 +196,7 @@ const Dashboard = () => {
       <div>
         <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
-          <HealthRadar domainScores={domainScores} />
+          <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
