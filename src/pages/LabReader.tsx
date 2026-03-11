@@ -168,7 +168,8 @@ const LabReader = () => {
   const csvInputRef = useRef<HTMLInputElement>(null);
 
   // Batch state
-  const [batchFiles, setBatchFiles] = useState<{ file: File; status: 'pending' | 'processing' | 'done' | 'error'; count: number; error?: string }[]>([]);
+  type BatchFile = { file: File; status: 'pending' | 'processing' | 'done' | 'error'; count: number; error?: string };
+  const [batchFiles, setBatchFiles] = useState<BatchFile[]>([]);
   const [batchProgress, setBatchProgress] = useState(0);
 
   // CSV state
