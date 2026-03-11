@@ -1,5 +1,13 @@
 import { HealthData, HealthScore, ScoreBreakdown, Status } from '@/types/health';
 
+export interface DomainScore {
+  id: string;
+  label: string;
+  score: number;
+  status: Status;
+  summary: string;
+}
+
 function getBiomarkerValue(data: HealthData, id: string): number | null {
   return data.biomarkers.find(b => b.id === id)?.value ?? null;
 }
@@ -147,4 +155,89 @@ export function calcLongevityScore(data: HealthData): HealthScore {
   const status: Status = total >= 75 ? 'green' : total >= 50 ? 'yellow' : 'red';
 
   return { value: clamp(Math.round(total), 0, 100), status, trend: 'stable', breakdown: items };
+}
+
+export function calcDomainScores(data: HealthData): DomainScore[] {
+  const ss = (id: string) => statusScore(getBiomarkerStatus(data, id));
+  const val = (id: string) => getBiomarkerValue(data, id);
+  const ed = (name: string) => examDone(data, name);
+  const toStatus = (s: number): Status => s >= 75 ? 'green' : s >= 50 ? 'yellow' : 'red';
+
+  // Cardiovascular
+  const cardioFactors = [ss('pa-sys'), ss('pa-dia'), ss('ldl'), ss('hdl'), ss('trig'), ss('pcr'), ss('apob')];
+  const cardioExams = [ed('Eletrocardiograma'), ed('Teste Ergométrico'), ed('Score de Cálcio Coronariano')];
+  const cardioExamScore = cardioExams.filter(Boolean).length / cardioExams.length;
+  const cardioScore = clamp(Math.round((avg(cardioFactors) * 0.75 + cardioExamScore * 0.25) * 100), 0, 100);
+  const cardioIssues = ['pa-sys', 'pa-dia', 'ldl', 'trig', 'pcr', 'apob'].filter(id => getBiomarkerStatus(data, id) !== 'green');
+  const cardioSummary = cardioScore >= 75
+    ? 'Perfil cardiovascular dentro dos parâmetros adequados.'
+    : cardioIssues.length > 0
+    ? `Atenção em ${cardioIssues.length} marcador(es): ${cardioIssues.map(id => data.biomarkers.find(b => b.id === id)?.name?.split(' ')[0]).join(', ')}.`
+    : 'Exames cardiovasculares pendentes.';
+
+  // Metabolic
+  const metabFactors = [ss('glicemia'), ss('hba1c'), ss('insulina'), ss('imc'), ss('cintura'), ss('trig')];
+  const metabScore = clamp(Math.round(avg(metabFactors) * 100), 0, 100);
+  const metabIssues = ['glicemia', 'hba1c', 'imc', 'cintura'].filter(id => getBiomarkerStatus(data, id) !== 'green');
+  const metabSummary = metabScore >= 75
+    ? 'Metabolismo equilibrado, sem sinais de resistência insulínica.'
+    : `${metabIssues.length} indicador(es) metabólico(s) requerem acompanhamento.`;
+
+  // Liver
+  const liverFactors = [ss('tgo'), ss('tgp'), ss('ggt')];
+  const liverExam = ed('Ultrassom Abdominal');
+  const liverScore = clamp(Math.round((avg(liverFactors) * 0.8 + (liverExam ? 1 : 0) * 0.2) * 100), 0, 100);
+  const liverSummary = liverScore >= 75
+    ? 'Enzimas hepáticas normais, função preservada.'
+    : 'Enzimas hepáticas elevadas — considerar ultrassom e revisão de hábitos.';
+
+  // Kidney
+  const kidneyFactors = [ss('creatinina'), ss('ureia')];
+  const kidneyExams = [ed('Urina Tipo 1'), ed('Microalbuminúria')];
+  const kidneyExamScore = kidneyExams.filter(Boolean).length / kidneyExams.length;
+  const kidneyScore = clamp(Math.round((avg(kidneyFactors) * 0.7 + kidneyExamScore * 0.3) * 100), 0, 100);
+  const kidneySummary = kidneyScore >= 75
+    ? 'Função renal preservada, creatinina e ureia normais.'
+    : 'Indicadores renais merecem atenção — acompanhar com nefrologista.';
+
+  // Hormonal
+  const hormonalFactors = [ss('tsh'), ss('t4livre'), ss('testosterona')];
+  const hormonalScore = clamp(Math.round(avg(hormonalFactors) * 100), 0, 100);
+  const hormonalSummary = hormonalScore >= 75
+    ? 'Tireoide e testosterona dentro da faixa ideal.'
+    : 'Perfil hormonal com alterações — revisar com endocrinologista.';
+
+  // Nutrition
+  const nutritionFactors = [ss('vitd'), ss('vitb12'), ss('ferritina')];
+  const nutritionScore = clamp(Math.round(avg(nutritionFactors) * 100), 0, 100);
+  const nutritionIssues = ['vitd', 'vitb12', 'ferritina'].filter(id => getBiomarkerStatus(data, id) !== 'green');
+  const nutritionSummary = nutritionScore >= 75
+    ? 'Vitaminas e minerais em níveis adequados.'
+    : `Deficiência em ${nutritionIssues.map(id => data.biomarkers.find(b => b.id === id)?.name?.split(' ')[0]).join(', ')} — avaliar suplementação.`;
+
+  // Preventive care
+  const totalExams = data.exams.length;
+  const upToDate = data.exams.filter(e => e.status === 'Em dia' || e.status === 'Próximo').length;
+  const overdue = data.exams.filter(e => e.status === 'Atrasado').length;
+  const preventiveScore = clamp(Math.round((upToDate / totalExams) * 100), 0, 100);
+  const preventiveSummary = preventiveScore >= 85
+    ? 'Check-up em dia, excelente adesão preventiva.'
+    : overdue > 0
+    ? `${overdue} exame(s) atrasado(s) — agendar o quanto antes.`
+    : 'Alguns exames ainda não realizados.';
+
+  return [
+    { id: 'cardiovascular', label: 'Cardiovascular', score: cardioScore, status: toStatus(cardioScore), summary: cardioSummary },
+    { id: 'metabolic', label: 'Metabólico', score: metabScore, status: toStatus(metabScore), summary: metabSummary },
+    { id: 'liver', label: 'Fígado', score: liverScore, status: toStatus(liverScore), summary: liverSummary },
+    { id: 'kidney', label: 'Rins', score: kidneyScore, status: toStatus(kidneyScore), summary: kidneySummary },
+    { id: 'hormonal', label: 'Hormonal', score: hormonalScore, status: toStatus(hormonalScore), summary: hormonalSummary },
+    { id: 'nutrition', label: 'Nutrição', score: nutritionScore, status: toStatus(nutritionScore), summary: nutritionSummary },
+    { id: 'preventive', label: 'Prevenção', score: preventiveScore, status: toStatus(preventiveScore), summary: preventiveSummary },
+  ];
+}
+
+function avg(values: number[]): number {
+  if (values.length === 0) return 0;
+  return values.reduce((a, b) => a + b, 0) / values.length;
 }
