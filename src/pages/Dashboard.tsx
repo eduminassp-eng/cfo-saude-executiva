@@ -20,6 +20,22 @@ const Dashboard = () => {
   const yellowCount = data.biomarkers.filter(b => b.status === 'yellow').length;
   const redCount = data.biomarkers.filter(b => b.status === 'red').length;
 
+  // Markers where higher = better (worsening = going down)
+  const upIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
+
+  const worsenedBiomarkers = useMemo(() => {
+    return data.biomarkers.filter(b => {
+      if (b.value === null || b.history.length === 0) return false;
+      const prev = b.history[0].value;
+      const diff = b.value - prev;
+      if (Math.abs(diff) < Math.abs(prev) * 0.02) return false; // ignore tiny changes
+      const isUp = diff > 0;
+      // For most markers, going up is bad; for upIsGood set, going down is bad
+      if (upIsGood.has(b.id)) return !isUp; // dropped = worsened
+      return isUp; // increased = worsened
+    });
+  }, [data.biomarkers]);
+
   const keyBiomarkers = data.biomarkers.filter(b => 
     ['pa-sys', 'glicemia', 'hba1c', 'ldl', 'hdl', 'trig', 'creatinina', 'tsh', 'tgo', 'tgp', 'ggt', 'vitd', 'ferritina', 'imc', 'cintura', 'psa'].includes(b.id)
   );
