@@ -1,6 +1,6 @@
 import { DomainScore } from '@/lib/scoring';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface Props {
