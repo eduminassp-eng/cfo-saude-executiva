@@ -1,6 +1,6 @@
 import { DomainScore } from '@/lib/scoring';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend } from 'recharts';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface Props {
@@ -20,13 +20,29 @@ const domainLabels: Record<string, string> = {
 
 export function HealthRadar({ domainScores, previousScores }: Props) {
   const [showComparison, setShowComparison] = useState(!!previousScores);
+  const [animProgress, setAnimProgress] = useState(0);
+
+  useEffect(() => {
+    setAnimProgress(0);
+    const start = performance.now();
+    const duration = 800;
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3); // easeOutCubic
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(elapsed / duration, 1);
+      setAnimProgress(ease(t));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [domainScores]);
 
   const chartData = domainScores.map(d => {
     const prev = previousScores?.find(p => p.id === d.id);
     return {
       domain: domainLabels[d.id] || d.label,
-      score: d.score,
-      previous: prev?.score ?? null,
+      score: Math.round(d.score * animProgress),
+      previous: prev ? Math.round(prev.score * animProgress) : null,
       fullMark: 100,
     };
   });
