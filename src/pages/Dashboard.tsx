@@ -18,6 +18,7 @@ import { LongevityForecast } from '@/components/LongevityForecast';
 import { generateForecast } from '@/lib/forecast';
 import { WhatIfSimulator } from '@/components/WhatIfSimulator';
 import { HealthRiskMap } from '@/components/HealthRiskMap';
+import { HealthPriorityEngine } from '@/components/HealthPriorityEngine';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
@@ -167,6 +168,9 @@ const Dashboard = () => {
           <p className="text-sm">Todos os indicadores estão dentro da faixa adequada.</p>
         </div>
       )}
+
+      {/* Health Priority Engine */}
+      <HealthPriorityEngine data={data} />
 
       {/* Health Alerts */}
       <HealthAlerts alerts={healthAlerts} maxVisible={4} />
