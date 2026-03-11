@@ -251,6 +251,7 @@ const Exames = () => {
       <p className="text-xs text-muted-foreground">{filtered.length} exame(s) • Clique para editar • Colunas ordenáveis</p>
 
       {editingExam && <ExamEditDialog exam={editingExam} onClose={() => setEditingExam(null)} />}
+      {showCreate && <ExamCreateDialog onClose={() => setShowCreate(false)} />}
     </div>
   );
 };
