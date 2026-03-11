@@ -15,6 +15,45 @@ const priorityStyles: Record<string, { bg: string; text: string }> = {
 
 export function CopilotActionPlan({ data }: Props) {
   const plan = useMemo(() => generateActionPlan(data), [data]);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  const handlePrint = useCallback(() => {
+    if (!contentRef.current) return;
+    const printWin = window.open('', '_blank');
+    if (!printWin) return;
+    printWin.document.write(`
+      <html><head><title>Plano de Ação — Health CFO</title>
+      <style>
+        body { font-family: system-ui, sans-serif; padding: 2rem; color: #1a1a1a; }
+        h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+        h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #666; margin: 1.25rem 0 0.5rem; }
+        .item { display: flex; gap: 0.5rem; align-items: flex-start; margin-bottom: 0.5rem; font-size: 0.875rem; }
+        .badge { font-size: 0.625rem; font-weight: 700; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; }
+        .alta { background: #fee; color: #c00; }
+        .media { background: #fff8e1; color: #b8860b; }
+        .baixa { background: #e8f5e9; color: #2e7d32; }
+        .reason { font-size: 0.75rem; color: #888; margin-left: 0.25rem; }
+        .footer { margin-top: 2rem; font-size: 0.7rem; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 1rem; }
+      </style></head><body>
+      <h2>🎯 Plano de Ação — Health CFO</h2>
+    `);
+    const horizonLabels = ['Próximos 30 dias', 'Próximos 90 dias', 'Próximos 180 dias'];
+    const horizonData = [plan.thirtyDays, plan.ninetyDays, plan.oneEightyDays];
+    horizonData.forEach((items, i) => {
+      printWin.document.write(`<h3>${horizonLabels[i]}</h3>`);
+      if (items.length === 0) {
+        printWin.document.write('<p style="font-size:0.8rem;color:#999">Nenhuma ação pendente.</p>');
+      }
+      items.forEach(item => {
+        const cls = item.priority === 'alta' ? 'alta' : item.priority === 'média' ? 'media' : 'baixa';
+        printWin.document.write(`<div class="item"><span class="badge ${cls}">${item.priority}</span><span>${item.action} <span class="reason">— ${item.reason}</span></span></div>`);
+      });
+    });
+    printWin.document.write('<div class="footer">Gerado em ' + new Date().toLocaleDateString('pt-BR') + ' • Este documento é para acompanhamento preventivo.</div>');
+    printWin.document.write('</body></html>');
+    printWin.document.close();
+    printWin.print();
+  }, [plan]);
 
   const horizons = [
     { key: 'thirtyDays' as const, label: 'Próximos 30 dias', icon: Clock, items: plan.thirtyDays },
