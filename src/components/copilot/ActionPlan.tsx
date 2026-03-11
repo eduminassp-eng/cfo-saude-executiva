@@ -62,7 +62,6 @@ export function CopilotActionPlan({ data }: Props) {
   ];
 
   return (
-    <div className="glass-card rounded-xl p-5">
     <div className="glass-card rounded-xl p-5" ref={contentRef}>
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
