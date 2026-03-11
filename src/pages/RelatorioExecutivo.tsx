@@ -193,8 +193,44 @@ const RelatorioExecutivo = () => {
 
       <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground text-center print:border print:border-gray-200">
         Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
+      {/* Action Plan */}
+      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200 print:break-before-page">
+        <h2 className="font-semibold mb-4">🎯 Plano de Ação</h2>
+        <div className="space-y-4">
+          {[
+            { label: 'Próximos 30 dias', items: actionPlan.thirtyDays },
+            { label: 'Próximos 90 dias', items: actionPlan.ninetyDays },
+            { label: 'Próximos 180 dias', items: actionPlan.oneEightyDays },
+          ].map(horizon => (
+            <div key={horizon.label}>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{horizon.label}</h3>
+              {horizon.items.length > 0 ? (
+                <ul className="space-y-1.5 text-sm">
+                  {horizon.items.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span
+                        className="shrink-0 mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
+                        style={{
+                          backgroundColor: item.priority === 'alta' ? 'hsl(var(--status-red) / 0.1)' : item.priority === 'média' ? 'hsl(var(--status-yellow) / 0.1)' : 'hsl(var(--status-green) / 0.1)',
+                          color: item.priority === 'alta' ? 'hsl(var(--status-red))' : item.priority === 'média' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-green))',
+                        }}
+                      >
+                        {item.priority}
+                      </span>
+                      <div>
+                        <span>{item.action}</span>
+                        <span className="text-xs text-muted-foreground ml-1">— {item.reason}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-xs text-muted-foreground">Nenhuma ação pendente.</p>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 
