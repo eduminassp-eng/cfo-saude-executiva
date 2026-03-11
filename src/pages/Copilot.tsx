@@ -213,6 +213,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         </div>
       )}
 
+      {tab === 'alerts' && (
+        <HealthAlerts alerts={healthAlerts} maxVisible={20} />
+      )}
+
       {tab === 'trends' && (
         <CopilotTrendPatterns patterns={trendPatterns} />
       )}
