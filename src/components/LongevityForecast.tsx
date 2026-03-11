@@ -21,6 +21,7 @@ const trendConfig = {
 
 export function LongevityForecast({ forecast }: Props) {
   const [expanded, setExpanded] = useState(false);
+  const summary = useMemo(() => buildForecastSummary(forecast), [forecast]);
 
   return (
     <div className="glass-card rounded-xl p-5 space-y-5 animate-fade-in">
