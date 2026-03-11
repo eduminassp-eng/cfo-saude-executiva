@@ -2,7 +2,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { KPICard } from '@/components/KPICard';
-import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
@@ -51,16 +51,56 @@ const Dashboard = () => {
         <p className="text-muted-foreground mt-1">Última atualização: {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}</p>
       </div>
 
-      {/* Alerts */}
-      {(overdueCount > 0 || redCount > 0) && (
-        <div className="glass-card rounded-xl p-4 flex items-start gap-3 border-l-4" style={{ borderLeftColor: 'hsl(var(--status-red))' }}>
-          <AlertTriangle className="w-5 h-5 status-red shrink-0 mt-0.5" />
-          <div className="text-sm">
-            {overdueCount > 0 && <p><strong>{overdueCount} exame(s) atrasado(s)</strong> necessitam agendamento.</p>}
-            {redCount > 0 && <p><strong>{redCount} indicador(es)</strong> requerem ação imediata.</p>}
+      {/* Overdue & Upcoming Exam Alert Cards */}
+      {(() => {
+        const overdueExams = data.exams.filter(e => e.status === 'Atrasado');
+        const upcomingExams = data.exams.filter(e => e.status === 'Próximo');
+        const alertExams = [...overdueExams, ...upcomingExams];
+        if (alertExams.length === 0 && redCount === 0) return null;
+        return (
+          <div className="space-y-3">
+            {redCount > 0 && (
+              <div className="glass-card rounded-xl p-4 flex items-start gap-3 border-l-4" style={{ borderLeftColor: 'hsl(var(--status-red))' }}>
+                <AlertTriangle className="w-5 h-5 status-red shrink-0 mt-0.5" />
+                <p className="text-sm"><strong>{redCount} indicador(es)</strong> requerem ação imediata.</p>
+              </div>
+            )}
+            {alertExams.length > 0 && (
+              <div className="glass-card rounded-xl p-4 border-l-4" style={{ borderLeftColor: overdueExams.length > 0 ? 'hsl(var(--status-red))' : 'hsl(var(--status-yellow))' }}>
+                <div className="flex items-start gap-3 mb-3">
+                  <CalendarClock className="w-5 h-5 shrink-0 mt-0.5" style={{ color: overdueExams.length > 0 ? 'hsl(var(--status-red))' : 'hsl(var(--status-yellow))' }} />
+                  <p className="text-sm font-medium">
+                    {overdueExams.length > 0 && <span><strong>{overdueExams.length} exame(s) atrasado(s)</strong></span>}
+                    {overdueExams.length > 0 && upcomingExams.length > 0 && ' • '}
+                    {upcomingExams.length > 0 && <span>{upcomingExams.length} próximo(s) do vencimento</span>}
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 ml-8">
+                  {alertExams.map(e => {
+                    const isOverdue = e.status === 'Atrasado';
+                    return (
+                      <div key={e.id} className="flex items-center justify-between text-xs rounded-lg px-3 py-2.5 animate-fade-in"
+                        style={{ backgroundColor: isOverdue ? 'hsl(var(--status-red) / 0.08)' : 'hsl(var(--status-yellow) / 0.08)' }}>
+                        <div className="min-w-0 mr-2">
+                          <p className="font-medium truncate">{e.name}</p>
+                          <p className="text-muted-foreground">{e.category}</p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${isOverdue ? 'bg-status-red status-red' : 'bg-status-yellow status-yellow'}`}>
+                            {e.status}
+                          </span>
+                          <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">Agendar</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Worsened biomarkers alert */}
       {worsenedBiomarkers.length > 0 && (
