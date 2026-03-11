@@ -19,6 +19,7 @@ import Tendencias from "./pages/Tendencias";
 import RelatorioExecutivo from "./pages/RelatorioExecutivo";
 import ResumoConsulta from "./pages/ResumoConsulta";
 import LabReader from "./pages/LabReader";
+import AppleHealth from "./pages/AppleHealth";
 import NotFound from "./pages/NotFound";
 import { Activity } from "lucide-react";
 
