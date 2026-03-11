@@ -573,13 +573,39 @@ const LabReader = () => {
 
       {/* Processing (AI) */}
       {step === 'processing' && (
-        <div className="glass-card rounded-xl p-12 text-center animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+        <div className="glass-card rounded-xl p-8 lg:p-12 text-center animate-fade-in space-y-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
-          <h3 className="font-semibold text-lg mb-2">Processando exame...</h3>
-          <p className="text-sm text-muted-foreground mb-1">Identificando biomarcadores e valores com IA</p>
-          <p className="text-xs text-muted-foreground">{fileName}</p>
+          <div>
+            <h3 className="font-semibold text-lg mb-1">
+              {batchFiles.length > 1 ? `Processando ${batchFiles.length} arquivos...` : 'Processando exame...'}
+            </h3>
+            <p className="text-sm text-muted-foreground">Identificando biomarcadores e valores com IA</p>
+          </div>
+
+          {batchFiles.length > 1 && (
+            <div className="space-y-3 text-left max-w-md mx-auto">
+              <Progress value={batchProgress} className="h-2" />
+              <div className="space-y-1.5">
+                {batchFiles.map((bf, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    {bf.status === 'pending' && <div className="w-3 h-3 rounded-full bg-muted" />}
+                    {bf.status === 'processing' && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
+                    {bf.status === 'done' && <CheckCircle2 className="w-3 h-3 text-status-green" />}
+                    {bf.status === 'error' && <X className="w-3 h-3 text-destructive" />}
+                    <span className={bf.status === 'processing' ? 'font-medium' : 'text-muted-foreground'}>
+                      {bf.file.name}
+                    </span>
+                    {bf.status === 'done' && <span className="ml-auto text-muted-foreground">{bf.count} biomarcadores</span>}
+                    {bf.status === 'error' && <span className="ml-auto text-destructive truncate max-w-[150px]">{bf.error}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {batchFiles.length <= 1 && <p className="text-xs text-muted-foreground">{fileName}</p>}
         </div>
       )}
 
