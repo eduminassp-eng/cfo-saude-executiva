@@ -200,7 +200,11 @@ export function useHealthData() {
         sleep_hours: next.lifestyle.sleepHours,
         smoking_status: next.lifestyle.smokingStatus,
         alcohol_weekly: next.lifestyle.alcoholWeekly,
-      }, { onConflict: 'user_id' });
+        daily_steps: next.lifestyle.dailySteps,
+        avg_heart_rate: next.lifestyle.avgHeartRate,
+        activity_minutes: next.lifestyle.activityMinutes,
+        weight: next.lifestyle.weight,
+      } as any, { onConflict: 'user_id' });
       if (lErr) throw lErr;
 
       // Update profile timestamp

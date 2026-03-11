@@ -147,6 +147,10 @@ export const sampleData: HealthData = {
     sleepHours: 7,
     smokingStatus: 'never',
     alcoholWeekly: 4,
+    dailySteps: 0,
+    avgHeartRate: 0,
+    activityMinutes: 0,
+    weight: null,
   },
   lastUpdated: '2025-11-15',
 };
