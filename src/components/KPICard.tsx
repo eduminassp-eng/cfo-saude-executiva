@@ -54,7 +54,7 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
 
       {/* Sparkline */}
       {sparkData.length >= 2 && (
-        <div className="h-8 w-full my-1.5">
+        <div className="h-8 w-full my-1.5 animate-fade-in">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={sparkData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
               <Line
