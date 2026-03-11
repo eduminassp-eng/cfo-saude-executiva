@@ -64,7 +64,7 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
                 strokeWidth={1.5}
                 dot={false}
                 activeDot={false}
-                isAnimationActive={false}
+                isAnimationActive={true}
               />
             </LineChart>
           </ResponsiveContainer>
