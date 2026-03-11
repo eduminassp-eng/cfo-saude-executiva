@@ -204,6 +204,7 @@ function ForecastExplanation() {
         </div>
       )}
     </div>
+  );
 }
 
 function ScoreNode({ label, value, colorVar, highlight = false }: {
