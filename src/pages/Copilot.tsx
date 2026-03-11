@@ -4,6 +4,7 @@ import {
   generateBiomarkerInsights,
   generateExamInsights,
   generateExecutiveSummary,
+  detectTrendPatterns,
   BiomarkerInsight,
   ExamInsight,
 } from '@/lib/copilot';
