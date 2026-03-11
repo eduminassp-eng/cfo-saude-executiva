@@ -1,8 +1,8 @@
 import { useState, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Biomarker, Status } from '@/types/health';
+import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
-import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
@@ -35,10 +35,34 @@ function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoo
 const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const Biomarcadores = () => {
-  const { data } = useHealth();
+  const { data, updateData } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
+  const [editingHistory, setEditingHistory] = useState<{ biomarkerId: string; index: number; entry: BiomarkerHistoryEntry } | null>(null);
+
+  const handleDeleteHistory = (biomarkerId: string, index: number) => {
+    updateData(prev => ({
+      ...prev,
+      biomarkers: prev.biomarkers.map(b =>
+        b.id === biomarkerId
+          ? { ...b, history: b.history.filter((_, i) => i !== index) }
+          : b
+      ),
+    }));
+  };
+
+  const handleSaveHistory = (biomarkerId: string, index: number, entry: BiomarkerHistoryEntry) => {
+    updateData(prev => ({
+      ...prev,
+      biomarkers: prev.biomarkers.map(b =>
+        b.id === biomarkerId
+          ? { ...b, history: b.history.map((h, i) => i === index ? entry : h) }
+          : b
+      ),
+    }));
+    setEditingHistory(null);
+  };
 
   const filtered = useMemo(() => {
     if (categoryFilter === 'Todos') return data.biomarkers;
@@ -224,11 +248,25 @@ const Biomarcadores = () => {
                       <p className="text-xs font-medium text-muted-foreground mb-2">Histórico</p>
                       <div className="space-y-1">
                         {b.history.map((h, i) => (
-                          <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-secondary/50">
+                          <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-secondary/50 group">
                             <span className="text-muted-foreground">{new Date(h.date).toLocaleDateString('pt-BR')}</span>
                             <div className="flex items-center gap-2">
                               <span className="font-mono font-medium">{h.value} {b.unit}</span>
                               {h.note && <span className="text-muted-foreground italic">{h.note}</span>}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setEditingHistory({ biomarkerId: b.id, index: i, entry: { ...h } }); }}
+                                className="p-1 rounded hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Editar"
+                              >
+                                <Pencil className="w-3 h-3 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteHistory(b.id, i); }}
+                                className="p-1 rounded hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Excluir"
+                              >
+                                <Trash2 className="w-3 h-3 text-destructive" />
+                              </button>
                             </div>
                           </div>
                         ))}
@@ -248,8 +286,62 @@ const Biomarcadores = () => {
           onClose={() => setEditingBiomarker(null)}
         />
       )}
+
+      {/* Edit history entry dialog */}
+      {editingHistory && (
+        <HistoryEditDialog
+          entry={editingHistory.entry}
+          unit={data.biomarkers.find(b => b.id === editingHistory.biomarkerId)?.unit ?? ''}
+          onSave={(entry) => handleSaveHistory(editingHistory.biomarkerId, editingHistory.index, entry)}
+          onClose={() => setEditingHistory(null)}
+        />
+      )}
     </div>
   );
 };
+
+function HistoryEditDialog({ entry, unit, onSave, onClose }: {
+  entry: BiomarkerHistoryEntry;
+  unit: string;
+  onSave: (entry: BiomarkerHistoryEntry) => void;
+  onClose: () => void;
+}) {
+  const [value, setValue] = useState(entry.value.toString());
+  const [date, setDate] = useState(entry.date);
+  const [note, setNote] = useState(entry.note);
+
+  return (
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="glass-card rounded-xl p-6 w-full max-w-sm animate-slide-up" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="text-sm font-semibold">Editar Registro Histórico</h3>
+          <button onClick={onClose} className="p-1 rounded hover:bg-secondary"><X className="w-4 h-4" /></button>
+        </div>
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-medium text-muted-foreground block mb-1">Valor ({unit})</label>
+            <input type="number" step="any" value={value} onChange={e => setValue(e.target.value)}
+              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground block mb-1">Data</label>
+            <input type="date" value={date} onChange={e => setDate(e.target.value)}
+              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" />
+          </div>
+          <div>
+            <label className="text-xs font-medium text-muted-foreground block mb-1">Observação</label>
+            <input type="text" value={note} onChange={e => setNote(e.target.value)} maxLength={200}
+              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Opcional" />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button onClick={onClose} className="flex-1 px-4 py-2 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">Cancelar</button>
+            <button onClick={() => { const v = parseFloat(value); if (!isNaN(v) && date) onSave({ value: v, date, note }); }}
+              className="flex-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default Biomarcadores;
