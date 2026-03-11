@@ -1,6 +1,7 @@
 import { BiomarkerInsight } from '@/lib/copilot';
 import { ChevronDown, ChevronUp, Heart, Zap, Clock, MessageCircleQuestion, ArrowRight } from 'lucide-react';
 import { useState } from 'react';
+import { ResponsiveContainer, LineChart, Line } from 'recharts';
 
 const statusConfig: Record<string, { label: string; bg: string; text: string; dot: string }> = {
   green: { label: 'Normal', bg: 'bg-status-green/10', text: 'text-status-green', dot: 'bg-status-green' },
@@ -55,6 +56,31 @@ export function CopilotBiomarkerCard({ insight, index }: Props) {
       {/* Expanded details */}
       {expanded && (
         <div className="border-t border-border/50 p-4 space-y-4 animate-fade-in">
+          {/* Sparkline trend */}
+          {(() => {
+            const history = b.history ?? [];
+            const sparkData = [
+              ...history.slice().reverse().map(h => ({ v: h.value })),
+              ...(b.value !== null ? [{ v: b.value }] : []),
+            ];
+            const statusColor = b.status === 'green' ? 'hsl(var(--status-green))'
+              : b.status === 'yellow' ? 'hsl(var(--status-yellow))'
+              : b.status === 'red' ? 'hsl(var(--status-red))'
+              : 'hsl(var(--muted-foreground))';
+            return sparkData.length >= 2 ? (
+              <div>
+                <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Tendência Histórica</p>
+                <div className="h-16 w-full bg-secondary/30 rounded-lg p-2">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={sparkData} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
+                      <Line type="monotone" dataKey="v" stroke={statusColor} strokeWidth={2} dot={{ r: 2, fill: statusColor }} activeDot={false} isAnimationActive />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            ) : null;
+          })()}
+
           {/* Score impact */}
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2 uppercase tracking-wider">Impacto nos Scores</p>
