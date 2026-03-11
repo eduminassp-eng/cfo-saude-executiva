@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, CheckCircle2, ArrowRight, Sparkles, X, Pencil, Loader2, Table2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ArrowRight, Sparkles, X, Pencil, Loader2, Table2, Files } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
