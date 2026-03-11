@@ -26,7 +26,7 @@ const Dashboard = () => {
 
   const worsenedBiomarkers = useMemo(() => {
     return data.biomarkers.filter(b => {
-      if (b.value === null || b.history.length === 0) return false;
+      if (b.value === null || !b.history || b.history.length === 0) return false;
       const prev = b.history[0].value;
       const diff = b.value - prev;
       if (Math.abs(diff) < Math.abs(prev) * 0.02) return false; // ignore tiny changes
