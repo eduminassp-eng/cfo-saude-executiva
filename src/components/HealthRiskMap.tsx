@@ -233,18 +233,23 @@ export function HealthRiskMap({ data }: Props) {
         </div>
         <div className="flex gap-2">
           {[
-            { count: greenCount, colorVar: '--status-green', label: 'OK' },
-            { count: yellowCount, colorVar: '--status-yellow', label: 'Atenção' },
-            { count: redCount, colorVar: '--status-red', label: 'Ação' },
-            { count: grayCount, colorVar: '--muted-foreground', label: 'S/dados' },
+            { count: greenCount, colorVar: '--status-green', label: 'OK', status: 'green' as Status },
+            { count: yellowCount, colorVar: '--status-yellow', label: 'Atenção', status: 'yellow' as Status },
+            { count: redCount, colorVar: '--status-red', label: 'Ação', status: 'red' as Status },
+            { count: grayCount, colorVar: '--muted-foreground', label: 'S/dados', status: 'unknown' as Status },
           ].filter(b => b.count > 0).map(b => (
-            <span
+            <button
               key={b.label}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-              style={{ color: `hsl(var(${b.colorVar}))`, backgroundColor: `hsl(var(${b.colorVar}) / 0.12)` }}
+              onClick={() => setActiveFilter(activeFilter === b.status ? null : b.status)}
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-full transition-all ${activeFilter === b.status ? 'ring-1 ring-offset-1 ring-offset-background' : 'opacity-70 hover:opacity-100'}`}
+              style={{
+                color: `hsl(var(${b.colorVar}))`,
+                backgroundColor: `hsl(var(${b.colorVar}) / ${activeFilter === b.status ? '0.25' : '0.12'})`,
+                ringColor: `hsl(var(${b.colorVar}))`,
+              }}
             >
               {b.count} {b.label}
-            </span>
+            </button>
           ))}
         </div>
       </div>
