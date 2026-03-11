@@ -2,9 +2,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
   FileText, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
-  TrendingUp, FileBarChart, Stethoscope, FlaskConical
+  TrendingUp, FileBarChart, Stethoscope, FlaskConical, LogOut
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
