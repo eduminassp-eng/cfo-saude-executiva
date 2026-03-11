@@ -1,7 +1,7 @@
 import { HealthData } from '@/types/health';
 import { generateActionPlan } from '@/lib/actionPlan';
-import { Target, Clock, CalendarDays, CalendarRange } from 'lucide-react';
-import { useMemo } from 'react';
+import { Target, Clock, CalendarDays, CalendarRange, Printer } from 'lucide-react';
+import { useMemo, useRef, useCallback } from 'react';
 
 interface Props {
   data: HealthData;
