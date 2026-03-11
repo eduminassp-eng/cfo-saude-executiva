@@ -39,7 +39,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* Sidebar */}
-      <aside className={`${mobileOpen ? 'block' : 'hidden'} lg:block w-full lg:w-56 shrink-0 border-r border-border bg-sidebar p-4 no-print`}>
+      <aside className={`${mobileOpen ? 'flex' : 'hidden'} lg:flex flex-col w-full lg:w-56 shrink-0 border-r border-border bg-sidebar p-4 no-print`}>
         <h1 className="hidden lg:block text-xl font-bold tracking-tight mb-8 px-2">
           Health<span className="text-primary">CFO</span>
         </h1>
