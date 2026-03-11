@@ -15,7 +15,9 @@ import { CopilotExamCard } from '@/components/copilot/ExamCard';
 import { CopilotDoctorQuestions } from '@/components/copilot/DoctorQuestions';
 import { CopilotActionPlan } from '@/components/copilot/ActionPlan';
 import { CopilotTrendPatterns } from '@/components/copilot/TrendPatterns';
-import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp } from 'lucide-react';
+import { HealthAlerts } from '@/components/HealthAlerts';
+import { generateHealthAlerts } from '@/lib/healthAlerts';
+import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Copilot = () => {
