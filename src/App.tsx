@@ -12,6 +12,7 @@ import Timeline from "./pages/Timeline";
 import Riscos from "./pages/Riscos";
 import Resumo from "./pages/Resumo";
 import Configuracoes from "./pages/Configuracoes";
+import Copilot from "./pages/Copilot";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
