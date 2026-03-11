@@ -14,6 +14,8 @@ import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
 import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
 import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
+import { LongevityForecast } from '@/components/LongevityForecast';
+import { generateForecast } from '@/lib/forecast';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
@@ -23,6 +25,7 @@ const Dashboard = () => {
   const domainScores = useMemo(() => calcDomainScores(data), [data]);
   const previousDomainScores = useMemo(() => calcPreviousDomainScores(data), [data]);
   const healthAlerts = useMemo(() => generateHealthAlerts(data), [data]);
+  const forecast = useMemo(() => generateForecast(data), [data]);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
@@ -229,6 +232,9 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
+
+      {/* Longevity Forecast */}
+      <LongevityForecast forecast={forecast} />
 
       {/* Preventive Compliance & Balance Sheet */}
       <PreventiveComplianceScore data={data} />
