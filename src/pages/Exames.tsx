@@ -1,8 +1,10 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { useState, useMemo } from 'react';
-import { Search, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { Exam } from '@/types/health';
 import { ExamEditDialog } from '@/components/ExamEditDialog';
+import { ExamCreateDialog } from '@/components/ExamCreateDialog';
+import { useToast } from '@/hooks/use-toast';
 
 const statusColors: Record<string, string> = {
   'Em dia': 'bg-status-green status-green',
