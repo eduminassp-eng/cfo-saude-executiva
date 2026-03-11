@@ -1,5 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
+import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { KPICard } from '@/components/KPICard';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
@@ -8,6 +8,7 @@ import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
 import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
 import { DomainDetailPanel } from '@/components/DomainDetailPanel';
+import { HealthRadar } from '@/components/HealthRadar';
 
 const Dashboard = () => {
   const { data } = useHealth();
@@ -187,15 +188,18 @@ const Dashboard = () => {
         />
       )}
 
-      {/* Domain Health Summary */}
+      {/* Health Radar + Domain Grid */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
-        <DomainGrid
-          domainScores={domainScores}
-          showDomainDetail={showDomainDetail}
-          setShowDomainDetail={setShowDomainDetail}
-          data={data}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
+          <HealthRadar domainScores={domainScores} />
+          <DomainGrid
+            domainScores={domainScores}
+            showDomainDetail={showDomainDetail}
+            setShowDomainDetail={setShowDomainDetail}
+            data={data}
+          />
+        </div>
       </div>
 
       {/* KPIs */}
@@ -228,7 +232,6 @@ const Dashboard = () => {
 export default Dashboard;
 
 // Inline grid that inserts detail panel below the clicked card's row
-import type { DomainScore } from '@/lib/scoring';
 
 function DomainGrid({ domainScores, showDomainDetail, setShowDomainDetail, data }: {
   domainScores: DomainScore[];
