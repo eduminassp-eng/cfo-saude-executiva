@@ -118,8 +118,8 @@ export function DomainDetailPanel({ domainId, label, score, status, summary, dat
             {isPreventive ? 'Todos os Exames' : 'Exames Relacionados'}
           </p>
           <div className="space-y-1.5">
-            {exams.map(e => e && (
-              <div key={e.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2">
+            {exams.map((e, i) => e && (
+              <div key={e.id} className="flex items-center justify-between text-sm bg-secondary/50 rounded-lg px-3 py-2 animate-fade-in" style={{ animationDelay: `${(biomarkers.length + i) * 60}ms`, animationFillMode: 'backwards' }}>
                 <span className="text-muted-foreground truncate mr-2">{e.name}</span>
                 <span className={`text-xs px-1.5 py-0.5 rounded shrink-0 ${
                   e.status === 'Em dia' ? 'bg-status-green status-green' :
