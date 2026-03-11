@@ -70,13 +70,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
-        <div className="mt-auto pt-4 border-t border-sidebar-border">
+        <div className="mt-auto pt-4 border-t border-sidebar-border space-y-1">
           <button
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors w-full"
           >
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
+          </button>
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-destructive/20 hover:text-destructive transition-colors w-full"
+          >
+            <LogOut className="w-4 h-4" />
+            Sair
           </button>
         </div>
       </aside>
