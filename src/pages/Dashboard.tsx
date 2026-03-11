@@ -233,6 +233,9 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Longevity Forecast */}
+      <LongevityForecast forecast={forecast} />
+
       {/* Preventive Compliance & Balance Sheet */}
       <PreventiveComplianceScore data={data} />
       <HealthBalanceSheet data={data} />
