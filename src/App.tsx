@@ -13,6 +13,10 @@ import Riscos from "./pages/Riscos";
 import Resumo from "./pages/Resumo";
 import Configuracoes from "./pages/Configuracoes";
 import Copilot from "./pages/Copilot";
+import Tendencias from "./pages/Tendencias";
+import RelatorioExecutivo from "./pages/RelatorioExecutivo";
+import ResumoConsulta from "./pages/ResumoConsulta";
+import LabReader from "./pages/LabReader";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +36,10 @@ const App = () => (
               <Route path="/timeline" element={<Timeline />} />
               <Route path="/riscos" element={<Riscos />} />
               <Route path="/copilot" element={<Copilot />} />
+              <Route path="/tendencias" element={<Tendencias />} />
+              <Route path="/relatorio" element={<RelatorioExecutivo />} />
+              <Route path="/resumo-consulta" element={<ResumoConsulta />} />
+              <Route path="/lab-reader" element={<LabReader />} />
               <Route path="/resumo" element={<Resumo />} />
               <Route path="/configuracoes" element={<Configuracoes />} />
               <Route path="*" element={<NotFound />} />
