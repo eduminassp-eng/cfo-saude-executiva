@@ -178,8 +178,8 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         ))}
       </div>
 
-      {/* Filters for biomarkers/exams tabs */}
-      {tab !== 'summary' && (
+      {/* Filters for biomarkers/exams/trends tabs */}
+      {(tab === 'biomarkers' || tab === 'exams') && (
         <div className="flex flex-wrap gap-3">
           <div className="relative flex-1 min-w-[200px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
