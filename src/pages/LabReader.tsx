@@ -400,6 +400,8 @@ const LabReader = () => {
     setCsvHeaders([]);
     setCsvRows([]);
     setCsvMapping({ name: '', value: '', unit: '', date: '' });
+    setBatchFiles([]);
+    setBatchProgress(0);
   };
 
   const confirmAndSave = async () => {
