@@ -10,6 +10,7 @@ interface Props {
 
 export function ExamEditDialog({ exam, onClose }: Props) {
   const { updateData } = useHealth();
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [lastDate, setLastDate] = useState(exam.lastDate ?? '');
   const [nextDate, setNextDate] = useState(exam.nextDate ?? '');
   const [doctor, setDoctor] = useState(exam.doctor);
