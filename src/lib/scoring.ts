@@ -1,5 +1,13 @@
 import { HealthData, HealthScore, ScoreBreakdown, Status } from '@/types/health';
 
+export interface DomainScore {
+  id: string;
+  label: string;
+  score: number;
+  status: Status;
+  summary: string;
+}
+
 function getBiomarkerValue(data: HealthData, id: string): number | null {
   return data.biomarkers.find(b => b.id === id)?.value ?? null;
 }
