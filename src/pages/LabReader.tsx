@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, FileText, CheckCircle2, ArrowRight, Sparkles, X, Pencil, Loader2, Table2 } from 'lucide-react';
+import { Upload, FileText, CheckCircle2, ArrowRight, Sparkles, X, Pencil, Loader2, Table2, Files } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -166,50 +167,100 @@ const LabReader = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const csvInputRef = useRef<HTMLInputElement>(null);
 
+  // Batch state
+  type BatchFile = { file: File; status: 'pending' | 'processing' | 'done' | 'error'; count: number; error?: string };
+  const [batchFiles, setBatchFiles] = useState<BatchFile[]>([]);
+  const [batchProgress, setBatchProgress] = useState(0);
+
   // CSV state
   const [csvHeaders, setCsvHeaders] = useState<string[]>([]);
   const [csvRows, setCsvRows] = useState<string[][]>([]);
   const [csvMapping, setCsvMapping] = useState<CsvMapping>({ name: '', value: '', unit: '', date: '' });
 
-  const processFile = useCallback(async (file: File) => {
-    if (!user) { toast.error('Faça login primeiro'); return; }
+  const processFile = useCallback(async (file: File): Promise<ExtractedBiomarker[]> => {
+    if (!user) throw new Error('Faça login primeiro');
 
     const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
-    if (!validTypes.includes(file.type)) {
-      toast.error('Formato não suportado. Use PDF, JPG ou PNG.');
-      return;
-    }
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Arquivo muito grande. Máximo 10MB.');
-      return;
-    }
+    if (!validTypes.includes(file.type)) throw new Error('Formato não suportado');
+    if (file.size > 10 * 1024 * 1024) throw new Error('Arquivo muito grande');
 
-    setFileName(file.name);
+    const ext = file.name.split('.').pop() || 'pdf';
+    const filePath = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error: uploadErr } = await supabase.storage.from('lab-reports').upload(filePath, file);
+    if (uploadErr) throw new Error('Erro no upload: ' + uploadErr.message);
+
+    const { data, error: fnErr } = await supabase.functions.invoke('extract-biomarkers', { body: { filePath } });
+    if (fnErr) throw new Error('Erro na extração: ' + fnErr.message);
+    if (data?.error) throw new Error(data.error);
+
+    return data?.biomarkers || [];
+  }, [user]);
+
+  const processBatch = useCallback(async (files: File[]) => {
+    if (!user) { toast.error('Faça login primeiro'); return; }
+
+    const batch: BatchFile[] = files.map(f => ({ file: f, status: 'pending' as const, count: 0 }));
+    setBatchFiles(batch);
     setStep('processing');
     setError('');
+    setBatchProgress(0);
+
+    const allBiomarkers: ExtractedBiomarker[] = [];
+    const updatedBatch: BatchFile[] = [...batch];
+
+    for (let i = 0; i < files.length; i++) {
+      updatedBatch[i] = { ...updatedBatch[i], status: 'processing' };
+      setBatchFiles([...updatedBatch]);
+
+      try {
+        const biomarkers = await processFile(files[i]);
+        updatedBatch[i] = { ...updatedBatch[i], status: 'done', count: biomarkers.length };
+        allBiomarkers.push(...biomarkers);
+      } catch (err: any) {
+        updatedBatch[i] = { ...updatedBatch[i], status: 'error', error: err.message };
+      }
+
+      setBatchFiles([...updatedBatch]);
+      setBatchProgress(Math.round(((i + 1) / files.length) * 100));
+    }
+
+    if (allBiomarkers.length === 0) {
+      setError('Nenhum biomarcador encontrado em nenhum arquivo.');
+      setStep('upload');
+      return;
+    }
+
+    // Deduplicate: keep latest value per biomarker name
+    const deduped = new Map<string, ExtractedBiomarker>();
+    allBiomarkers.forEach(b => {
+      const key = b.name.toLowerCase().trim();
+      const existing = deduped.get(key);
+      if (!existing || (b.date && (!existing.date || b.date > existing.date))) {
+        deduped.set(key, b);
+      }
+    });
+
+    setExtractedBiomarkers(Array.from(deduped.values()));
+    setFileName(`${files.length} arquivos`);
+    setStep('review');
+  }, [user, processFile]);
+
+  const handleSingleFile = useCallback(async (file: File) => {
+    if (!user) { toast.error('Faça login primeiro'); return; }
+    setFileName(file.name);
+    setBatchFiles([{ file, status: 'processing', count: 0 }]);
+    setStep('processing');
+    setError('');
+    setBatchProgress(50);
 
     try {
-      const ext = file.name.split('.').pop() || 'pdf';
-      const filePath = `${user.id}/${Date.now()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from('lab-reports')
-        .upload(filePath, file);
-      if (uploadErr) throw new Error('Erro no upload: ' + uploadErr.message);
-
-      const { data, error: fnErr } = await supabase.functions.invoke('extract-biomarkers', {
-        body: { filePath },
-      });
-
-      if (fnErr) throw new Error('Erro na extração: ' + fnErr.message);
-      if (data?.error) throw new Error(data.error);
-
-      const biomarkers = data?.biomarkers || [];
+      const biomarkers = await processFile(file);
+      setBatchProgress(100);
       if (biomarkers.length === 0) {
         setError('Nenhum biomarcador encontrado. Tente com outro arquivo.');
         setStep('upload');
         return;
       }
-
       setExtractedBiomarkers(biomarkers);
       setStep('review');
     } catch (err: any) {
@@ -218,7 +269,7 @@ const LabReader = () => {
       setStep('upload');
       toast.error(err.message || 'Erro ao processar arquivo');
     }
-  }, [user]);
+  }, [user, processFile]);
 
   const processCSV = useCallback((file: File) => {
     if (!user) { toast.error('Faça login primeiro'); return; }
@@ -295,20 +346,36 @@ const LabReader = () => {
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     setDragOver(false);
-    const file = e.dataTransfer.files[0];
-    if (!file) return;
-    if (file.name.toLowerCase().endsWith('.csv') || file.type === 'text/csv') {
-      processCSV(file);
-    } else {
-      processFile(file);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    // If single CSV, use CSV flow
+    if (files.length === 1 && (files[0].name.toLowerCase().endsWith('.csv') || files[0].type === 'text/csv')) {
+      processCSV(files[0]);
+      return;
     }
-  }, [processFile, processCSV]);
+
+    // Filter valid files
+    const validFiles = files.filter(f => ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'].includes(f.type));
+    if (validFiles.length === 0) { toast.error('Nenhum arquivo válido (PDF, JPG, PNG)'); return; }
+
+    if (validFiles.length === 1) {
+      handleSingleFile(validFiles[0]);
+    } else {
+      processBatch(validFiles);
+    }
+  }, [handleSingleFile, processBatch, processCSV]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) processFile(file);
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    if (files.length === 1) {
+      handleSingleFile(files[0]);
+    } else {
+      processBatch(files);
+    }
     e.target.value = '';
-  }, [processFile]);
+  }, [handleSingleFile, processBatch]);
 
   const handleCsvSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -333,6 +400,8 @@ const LabReader = () => {
     setCsvHeaders([]);
     setCsvRows([]);
     setCsvMapping({ name: '', value: '', unit: '', date: '' });
+    setBatchFiles([]);
+    setBatchProgress(0);
   };
 
   const confirmAndSave = async () => {
@@ -440,6 +509,7 @@ const LabReader = () => {
         type="file"
         accept=".pdf,.jpg,.jpeg,.png,.webp"
         className="hidden"
+        multiple
         onChange={handleFileSelect}
       />
       <input
@@ -463,15 +533,15 @@ const LabReader = () => {
             onClick={() => fileInputRef.current?.click()}
           >
             <Upload className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
-            <h3 className="font-semibold text-lg mb-1">Arraste seu exame aqui</h3>
-            <p className="text-sm text-muted-foreground mb-4">PDF, JPG, PNG (máx. 10MB)</p>
+            <h3 className="font-semibold text-lg mb-1">Arraste seus exames aqui</h3>
+            <p className="text-sm text-muted-foreground mb-4">PDF, JPG, PNG (máx. 10MB) — múltiplos arquivos suportados</p>
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium">
-              <FileText className="w-4 h-4" />
-              Selecionar arquivo
+              <Files className="w-4 h-4" />
+              Selecionar arquivos
             </div>
             <p className="text-[10px] text-muted-foreground mt-3">
               <Sparkles className="w-3 h-3 inline mr-1" />
-              Extração inteligente via IA
+              Extração inteligente via IA — processa todos em lote
             </p>
           </div>
 
@@ -505,13 +575,39 @@ const LabReader = () => {
 
       {/* Processing (AI) */}
       {step === 'processing' && (
-        <div className="glass-card rounded-xl p-12 text-center animate-fade-in">
-          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+        <div className="glass-card rounded-xl p-8 lg:p-12 text-center animate-fade-in space-y-4">
+          <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
             <Loader2 className="w-8 h-8 text-primary animate-spin" />
           </div>
-          <h3 className="font-semibold text-lg mb-2">Processando exame...</h3>
-          <p className="text-sm text-muted-foreground mb-1">Identificando biomarcadores e valores com IA</p>
-          <p className="text-xs text-muted-foreground">{fileName}</p>
+          <div>
+            <h3 className="font-semibold text-lg mb-1">
+              {batchFiles.length > 1 ? `Processando ${batchFiles.length} arquivos...` : 'Processando exame...'}
+            </h3>
+            <p className="text-sm text-muted-foreground">Identificando biomarcadores e valores com IA</p>
+          </div>
+
+          {batchFiles.length > 1 && (
+            <div className="space-y-3 text-left max-w-md mx-auto">
+              <Progress value={batchProgress} className="h-2" />
+              <div className="space-y-1.5">
+                {batchFiles.map((bf, i) => (
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    {bf.status === 'pending' && <div className="w-3 h-3 rounded-full bg-muted" />}
+                    {bf.status === 'processing' && <Loader2 className="w-3 h-3 text-primary animate-spin" />}
+                    {bf.status === 'done' && <CheckCircle2 className="w-3 h-3 text-status-green" />}
+                    {bf.status === 'error' && <X className="w-3 h-3 text-destructive" />}
+                    <span className={bf.status === 'processing' ? 'font-medium' : 'text-muted-foreground'}>
+                      {bf.file.name}
+                    </span>
+                    {bf.status === 'done' && <span className="ml-auto text-muted-foreground">{bf.count} biomarcadores</span>}
+                    {bf.status === 'error' && <span className="ml-auto text-destructive truncate max-w-[150px]">{bf.error}</span>}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {batchFiles.length <= 1 && <p className="text-xs text-muted-foreground">{fileName}</p>}
         </div>
       )}
 
