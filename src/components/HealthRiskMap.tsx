@@ -214,11 +214,14 @@ interface Props {
 export function HealthRiskMap({ data }: Props) {
   const domains = useMemo(() => buildRiskDomains(data), [data]);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<Status | null>(null);
 
   const greenCount = domains.filter(d => d.status === 'green').length;
   const yellowCount = domains.filter(d => d.status === 'yellow').length;
   const redCount = domains.filter(d => d.status === 'red').length;
   const grayCount = domains.filter(d => d.status === 'unknown').length;
+
+  const filteredDomains = activeFilter ? domains.filter(d => d.status === activeFilter) : domains;
 
   return (
     <div className="space-y-4">
@@ -230,25 +233,29 @@ export function HealthRiskMap({ data }: Props) {
         </div>
         <div className="flex gap-2">
           {[
-            { count: greenCount, colorVar: '--status-green', label: 'OK' },
-            { count: yellowCount, colorVar: '--status-yellow', label: 'Atenção' },
-            { count: redCount, colorVar: '--status-red', label: 'Ação' },
-            { count: grayCount, colorVar: '--muted-foreground', label: 'S/dados' },
+            { count: greenCount, colorVar: '--status-green', label: 'OK', status: 'green' as Status },
+            { count: yellowCount, colorVar: '--status-yellow', label: 'Atenção', status: 'yellow' as Status },
+            { count: redCount, colorVar: '--status-red', label: 'Ação', status: 'red' as Status },
+            { count: grayCount, colorVar: '--muted-foreground', label: 'S/dados', status: 'unknown' as Status },
           ].filter(b => b.count > 0).map(b => (
-            <span
+            <button
               key={b.label}
-              className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-              style={{ color: `hsl(var(${b.colorVar}))`, backgroundColor: `hsl(var(${b.colorVar}) / 0.12)` }}
+              onClick={() => setActiveFilter(activeFilter === b.status ? null : b.status)}
+              className={`text-[10px] font-medium px-2 py-0.5 rounded-full transition-all ${activeFilter === b.status ? 'ring-1 ring-offset-1 ring-offset-background' : 'opacity-70 hover:opacity-100'}`}
+              style={{
+                color: `hsl(var(${b.colorVar}))`,
+                backgroundColor: `hsl(var(${b.colorVar}) / ${activeFilter === b.status ? '0.25' : '0.12'})`,
+              }}
             >
               {b.count} {b.label}
-            </span>
+            </button>
           ))}
         </div>
       </div>
 
       {/* Domain Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {domains.map((d, idx) => {
+        {filteredDomains.map((d, idx) => {
           const isExpanded = expandedId === d.id;
           const colorVar = d.status === 'green' ? '--status-green' : d.status === 'yellow' ? '--status-yellow' : d.status === 'red' ? '--status-red' : '--muted-foreground';
           const Icon = d.icon;
