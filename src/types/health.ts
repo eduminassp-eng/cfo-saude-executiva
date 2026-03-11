@@ -41,6 +41,10 @@ export interface LifestyleData {
   sleepHours: number;
   smokingStatus: 'never' | 'former' | 'current';
   alcoholWeekly: number; // drinks/week
+  dailySteps: number;
+  avgHeartRate: number;
+  activityMinutes: number;
+  weight: number | null;
 }
 
 export interface HealthData {
