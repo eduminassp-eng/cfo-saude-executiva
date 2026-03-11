@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const EMPTY_DATA: HealthData = {
   biomarkers: [],
   exams: [],
-  lifestyle: { exerciseFrequency: 0, sleepHours: 7, smokingStatus: 'never', alcoholWeekly: 0 },
+  lifestyle: { exerciseFrequency: 0, sleepHours: 7, smokingStatus: 'never', alcoholWeekly: 0, dailySteps: 0, avgHeartRate: 0, activityMinutes: 0, weight: null },
   lastUpdated: new Date().toISOString().split('T')[0],
 };
 
@@ -95,6 +95,10 @@ export function useHealthData() {
         sleepHours: lifestyle.sleep_hours,
         smokingStatus: lifestyle.smoking_status as LifestyleData['smokingStatus'],
         alcoholWeekly: lifestyle.alcohol_weekly,
+        dailySteps: (lifestyle as any).daily_steps ?? 0,
+        avgHeartRate: (lifestyle as any).avg_heart_rate ?? 0,
+        activityMinutes: (lifestyle as any).activity_minutes ?? 0,
+        weight: (lifestyle as any).weight ?? null,
       } : EMPTY_DATA.lifestyle;
 
       const { data: profile } = await supabase
@@ -196,7 +200,11 @@ export function useHealthData() {
         sleep_hours: next.lifestyle.sleepHours,
         smoking_status: next.lifestyle.smokingStatus,
         alcohol_weekly: next.lifestyle.alcoholWeekly,
-      }, { onConflict: 'user_id' });
+        daily_steps: next.lifestyle.dailySteps,
+        avg_heart_rate: next.lifestyle.avgHeartRate,
+        activity_minutes: next.lifestyle.activityMinutes,
+        weight: next.lifestyle.weight,
+      } as any, { onConflict: 'user_id' });
       if (lErr) throw lErr;
 
       // Update profile timestamp

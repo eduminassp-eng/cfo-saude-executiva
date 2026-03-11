@@ -19,6 +19,7 @@ import Tendencias from "./pages/Tendencias";
 import RelatorioExecutivo from "./pages/RelatorioExecutivo";
 import ResumoConsulta from "./pages/ResumoConsulta";
 import LabReader from "./pages/LabReader";
+import AppleHealth from "./pages/AppleHealth";
 import NotFound from "./pages/NotFound";
 import { Activity } from "lucide-react";
 
@@ -55,6 +56,7 @@ function ProtectedRoutes() {
           <Route path="/relatorio" element={<RelatorioExecutivo />} />
           <Route path="/resumo-consulta" element={<ResumoConsulta />} />
           <Route path="/lab-reader" element={<LabReader />} />
+          <Route path="/apple-health" element={<AppleHealth />} />
           <Route path="/resumo" element={<Resumo />} />
           <Route path="/configuracoes" element={<Configuracoes />} />
           <Route path="*" element={<NotFound />} />

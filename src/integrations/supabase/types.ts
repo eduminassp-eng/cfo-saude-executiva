@@ -151,34 +151,46 @@ export type Database = {
       }
       lifestyle_data: {
         Row: {
+          activity_minutes: number
           alcohol_weekly: number
+          avg_heart_rate: number
           created_at: string
+          daily_steps: number
           exercise_frequency: number
           id: string
           sleep_hours: number
           smoking_status: string
           updated_at: string
           user_id: string
+          weight: number | null
         }
         Insert: {
+          activity_minutes?: number
           alcohol_weekly?: number
+          avg_heart_rate?: number
           created_at?: string
+          daily_steps?: number
           exercise_frequency?: number
           id?: string
           sleep_hours?: number
           smoking_status?: string
           updated_at?: string
           user_id: string
+          weight?: number | null
         }
         Update: {
+          activity_minutes?: number
           alcohol_weekly?: number
+          avg_heart_rate?: number
           created_at?: string
+          daily_steps?: number
           exercise_frequency?: number
           id?: string
           sleep_hours?: number
           smoking_status?: string
           updated_at?: string
           user_id?: string
+          weight?: number | null
         }
         Relationships: []
       }
