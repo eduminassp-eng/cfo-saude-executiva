@@ -199,14 +199,14 @@ const LabReader = () => {
   const processBatch = useCallback(async (files: File[]) => {
     if (!user) { toast.error('Faça login primeiro'); return; }
 
-    const batch = files.map(f => ({ file: f, status: 'pending' as const, count: 0 }));
+    const batch: BatchFile[] = files.map(f => ({ file: f, status: 'pending' as const, count: 0 }));
     setBatchFiles(batch);
     setStep('processing');
     setError('');
     setBatchProgress(0);
 
     const allBiomarkers: ExtractedBiomarker[] = [];
-    const updatedBatch = [...batch];
+    const updatedBatch: BatchFile[] = [...batch];
 
     for (let i = 0; i < files.length; i++) {
       updatedBatch[i] = { ...updatedBatch[i], status: 'processing' };
