@@ -232,7 +232,6 @@ const Dashboard = () => {
 export default Dashboard;
 
 // Inline grid that inserts detail panel below the clicked card's row
-import type { DomainScore } from '@/lib/scoring';
 
 function DomainGrid({ domainScores, showDomainDetail, setShowDomainDetail, data }: {
   domainScores: DomainScore[];
