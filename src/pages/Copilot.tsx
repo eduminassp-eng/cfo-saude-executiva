@@ -27,6 +27,7 @@ const Copilot = () => {
   const biomarkerInsights = useMemo(() => generateBiomarkerInsights(data), [data]);
   const examInsights = useMemo(() => generateExamInsights(data), [data]);
   const summary = useMemo(() => generateExecutiveSummary(data), [data]);
+  const trendPatterns = useMemo(() => detectTrendPatterns(data), [data]);
   const scores = useMemo(() => ({
     cardiac: calcCardiacScore(data),
     metabolic: calcMetabolicScore(data),
