@@ -26,6 +26,7 @@ export function useHealthData() {
   }, []);
 
   const resetData = useCallback(() => {
+    localStorage.removeItem(STORAGE_KEY);
     setData(sampleData);
   }, []);
 

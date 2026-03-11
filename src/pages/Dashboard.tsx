@@ -158,7 +158,11 @@ const Dashboard = () => {
             };
             const Icon = icons[d.id] || Heart;
             return (
-              <div key={d.id} className="glass-card rounded-xl p-4">
+              <button
+                key={d.id}
+                onClick={() => setShowDomainDetail(showDomainDetail === d.id ? null : d.id)}
+                className="glass-card rounded-xl p-4 text-left hover:bg-accent/30 transition-colors"
+              >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <div className="p-1.5 rounded-lg bg-secondary">
@@ -187,11 +191,28 @@ const Dashboard = () => {
                   />
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed">{d.summary}</p>
-              </div>
+              </button>
             );
           })}
         </div>
       </div>
+
+      {/* Domain detail panel */}
+      {showDomainDetail && (() => {
+        const d = domainScores.find(ds => ds.id === showDomainDetail);
+        if (!d) return null;
+        return (
+          <DomainDetailPanel
+            domainId={d.id}
+            label={d.label}
+            score={d.score}
+            status={d.status}
+            summary={d.summary}
+            data={data}
+            onClose={() => setShowDomainDetail(null)}
+          />
+        );
+      })()}
 
       {/* KPIs */}
       <div>
