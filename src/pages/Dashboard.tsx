@@ -214,6 +214,10 @@ const Dashboard = () => {
         </div>
       </div>
 
+      {/* Preventive Compliance & Balance Sheet */}
+      <PreventiveComplianceScore data={data} />
+      <HealthBalanceSheet data={data} />
+
       {/* Disclaimer */}
       <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground">
         <p><strong>Aviso:</strong> Este painel é uma ferramenta de organização e acompanhamento preventivo. 
