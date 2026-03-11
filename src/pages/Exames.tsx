@@ -71,6 +71,29 @@ const Exames = () => {
     pendente: data.exams.filter(e => e.status === 'Pendente').length,
   }), [data.exams]);
 
+  // Toast notifications for overdue/upcoming exams
+  useEffect(() => {
+    if (toastFired.current) return;
+    toastFired.current = true;
+    const overdue = data.exams.filter(e => e.status === 'Atrasado');
+    const upcoming = data.exams.filter(e => e.status === 'Próximo');
+    if (overdue.length > 0) {
+      toast({
+        variant: 'destructive',
+        title: `${overdue.length} exame(s) atrasado(s)`,
+        description: overdue.map(e => e.name).join(', '),
+      });
+    }
+    if (upcoming.length > 0) {
+      setTimeout(() => {
+        toast({
+          title: `${upcoming.length} exame(s) próximo(s) do vencimento`,
+          description: upcoming.map(e => e.name).join(', '),
+        });
+      }, overdue.length > 0 ? 1500 : 0);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleSort = (key: SortKey) => {
     if (sortKey === key) setSortAsc(!sortAsc);
     else { setSortKey(key); setSortAsc(true); }
