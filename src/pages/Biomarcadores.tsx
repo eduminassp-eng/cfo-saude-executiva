@@ -248,11 +248,25 @@ const Biomarcadores = () => {
                       <p className="text-xs font-medium text-muted-foreground mb-2">Histórico</p>
                       <div className="space-y-1">
                         {b.history.map((h, i) => (
-                          <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-secondary/50">
+                          <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-secondary/50 group">
                             <span className="text-muted-foreground">{new Date(h.date).toLocaleDateString('pt-BR')}</span>
                             <div className="flex items-center gap-2">
                               <span className="font-mono font-medium">{h.value} {b.unit}</span>
                               {h.note && <span className="text-muted-foreground italic">{h.note}</span>}
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setEditingHistory({ biomarkerId: b.id, index: i, entry: { ...h } }); }}
+                                className="p-1 rounded hover:bg-accent opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Editar"
+                              >
+                                <Pencil className="w-3 h-3 text-muted-foreground" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); handleDeleteHistory(b.id, i); }}
+                                className="p-1 rounded hover:bg-destructive/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                title="Excluir"
+                              >
+                                <Trash2 className="w-3 h-3 text-destructive" />
+                              </button>
                             </div>
                           </div>
                         ))}
