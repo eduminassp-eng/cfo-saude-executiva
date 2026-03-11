@@ -1,7 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X, Activity 
+  FileText, Settings, Menu, X, Activity, BrainCircuit 
 } from 'lucide-react';
 import { useState } from 'react';
 
