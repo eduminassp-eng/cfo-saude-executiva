@@ -1,1 +1,4 @@
 project_id = "ypakfcyzuvpjsjvuupig"
+
+[functions.extract-biomarkers]
+verify_jwt = false
