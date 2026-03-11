@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Exam } from '@/types/health';
 import { useHealth } from '@/contexts/HealthContext';
-import { X } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 
 interface Props {
   exam: Exam;
