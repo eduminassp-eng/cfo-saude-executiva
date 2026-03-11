@@ -507,6 +507,7 @@ const LabReader = () => {
         type="file"
         accept=".pdf,.jpg,.jpeg,.png,.webp"
         className="hidden"
+        multiple
         onChange={handleFileSelect}
       />
       <input
