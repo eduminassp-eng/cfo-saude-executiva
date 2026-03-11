@@ -27,11 +27,22 @@ export function BiomarkerEditDialog({ biomarker, onClose }: Props) {
     const numVal = value ? parseFloat(value) : null;
     updateData(prev => ({
       ...prev,
-      biomarkers: prev.biomarkers.map(b =>
-        b.id === biomarker.id
-          ? { ...b, value: numVal, lastDate: date || b.lastDate, note, status: computeStatus(numVal, b.targetMin, b.targetMax) }
-          : b
-      ),
+      biomarkers: prev.biomarkers.map(b => {
+        if (b.id !== biomarker.id) return b;
+        // Push current value to history before overwriting
+        const newHistory = [...b.history];
+        if (b.value !== null && b.lastDate) {
+          newHistory.unshift({ value: b.value, date: b.lastDate, note: b.note });
+        }
+        return {
+          ...b,
+          value: numVal,
+          lastDate: date || b.lastDate,
+          note,
+          status: computeStatus(numVal, b.targetMin, b.targetMax),
+          history: newHistory,
+        };
+      }),
     }));
     onClose();
   };

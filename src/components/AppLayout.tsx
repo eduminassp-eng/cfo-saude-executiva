@@ -1,12 +1,13 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X 
+  FileText, Settings, Menu, X, Activity 
 } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/biomarcadores', label: 'Biomarcadores', icon: Activity },
   { path: '/exames', label: 'Exames', icon: ClipboardList },
   { path: '/timeline', label: 'Timeline', icon: Calendar },
   { path: '/riscos', label: 'Riscos', icon: AlertTriangle },

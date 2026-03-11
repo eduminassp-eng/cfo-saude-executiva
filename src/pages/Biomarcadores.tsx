@@ -1,0 +1,255 @@
+import { useState, useMemo } from 'react';
+import { useHealth } from '@/contexts/HealthContext';
+import { Biomarker, Status } from '@/types/health';
+import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
+import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
+
+const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
+  green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
+  yellow: { bg: 'bg-status-yellow', text: 'status-yellow', label: 'Atenção' },
+  red: { bg: 'bg-status-red', text: 'status-red', label: 'Ação' },
+  unknown: { bg: 'bg-secondary', text: 'text-muted-foreground', label: '—' },
+};
+
+const categories = ['Todos', 'Cardiovascular', 'Metabolismo', 'Fígado', 'Rins', 'Hormonal', 'Composição Corporal', 'Urologia'];
+
+function getTrend(b: Biomarker): 'up' | 'down' | 'stable' {
+  if (!b.value || b.history.length === 0) return 'stable';
+  const prev = b.history[0].value;
+  const diff = b.value - prev;
+  if (Math.abs(diff) < prev * 0.02) return 'stable';
+  return diff > 0 ? 'up' : 'down';
+}
+
+function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoodUp: boolean }) {
+  if (trend === 'stable') return <Minus className="w-3.5 h-3.5 text-muted-foreground" />;
+  const isGood = (trend === 'up' && isGoodUp) || (trend === 'down' && !isGoodUp);
+  const color = isGood ? 'status-green' : 'status-red';
+  return trend === 'up'
+    ? <TrendingUp className={`w-3.5 h-3.5 ${color}`} />
+    : <TrendingDown className={`w-3.5 h-3.5 ${color}`} />;
+}
+
+// For markers where higher = worse (most markers), "up" is bad
+const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
+
+const Biomarcadores = () => {
+  const { data } = useHealth();
+  const [categoryFilter, setCategoryFilter] = useState('Todos');
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
+
+  const filtered = useMemo(() => {
+    if (categoryFilter === 'Todos') return data.biomarkers;
+    return data.biomarkers.filter(b => b.category === categoryFilter);
+  }, [data.biomarkers, categoryFilter]);
+
+  const stats = useMemo(() => {
+    const green = data.biomarkers.filter(b => b.status === 'green').length;
+    const yellow = data.biomarkers.filter(b => b.status === 'yellow').length;
+    const red = data.biomarkers.filter(b => b.status === 'red').length;
+    return { green, yellow, red, total: data.biomarkers.length };
+  }, [data.biomarkers]);
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Biomarcadores</h1>
+        <p className="text-muted-foreground mt-1">Acompanhamento completo dos seus indicadores de saúde</p>
+      </div>
+
+      {/* Summary cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div className="glass-card rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold font-mono">{stats.total}</p>
+          <p className="text-xs text-muted-foreground">Total</p>
+        </div>
+        <div className="glass-card rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold font-mono status-green">{stats.green}</p>
+          <p className="text-xs text-muted-foreground">Normal</p>
+        </div>
+        <div className="glass-card rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold font-mono status-yellow">{stats.yellow}</p>
+          <p className="text-xs text-muted-foreground">Atenção</p>
+        </div>
+        <div className="glass-card rounded-xl p-4 text-center">
+          <p className="text-2xl font-bold font-mono status-red">{stats.red}</p>
+          <p className="text-xs text-muted-foreground">Ação</p>
+        </div>
+      </div>
+
+      {/* Category filter */}
+      <div className="flex flex-wrap gap-2">
+        {categories.map(cat => (
+          <button
+            key={cat}
+            onClick={() => setCategoryFilter(cat)}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              categoryFilter === cat
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-accent'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
+      </div>
+
+      {/* Biomarker list */}
+      <div className="space-y-2">
+        {filtered.map(b => {
+          const trend = getTrend(b);
+          const isGoodUp = markersWhereUpIsGood.has(b.id);
+          const isExpanded = expandedId === b.id;
+          const config = statusConfig[b.status];
+
+          // Build chart data: history (oldest first) + current
+          const chartData = [
+            ...b.history.slice().reverse().map(h => ({ date: h.date, value: h.value })),
+            ...(b.value !== null && b.lastDate ? [{ date: b.lastDate, value: b.value }] : []),
+          ];
+
+          return (
+            <div key={b.id} className="glass-card rounded-xl overflow-hidden">
+              {/* Main row */}
+              <button
+                onClick={() => setExpandedId(isExpanded ? null : b.id)}
+                className="w-full p-4 flex items-center gap-3 text-left hover:bg-accent/30 transition-colors"
+              >
+                {/* Status dot */}
+                <div
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: `hsl(var(--status-${b.status === 'unknown' ? 'yellow' : b.status}))` }}
+                />
+
+                {/* Name + category */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{b.name}</p>
+                  <p className="text-xs text-muted-foreground">{b.category}</p>
+                </div>
+
+                {/* Value */}
+                <div className="text-right shrink-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-lg font-bold font-mono">{b.value ?? '—'}</span>
+                    <span className="text-xs text-muted-foreground">{b.unit}</span>
+                    <TrendIcon trend={trend} isGoodUp={isGoodUp} />
+                  </div>
+                  {b.lastDate && (
+                    <p className="text-xs text-muted-foreground">
+                      {new Date(b.lastDate).toLocaleDateString('pt-BR')}
+                    </p>
+                  )}
+                </div>
+
+                {/* Badge */}
+                <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${config.bg} ${config.text}`}>
+                  {config.label}
+                </span>
+
+                {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+              </button>
+
+              {/* Expanded detail */}
+              {isExpanded && (
+                <div className="px-4 pb-4 pt-0 border-t border-border space-y-4">
+                  {/* Info row */}
+                  <div className="flex items-center justify-between pt-3">
+                    <div className="text-xs text-muted-foreground">
+                      Referência: {b.targetMin !== null ? b.targetMin : ''}{b.targetMin !== null && b.targetMax !== null ? '–' : ''}{b.targetMax !== null ? (b.targetMin === null ? `< ${b.targetMax}` : b.targetMax) : (b.targetMin !== null ? `> ${b.targetMin}` : '—')} {b.unit}
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setEditingBiomarker(b); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      Editar
+                    </button>
+                  </div>
+
+                  {b.note && <p className="text-xs text-muted-foreground italic">{b.note}</p>}
+
+                  {/* Sparkline chart */}
+                  {chartData.length >= 2 && (
+                    <div className="h-32 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                          <XAxis
+                            dataKey="date"
+                            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                            tickFormatter={d => new Date(d).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' })}
+                            axisLine={false}
+                            tickLine={false}
+                          />
+                          <YAxis
+                            domain={['auto', 'auto']}
+                            tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                            axisLine={false}
+                            tickLine={false}
+                            width={45}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              background: 'hsl(var(--card))',
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '8px',
+                              fontSize: '12px',
+                            }}
+                            labelFormatter={d => new Date(d).toLocaleDateString('pt-BR')}
+                            formatter={(val: number) => [`${val} ${b.unit}`, b.name]}
+                          />
+                          {b.targetMax !== null && (
+                            <ReferenceLine y={b.targetMax} stroke="hsl(var(--status-yellow))" strokeDasharray="4 4" strokeOpacity={0.6} />
+                          )}
+                          {b.targetMin !== null && (
+                            <ReferenceLine y={b.targetMin} stroke="hsl(var(--status-yellow))" strokeDasharray="4 4" strokeOpacity={0.6} />
+                          )}
+                          <Line
+                            type="monotone"
+                            dataKey="value"
+                            stroke="hsl(var(--primary))"
+                            strokeWidth={2}
+                            dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                            activeDot={{ r: 5 }}
+                          />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  )}
+
+                  {/* History table */}
+                  {b.history.length > 0 && (
+                    <div>
+                      <p className="text-xs font-medium text-muted-foreground mb-2">Histórico</p>
+                      <div className="space-y-1">
+                        {b.history.map((h, i) => (
+                          <div key={i} className="flex items-center justify-between text-xs py-1.5 px-2 rounded bg-secondary/50">
+                            <span className="text-muted-foreground">{new Date(h.date).toLocaleDateString('pt-BR')}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-mono font-medium">{h.value} {b.unit}</span>
+                              {h.note && <span className="text-muted-foreground italic">{h.note}</span>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {editingBiomarker && (
+        <BiomarkerEditDialog
+          biomarker={editingBiomarker}
+          onClose={() => setEditingBiomarker(null)}
+        />
+      )}
+    </div>
+  );
+};
+
+export default Biomarcadores;
