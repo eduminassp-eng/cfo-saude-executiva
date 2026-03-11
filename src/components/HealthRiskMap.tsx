@@ -255,7 +255,7 @@ export function HealthRiskMap({ data }: Props) {
 
       {/* Domain Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {domains.map((d, idx) => {
+        {filteredDomains.map((d, idx) => {
           const isExpanded = expandedId === d.id;
           const colorVar = d.status === 'green' ? '--status-green' : d.status === 'yellow' ? '--status-yellow' : d.status === 'red' ? '--status-red' : '--muted-foreground';
           const Icon = d.icon;
