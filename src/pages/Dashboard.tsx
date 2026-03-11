@@ -169,6 +169,9 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Health Priority Engine */}
+      <HealthPriorityEngine data={data} />
+
       {/* Health Alerts */}
       <HealthAlerts alerts={healthAlerts} maxVisible={4} />
 
