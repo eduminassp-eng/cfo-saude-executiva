@@ -245,7 +245,6 @@ export function HealthRiskMap({ data }: Props) {
               style={{
                 color: `hsl(var(${b.colorVar}))`,
                 backgroundColor: `hsl(var(${b.colorVar}) / ${activeFilter === b.status ? '0.25' : '0.12'})`,
-                ringColor: `hsl(var(${b.colorVar}))`,
               }}
             >
               {b.count} {b.label}
