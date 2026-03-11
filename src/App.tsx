@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { AppLayout } from "@/components/AppLayout";
 import Dashboard from "./pages/Dashboard";
+import Biomarcadores from "./pages/Biomarcadores";
 import Exames from "./pages/Exames";
 import Timeline from "./pages/Timeline";
 import Riscos from "./pages/Riscos";
