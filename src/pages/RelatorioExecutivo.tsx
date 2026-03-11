@@ -191,8 +191,7 @@ const RelatorioExecutivo = () => {
         </ul>
       </div>
 
-      <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground text-center print:border print:border-gray-200">
-        Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
+
       {/* Action Plan */}
       <div className="glass-card rounded-xl p-5 print:border print:border-gray-200 print:break-before-page">
         <h2 className="font-semibold mb-4">🎯 Plano de Ação</h2>
