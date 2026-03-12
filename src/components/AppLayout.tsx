@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
   FileText, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
-  TrendingUp, FileBarChart, Stethoscope, FlaskConical, LogOut, Heart
+  TrendingUp, FileBarChart, Stethoscope, FlaskConical, LogOut, Heart, MessageCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
