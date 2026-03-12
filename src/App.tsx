@@ -36,6 +36,31 @@ function LoadingScreen() {
   );
 }
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/biomarcadores" element={<Biomarcadores />} />
+        <Route path="/exames" element={<Exames />} />
+        <Route path="/timeline" element={<Timeline />} />
+        <Route path="/riscos" element={<Riscos />} />
+        <Route path="/copilot" element={<Copilot />} />
+        <Route path="/tendencias" element={<Tendencias />} />
+        <Route path="/relatorio" element={<RelatorioExecutivo />} />
+        <Route path="/resumo-consulta" element={<ResumoConsulta />} />
+        <Route path="/lab-reader" element={<LabReader />} />
+        <Route path="/apple-health" element={<AppleHealth />} />
+        <Route path="/resumo" element={<Resumo />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function ProtectedRoutes() {
   const { user, loading } = useAuth();
 
@@ -45,22 +70,7 @@ function ProtectedRoutes() {
   return (
     <HealthProvider>
       <AppLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/biomarcadores" element={<Biomarcadores />} />
-          <Route path="/exames" element={<Exames />} />
-          <Route path="/timeline" element={<Timeline />} />
-          <Route path="/riscos" element={<Riscos />} />
-          <Route path="/copilot" element={<Copilot />} />
-          <Route path="/tendencias" element={<Tendencias />} />
-          <Route path="/relatorio" element={<RelatorioExecutivo />} />
-          <Route path="/resumo-consulta" element={<ResumoConsulta />} />
-          <Route path="/lab-reader" element={<LabReader />} />
-          <Route path="/apple-health" element={<AppleHealth />} />
-          <Route path="/resumo" element={<Resumo />} />
-          <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimatedRoutes />
       </AppLayout>
     </HealthProvider>
   );
