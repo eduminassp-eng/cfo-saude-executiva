@@ -1,5 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload, Settings2 } from 'lucide-react';
+import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload, Settings2, BookOpen } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { useMemo, useCallback, useRef, useState } from 'react';
