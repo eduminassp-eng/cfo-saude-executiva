@@ -71,10 +71,12 @@ const Dashboard = () => {
   return (
     <PageTransition>
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header - Apple Health style */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Painel Executivo de Saúde</h1>
-        <p className="text-muted-foreground mt-1">Última atualização: {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}</p>
+        <p className="text-sm text-muted-foreground font-medium mb-1">
+          {new Date(data.lastUpdated).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
+        <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">Resumo de Saúde</h1>
       </div>
 
       {/* Overdue & Upcoming Exam Alert Cards */}
@@ -209,7 +211,7 @@ const Dashboard = () => {
 
       {/* Health Radar + Domain Grid */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Saúde por Domínio</h2>
+        <h2 className="section-header mb-4">Saúde por Domínio</h2>
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
           <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
           <DomainGrid
@@ -223,7 +225,7 @@ const Dashboard = () => {
 
       {/* KPIs */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Indicadores-Chave</h2>
+        <h2 className="section-header mb-4">Indicadores-Chave</h2>
         <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {keyBiomarkers.map(b => (
             <StaggerItem key={b.id}>
