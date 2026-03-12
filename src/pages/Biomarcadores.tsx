@@ -88,24 +88,21 @@ const Biomarcadores = () => {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-green">{stats.green}</p>
-          <p className="text-xs text-muted-foreground">Normal</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-yellow">{stats.yellow}</p>
-          <p className="text-xs text-muted-foreground">Atenção</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-red">{stats.red}</p>
-          <p className="text-xs text-muted-foreground">Ação</p>
-        </div>
-      </div>
+      <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { value: stats.total, label: 'Total', className: '' },
+          { value: stats.green, label: 'Normal', className: 'status-green' },
+          { value: stats.yellow, label: 'Atenção', className: 'status-yellow' },
+          { value: stats.red, label: 'Ação', className: 'status-red' },
+        ].map(s => (
+          <StaggerItem key={s.label}>
+            <div className="glass-card p-4 text-center">
+              <p className={`display-number text-2xl ${s.className}`}>{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+            </div>
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
 
       {/* Category filter */}
       <div className="flex flex-wrap gap-2">
