@@ -1,12 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { AppLayout } from "@/components/AppLayout";
-import Auth from "./pages/Auth";
+import { AnimatePresence } from "framer-motion";
 import Dashboard from "./pages/Dashboard";
 import Biomarcadores from "./pages/Biomarcadores";
 import Exames from "./pages/Exames";
