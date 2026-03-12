@@ -3,6 +3,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from '@/lib/scoring';
 import { Printer, AlertTriangle, CheckCircle2, TrendingDown, MessageCircleQuestion, Pill } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
@@ -48,7 +49,7 @@ const ResumoConsulta = () => {
   };
 
   const statusColor = (s: string) =>
-    s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
+    s === 'green' ? 'text-[hsl(var(--status-green))]' : s === 'yellow' ? 'text-[hsl(var(--status-yellow))]' : 'text-[hsl(var(--status-red))]';
 
   return (
     <PageTransition>
@@ -56,11 +57,11 @@ const ResumoConsulta = () => {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-xl lg:text-2xl font-bold tracking-tight">Resumo para Consulta</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">{new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
         </div>
         <button
           onClick={handlePrint}
-          className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium no-print"
+          className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-medium no-print hover:opacity-90 transition-opacity"
         >
           <Printer className="w-4 h-4" />
           <span className="hidden sm:inline">Imprimir</span>
@@ -68,24 +69,26 @@ const ResumoConsulta = () => {
       </div>
 
       {/* Scores */}
-      <div className="grid grid-cols-3 gap-2">
+      <StaggerContainer className="grid grid-cols-3 gap-2">
         {[
           { label: 'Cardíaco', value: cardiac.value, status: cardiac.status },
           { label: 'Metabólico', value: metabolic.value, status: metabolic.status },
           { label: 'Longevidade', value: longevity.value, status: longevity.status },
         ].map(s => (
-          <div key={s.label} className="glass-card rounded-xl p-3 text-center">
-            <p className="text-xl font-bold font-mono" style={{ color: statusColor(s.status) }}>{s.value}</p>
-            <p className="text-[10px] text-muted-foreground">{s.label}</p>
-          </div>
+          <StaggerItem key={s.label}>
+            <div className="glass-card p-3 text-center">
+              <p className={`display-number text-xl ${statusColor(s.status)}`}>{s.value}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+            </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       {/* Major Alerts */}
       {(redBiomarkers.length > 0 || overdue.length > 0) && (
-        <div className="glass-card rounded-xl p-4 border-l-4" style={{ borderLeftColor: 'hsl(var(--status-red))' }}>
+        <div className="glass-card p-4 border-l-4 border-l-[hsl(var(--status-red))]">
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-4 h-4 text-status-red" />
+            <AlertTriangle className="w-4 h-4 text-[hsl(var(--status-red))]" />
             <h2 className="text-sm font-semibold">Alertas Principais</h2>
           </div>
           <ul className="text-sm space-y-1">
@@ -97,9 +100,9 @@ const ResumoConsulta = () => {
 
       {/* Attention */}
       {yellowBiomarkers.length > 0 && (
-        <div className="glass-card rounded-xl p-4">
+        <div className="glass-card p-4">
           <div className="flex items-center gap-2 mb-2">
-            <CheckCircle2 className="w-4 h-4 text-status-yellow" />
+            <CheckCircle2 className="w-4 h-4 text-[hsl(var(--status-yellow))]" />
             <h2 className="text-sm font-semibold">Em Atenção</h2>
           </div>
           <p className="text-sm text-muted-foreground">{yellowBiomarkers.map(b => `${b.name} (${b.value} ${b.unit})`).join(' • ')}</p>
@@ -108,9 +111,9 @@ const ResumoConsulta = () => {
 
       {/* Recent Trends */}
       {trends.length > 0 && (
-        <div className="glass-card rounded-xl p-4">
+        <div className="glass-card p-4">
           <div className="flex items-center gap-2 mb-2">
-            <TrendingDown className="w-4 h-4 text-status-red" />
+            <TrendingDown className="w-4 h-4 text-[hsl(var(--status-red))]" />
             <h2 className="text-sm font-semibold">Tendências de Piora</h2>
           </div>
           <p className="text-sm text-muted-foreground">{trends.join(', ')}</p>
@@ -118,7 +121,7 @@ const ResumoConsulta = () => {
       )}
 
       {/* Medications */}
-      <div className="glass-card rounded-xl p-4 no-print">
+      <div className="glass-card p-4 no-print">
         <div className="flex items-center gap-2 mb-2">
           <Pill className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-semibold">Medicamentos Atuais</h2>
@@ -127,11 +130,11 @@ const ResumoConsulta = () => {
           value={medications}
           onChange={e => saveMedications(e.target.value)}
           placeholder="Liste seus medicamentos atuais aqui..."
-          className="w-full bg-secondary rounded-lg px-3 py-2 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full bg-secondary/60 rounded-xl px-3 py-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none transition-all"
         />
       </div>
       {medications && (
-        <div className="glass-card rounded-xl p-4 hidden print:block">
+        <div className="glass-card p-4 hidden print:block">
           <div className="flex items-center gap-2 mb-2">
             <Pill className="w-4 h-4" />
             <h2 className="text-sm font-semibold">Medicamentos Atuais</h2>
@@ -141,7 +144,7 @@ const ResumoConsulta = () => {
       )}
 
       {/* Doctor Questions */}
-      <div className="glass-card rounded-xl p-4">
+      <div className="glass-card p-4">
         <div className="flex items-center gap-2 mb-2">
           <MessageCircleQuestion className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-semibold">Perguntas para o Médico</h2>
