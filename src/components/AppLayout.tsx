@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
-  TrendingUp, FileBarChart, FlaskConical, LogOut, Heart, MessageCircle
+  LayoutDashboard, ClipboardList, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
+  FileBarChart, FlaskConical, LogOut, Heart, MessageCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
