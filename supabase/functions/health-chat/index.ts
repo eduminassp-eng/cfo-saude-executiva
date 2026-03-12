@@ -13,7 +13,7 @@ serve(async (req) => {
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    const { messages, healthContext } = await req.json();
+    const { messages, healthContext, attachment } = await req.json();
     if (!messages || !Array.isArray(messages)) throw new Error("Missing messages");
 
     const systemPrompt = `Você é um assistente de saúde preventiva integrado ao Health CFO. Você tem acesso aos dados de saúde do usuário abaixo.
@@ -29,7 +29,23 @@ REGRAS:
 - Sempre inclua o disclaimer: suas respostas são informativas e NÃO substituem orientação médica.
 - Se perguntado sobre algo fora dos dados disponíveis, diga que não tem essa informação.
 - Seja conciso mas completo. Use linguagem acessível.
-- Quando relevante, sugira perguntas que o usuário pode fazer ao médico.`;
+- Quando relevante, sugira perguntas que o usuário pode fazer ao médico.
+- Se o usuário anexar um resultado de exame (PDF ou imagem), analise os valores encontrados, compare com os dados existentes do usuário e destaque alterações relevantes.`;
+
+    // Build the last user message with optional attachment
+    const aiMessages = messages.map((m: any, i: number) => {
+      // Only attach file to the last user message
+      if (i === messages.length - 1 && m.role === "user" && attachment?.base64 && attachment?.mimeType) {
+        return {
+          role: "user",
+          content: [
+            { type: "text", text: m.content || "Analise este resultado de exame anexado." },
+            { type: "image_url", image_url: { url: `data:${attachment.mimeType};base64,${attachment.base64}` } },
+          ],
+        };
+      }
+      return { role: m.role, content: m.content };
+    });
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -38,10 +54,10 @@ REGRAS:
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages,
+          ...aiMessages,
         ],
         stream: true,
       }),
