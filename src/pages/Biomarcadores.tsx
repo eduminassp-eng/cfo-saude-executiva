@@ -39,7 +39,7 @@ function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoo
 const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const Biomarcadores = () => {
-  const { data, loading, updateData } = useHealth();
+  const { data, loading, error, retry, updateData } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
