@@ -16,16 +16,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      // getSession() já trata sessão inicial; evita sobrescrever com null em INITIAL_SESSION
+      if (event === 'INITIAL_SESSION') return;
+      setSession(nextSession);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-      }
-    );
+    supabase.auth.getSession().then(({ data: { session: restoredSession } }) => {
+      setSession(restoredSession);
+      setLoading(false);
+    });
 
     // Safety timeout to prevent infinite loading screen
     const timeout = setTimeout(() => {
@@ -54,3 +55,4 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
+
