@@ -95,6 +95,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {children}
         </div>
       </main>
+
+      {/* Floating AI Chat button */}
+      {location.pathname !== '/copilot' && (
+        <Link
+          to="/copilot"
+          className="fixed bottom-6 right-6 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all hover:scale-105 active:scale-95 no-print"
+          title="Chat com IA"
+        >
+          <MessageCircle className="w-6 h-6" />
+        </Link>
+      )}
     </div>
   );
 }
