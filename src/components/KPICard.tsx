@@ -95,6 +95,6 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
         </p>
       )}
       {biomarker.note && <p className="text-xs text-muted-foreground mt-1 italic">{biomarker.note}</p>}
-    </button>
+    </motion.button>
   );
 }

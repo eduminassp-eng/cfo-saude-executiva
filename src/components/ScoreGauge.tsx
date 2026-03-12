@@ -21,15 +21,17 @@ export function ScoreGauge({ label, value, status, subtitle, colorVar }: ScoreGa
       <div className="relative w-32 h-32">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
-          <circle
+          <motion.circle
             cx="60" cy="60" r={radius}
             fill="none"
             stroke={`hsl(var(--${colorVar}))`}
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            strokeDashoffset={circumference - progress}
-            className="transition-all duration-1000 ease-out score-ring"
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: circumference - progress }}
+            transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 }}
+            className="score-ring"
             style={{ color: `hsl(var(--${colorVar}))` }}
           />
         </svg>
