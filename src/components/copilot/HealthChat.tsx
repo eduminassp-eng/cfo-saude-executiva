@@ -1,18 +1,24 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Send, Bot, User, Loader2, Sparkles, Trash2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { generateHealthAlerts } from '@/lib/healthAlerts';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-chat`;
 
-const SUGGESTIONS = [
-  'Quais biomarcadores estão fora do ideal?',
-  'Como melhorar meu colesterol?',
-  'Quais exames devo priorizar agora?',
+const FALLBACK_SUGGESTIONS = [
   'Resuma minha saúde em poucas frases',
+  'Quais exames devo priorizar agora?',
+  'Me dê dicas para melhorar meu estilo de vida',
 ];
+
+interface DynamicSuggestion {
+  text: string;
+  icon: 'alert' | 'clock' | 'trend' | 'default';
+  priority: number;
+}
 
 export function HealthChat() {
   const { data } = useHealth();
@@ -21,6 +27,89 @@ export function HealthChat() {
   const [isLoading, setIsLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  const dynamicSuggestions = useMemo(() => {
+    const suggestions: DynamicSuggestion[] = [];
+    const alerts = generateHealthAlerts(data);
+
+    // Critical biomarkers
+    const criticalBio = data.biomarkers.filter(b => b.status === 'red' && b.value !== null);
+    if (criticalBio.length > 0) {
+      const names = criticalBio.slice(0, 2).map(b => b.name).join(' e ');
+      suggestions.push({
+        text: `Por que meu ${names} está fora do normal e o que fazer?`,
+        icon: 'alert',
+        priority: 1,
+      });
+    }
+
+    // Warning biomarkers
+    const warningBio = data.biomarkers.filter(b => b.status === 'yellow' && b.value !== null);
+    if (warningBio.length > 0) {
+      const name = warningBio[0].name;
+      suggestions.push({
+        text: `Meu ${name} está na zona de atenção — devo me preocupar?`,
+        icon: 'alert',
+        priority: 2,
+      });
+    }
+
+    // Overdue exams
+    const overdueExams = data.exams.filter(e => e.status === 'Atrasado');
+    if (overdueExams.length > 0) {
+      suggestions.push({
+        text: `Tenho ${overdueExams.length} exame(s) atrasado(s). Quais são mais urgentes?`,
+        icon: 'clock',
+        priority: 1,
+      });
+    }
+
+    // Upcoming exams
+    const upcomingExams = data.exams.filter(e => e.status === 'Próximo');
+    if (upcomingExams.length > 0) {
+      suggestions.push({
+        text: `Quais exames vencem em breve e como me preparar?`,
+        icon: 'clock',
+        priority: 3,
+      });
+    }
+
+    // Worsening trends
+    const worseningAlerts = alerts.filter(a => a.type === 'trend_worsening');
+    if (worseningAlerts.length > 0) {
+      const name = worseningAlerts[0].title.replace(' em tendência de piora', '');
+      suggestions.push({
+        text: `${name} está piorando — o que pode estar causando isso?`,
+        icon: 'trend',
+        priority: 2,
+      });
+    }
+
+    // Sort by priority and cap at 4
+    suggestions.sort((a, b) => a.priority - b.priority);
+    const result = suggestions.slice(0, 4);
+
+    // Fill remaining slots with fallback
+    if (result.length < 3) {
+      for (const fb of FALLBACK_SUGGESTIONS) {
+        if (result.length >= 4) break;
+        if (!result.some(r => r.text === fb)) {
+          result.push({ text: fb, icon: 'default', priority: 10 });
+        }
+      }
+    }
+
+    return result;
+  }, [data]);
+
+  const suggestionIcon = (icon: DynamicSuggestion['icon']) => {
+    switch (icon) {
+      case 'alert': return <AlertTriangle className="w-3 h-3 shrink-0 text-destructive" />;
+      case 'clock': return <Clock className="w-3 h-3 shrink-0 text-status-yellow" />;
+      case 'trend': return <TrendingDown className="w-3 h-3 shrink-0 text-status-yellow" />;
+      default: return null;
+    }
+  };
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -158,13 +247,14 @@ export function HealthChat() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2 justify-center max-w-md">
-              {SUGGESTIONS.map(s => (
+              {dynamicSuggestions.map(s => (
                 <button
-                  key={s}
-                  onClick={() => sendMessage(s)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
+                  key={s.text}
+                  onClick={() => sendMessage(s.text)}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-left"
                 >
-                  {s}
+                  {suggestionIcon(s.icon)}
+                  {s.text}
                 </button>
               ))}
             </div>
