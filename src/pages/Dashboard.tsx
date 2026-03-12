@@ -1,4 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
+import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
