@@ -227,7 +227,7 @@ const Dashboard = () => {
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
-            setShowDomainDetail={setShowDomainDetail}
+            setShowDomainDetail={handleShowDomain}
             data={data}
           />
         </div>
