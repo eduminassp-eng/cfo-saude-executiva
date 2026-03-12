@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 
 const Timeline = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
 
   const overdue = data.exams.filter(e => e.status === 'Atrasado').sort((a, b) => (a.nextDate ?? '').localeCompare(b.nextDate ?? ''));
   const upcoming = data.exams.filter(e => e.status === 'Em dia' || e.status === 'Próximo').filter(e => e.nextDate).sort((a, b) => (a.nextDate!).localeCompare(b.nextDate!));
