@@ -114,11 +114,10 @@ function BiomarkerRow({
       >
         {/* Status indicator */}
         <div
-          className="w-3 h-3 rounded-full shrink-0 ring-4"
+          className="w-3 h-3 rounded-full shrink-0"
           style={{
             backgroundColor: statusColor,
-            ringColor: `hsl(${config.colorVar} / 0.15)`,
-            boxShadow: `0 0 8px hsl(${config.colorVar} / 0.3)`,
+            boxShadow: `0 0 0 4px hsl(${config.colorVar} / 0.15), 0 0 8px hsl(${config.colorVar} / 0.3)`,
           }}
         />
 
