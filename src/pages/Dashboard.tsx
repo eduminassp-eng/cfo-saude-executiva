@@ -1,28 +1,36 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
-import { ScoreGauge } from '@/components/ScoreGauge';
-import { KPICard } from '@/components/KPICard';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
-import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
-import { DomainDetailPanel } from '@/components/DomainDetailPanel';
-import { HealthRadar } from '@/components/HealthRadar';
-import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
-import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
-import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
-import { LongevityForecast } from '@/components/LongevityForecast';
 import { generateForecast } from '@/lib/forecast';
-import { WhatIfSimulator } from '@/components/WhatIfSimulator';
-import { HealthRiskMap } from '@/components/HealthRiskMap';
-import { HealthPriorityEngine } from '@/components/HealthPriorityEngine';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { AnimatedCard } from '@/components/motion/AnimatedCard';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components
+const ScoreGauge = lazy(() => import('@/components/ScoreGauge').then(m => ({ default: m.ScoreGauge })));
+const KPICard = lazy(() => import('@/components/KPICard').then(m => ({ default: m.KPICard })));
+const ScoreDetailPanel = lazy(() => import('@/components/ScoreDetailPanel').then(m => ({ default: m.ScoreDetailPanel })));
+const DomainDetailPanel = lazy(() => import('@/components/DomainDetailPanel').then(m => ({ default: m.DomainDetailPanel })));
+const HealthRadar = lazy(() => import('@/components/HealthRadar').then(m => ({ default: m.HealthRadar })));
+const PreventiveComplianceScore = lazy(() => import('@/components/PreventiveCompliance').then(m => ({ default: m.PreventiveComplianceScore })));
+const HealthBalanceSheet = lazy(() => import('@/components/HealthBalanceSheet').then(m => ({ default: m.HealthBalanceSheet })));
+const HealthAlerts = lazy(() => import('@/components/HealthAlerts').then(m => ({ default: m.HealthAlerts })));
+const LongevityForecast = lazy(() => import('@/components/LongevityForecast').then(m => ({ default: m.LongevityForecast })));
+const WhatIfSimulator = lazy(() => import('@/components/WhatIfSimulator').then(m => ({ default: m.WhatIfSimulator })));
+const HealthRiskMap = lazy(() => import('@/components/HealthRiskMap').then(m => ({ default: m.HealthRiskMap })));
+const HealthPriorityEngine = lazy(() => import('@/components/HealthPriorityEngine').then(m => ({ default: m.HealthPriorityEngine })));
+
+function LazyFallback() {
+  return <div className="glass-card p-6"><Skeleton className="h-40 w-full rounded-xl" /></div>;
+}
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
