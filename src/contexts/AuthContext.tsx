@@ -18,22 +18,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let subscription: { unsubscribe: () => void } | null = null;
 
-    // 1. Restore session from storage FIRST
     supabase.auth.getSession().then(({ data: { session: restored } }) => {
       setSession(restored);
       setLoading(false);
 
-      // 2. ONLY AFTER hydration, start listening for changes
-      const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
-        console.log('[Auth] onAuthStateChange:', event, nextSession ? `user=${nextSession.user.email}` : 'no session');
+      const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
         setSession(nextSession);
       });
       subscription = data.subscription;
     });
 
-    // Safety timeout
     const timeout = setTimeout(() => {
-      console.warn('[Auth] Timeout reached — forcing loading=false');
       setLoading(false);
     }, 5000);
 
@@ -44,7 +39,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = async () => {
-    console.log('[Auth] signOut called');
     await supabase.auth.signOut();
   };
 
