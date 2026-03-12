@@ -17,7 +17,6 @@ import RelatorioExecutivo from "./pages/RelatorioExecutivo";
 import LabReader from "./pages/LabReader";
 import AppleHealth from "./pages/AppleHealth";
 import NotFound from "./pages/NotFound";
-import NotFound from "./pages/NotFound";
 import { Activity } from "lucide-react";
 
 const queryClient = new QueryClient();
