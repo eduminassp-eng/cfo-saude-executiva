@@ -488,20 +488,51 @@ export function HealthChat() {
 
         {/* Input */}
         <div className="border-t border-border/50 px-3 py-2.5 bg-secondary/20">
+          {attachment && (
+            <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-primary/10 rounded-lg text-xs">
+              {attachment.mimeType === 'application/pdf' ? (
+                <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+              ) : (
+                <ImageIcon className="w-3.5 h-3.5 text-primary shrink-0" />
+              )}
+              <span className="truncate flex-1 text-foreground">{attachment.name}</span>
+              <button
+                onClick={() => setAttachment(null)}
+                className="p-0.5 rounded hover:bg-destructive/20 transition-colors"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+              </button>
+            </div>
+          )}
           <div className="flex gap-2 items-end">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="shrink-0 w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Anexar resultado de exame (PDF ou imagem)"
+            >
+              <Paperclip className="w-4 h-4 text-muted-foreground" />
+            </button>
             <textarea
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Pergunte sobre seus exames, biomarcadores..."
+              placeholder={attachment ? "Descreva o que quer saber sobre o exame..." : "Pergunte sobre seus exames, biomarcadores..."}
               rows={1}
               className="flex-1 bg-secondary/50 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary min-h-[38px] max-h-[100px]"
               disabled={isLoading}
             />
             <button
               onClick={() => sendMessage(input)}
-              disabled={!input.trim() || isLoading}
+              disabled={(!input.trim() && !attachment) || isLoading}
               className="shrink-0 w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
