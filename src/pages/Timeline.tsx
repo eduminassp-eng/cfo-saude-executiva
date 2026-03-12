@@ -39,6 +39,7 @@ const Timeline = () => {
   );
 
   return (
+    <PageTransition>
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Timeline de Saúde</h1>
