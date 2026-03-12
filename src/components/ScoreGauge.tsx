@@ -1,5 +1,5 @@
 import { Status } from '@/types/health';
-
+import { motion } from 'framer-motion';
 interface ScoreGaugeProps {
   label: string;
   value: number;
