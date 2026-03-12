@@ -4,9 +4,9 @@ import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
+import { HIGHER_IS_BETTER } from '@/lib/scoring';
 
 const TRACKED_IDS = ['ldl', 'hdl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ggt', 'vitd', 'imc', 'cintura'];
-const UP_IS_GOOD = new Set(['hdl', 'vitd']);
 
 interface TrendData {
   id: string;
