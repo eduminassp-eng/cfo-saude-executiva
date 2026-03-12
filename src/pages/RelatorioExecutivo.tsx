@@ -53,6 +53,7 @@ const RelatorioExecutivo = () => {
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
+    <PageTransition>
     <div className="space-y-6 print:space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
