@@ -1,13 +1,11 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { useMemo, useCallback, useState } from 'react';
-import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
+import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, HIGHER_IS_BETTER } from '@/lib/scoring';
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
 import { Printer, Pill, MessageCircleQuestion, TrendingDown, AlertTriangle, CheckCircle2, CalendarClock, Stethoscope } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
-
-const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const RelatorioExecutivo = () => {
   const { data } = useHealth();
