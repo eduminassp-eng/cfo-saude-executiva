@@ -199,7 +199,7 @@ const Dashboard = () => {
             </button>
           </StaggerItem>
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
+            <button onClick={() => handleShowScore('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
               <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
             </button>
           </StaggerItem>
