@@ -20,8 +20,9 @@ export function useHealthData() {
 
   // Load data from Supabase
   const loadData = useCallback(async () => {
-    if (!user) { setData(EMPTY_DATA); setLoading(false); return; }
+    if (!user) { setData(EMPTY_DATA); setLoading(false); setError(null); return; }
     
+    setError(null);
     try {
       // Check if user has data
       const { data: biomarkers, error: bErr } = await supabase
