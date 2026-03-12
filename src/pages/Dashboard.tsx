@@ -33,7 +33,7 @@ function LazyFallback() {
 }
 
 const Dashboard = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
   const cardiac = calcCardiacScore(data);
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
