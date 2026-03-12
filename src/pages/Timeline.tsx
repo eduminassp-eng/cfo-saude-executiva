@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Calendar, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const Timeline = () => {
   const { data } = useHealth();
@@ -38,6 +39,7 @@ const Timeline = () => {
   );
 
   return (
+    <PageTransition>
     <div className="space-y-8">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Timeline de Saúde</h1>
@@ -48,6 +50,7 @@ const Timeline = () => {
       <Section title="Próximos Agendamentos" icon={Calendar} items={upcoming} iconClass="status-yellow" />
       <Section title="Últimos Realizados" icon={CheckCircle2} items={completed} iconClass="status-green" />
     </div>
+    </PageTransition>
   );
 };
 

@@ -1,6 +1,8 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { Exam } from '@/types/health';
 import { ExamEditDialog } from '@/components/ExamEditDialog';
 import { ExamCreateDialog } from '@/components/ExamCreateDialog';
@@ -105,6 +107,7 @@ const Exames = () => {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
@@ -121,28 +124,22 @@ const Exames = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="glass-card rounded-xl p-3 text-center">
-          <p className="text-xl font-bold font-mono">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total</p>
-        </div>
-        <div className="glass-card rounded-xl p-3 text-center">
-          <p className="text-xl font-bold font-mono status-green">{stats.emDia}</p>
-          <p className="text-xs text-muted-foreground">Em dia</p>
-        </div>
-        <div className="glass-card rounded-xl p-3 text-center">
-          <p className="text-xl font-bold font-mono status-yellow">{stats.proximo}</p>
-          <p className="text-xs text-muted-foreground">Próximo</p>
-        </div>
-        <div className="glass-card rounded-xl p-3 text-center">
-          <p className="text-xl font-bold font-mono status-red">{stats.atrasado}</p>
-          <p className="text-xs text-muted-foreground">Atrasado</p>
-        </div>
-        <div className="glass-card rounded-xl p-3 text-center">
-          <p className="text-xl font-bold font-mono">{stats.pendente}</p>
-          <p className="text-xs text-muted-foreground">Pendente</p>
-        </div>
-      </div>
+      <StaggerContainer className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        {[
+          { value: stats.total, label: 'Total', className: '' },
+          { value: stats.emDia, label: 'Em dia', className: 'status-green' },
+          { value: stats.proximo, label: 'Próximo', className: 'status-yellow' },
+          { value: stats.atrasado, label: 'Atrasado', className: 'status-red' },
+          { value: stats.pendente, label: 'Pendente', className: '' },
+        ].map(s => (
+          <StaggerItem key={s.label}>
+            <div className="glass-card p-3 text-center">
+              <p className={`display-number text-xl ${s.className}`}>{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+            </div>
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 no-print">
@@ -253,6 +250,7 @@ const Exames = () => {
       {editingExam && <ExamEditDialog exam={editingExam} onClose={() => setEditingExam(null)} />}
       {showCreate && <ExamCreateDialog onClose={() => setShowCreate(false)} />}
     </div>
+    </PageTransition>
   );
 };
 

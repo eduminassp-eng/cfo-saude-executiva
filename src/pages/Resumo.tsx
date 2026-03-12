@@ -1,6 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from '@/lib/scoring';
 import { Printer } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const Resumo = () => {
   const { data } = useHealth();
@@ -13,6 +14,7 @@ const Resumo = () => {
   const redBiomarkers = data.biomarkers.filter(b => b.status === 'red');
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
@@ -109,6 +111,7 @@ const Resumo = () => {
         <p className="mt-1">Este documento é para fins de organização pessoal. Não substitui orientação médica.</p>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

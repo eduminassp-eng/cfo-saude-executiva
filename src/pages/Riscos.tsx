@@ -1,5 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Status } from '@/types/health';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const riskGroups = [
   { label: 'Cardiovascular', biomarkerIds: ['pa-sys', 'pa-dia', 'ldl', 'hdl', 'trig', 'pcr', 'apob'], examNames: ['Eletrocardiograma', 'Teste Ergométrico', 'Ecocardiograma', 'Score de Cálcio Coronariano'] },
@@ -43,13 +45,14 @@ const Riscos = () => {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Mapa de Riscos</h1>
         <p className="text-muted-foreground mt-1">Visão consolidada por área de saúde</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {riskGroups.map(group => {
           const groupStatus = getGroupStatus(group);
           const config = statusConfig[groupStatus];
@@ -58,7 +61,8 @@ const Riscos = () => {
           const exams = group.examNames.map(name => data.exams.find(e => e.name === name)).filter(Boolean);
 
           return (
-            <div key={group.label} className="glass-card rounded-xl p-5">
+            <StaggerItem key={group.label}>
+            <div className="glass-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">{group.label}</h3>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
@@ -93,9 +97,10 @@ const Riscos = () => {
                 ))}
               </div>
             </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       {/* Lifestyle */}
       <div className="glass-card rounded-xl p-5">
@@ -120,6 +125,7 @@ const Riscos = () => {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

@@ -2,6 +2,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useMemo, useCallback, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from '@/lib/scoring';
 import { Printer, AlertTriangle, CheckCircle2, TrendingDown, MessageCircleQuestion, Pill } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
@@ -50,6 +51,7 @@ const ResumoConsulta = () => {
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
+    <PageTransition>
     <div className="space-y-5 max-w-2xl mx-auto print:space-y-3">
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -154,6 +156,7 @@ const ResumoConsulta = () => {
         Documento para uso pessoal em consultas. Não substitui orientação médica.
       </p>
     </div>
+    </PageTransition>
   );
 };
 

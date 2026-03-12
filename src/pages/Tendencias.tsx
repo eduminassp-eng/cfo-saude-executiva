@@ -2,6 +2,8 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const TRACKED_IDS = ['ldl', 'hdl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ggt', 'vitd', 'imc', 'cintura'];
 const UP_IS_GOOD = new Set(['hdl', 'vitd']);
@@ -79,25 +81,28 @@ const Tendencias = () => {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Motor de Tendências de Risco</h1>
         <p className="text-muted-foreground mt-1">Evolução histórica dos biomarcadores-chave</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <StaggerContainer className="grid grid-cols-3 gap-3">
         {(['improving', 'stable', 'worsening'] as const).map(d => {
           const count = trends.filter(t => t.direction === d).length;
           const cfg = directionConfig[d];
           return (
-            <div key={d} className="glass-card rounded-xl p-3 text-center">
-              <cfg.icon className="w-5 h-5 mx-auto mb-1" style={{ color: cfg.color }} />
-              <p className="text-xl font-bold font-mono" style={{ color: cfg.color }}>{count}</p>
-              <p className="text-xs text-muted-foreground">{cfg.label}</p>
-            </div>
+            <StaggerItem key={d}>
+              <div className="glass-card p-3 text-center">
+                <cfg.icon className="w-5 h-5 mx-auto mb-1" style={{ color: cfg.color }} />
+                <p className="display-number text-xl" style={{ color: cfg.color }}>{count}</p>
+                <p className="text-xs text-muted-foreground">{cfg.label}</p>
+              </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       <div className="space-y-4">
         {trends.map((t, i) => {
@@ -172,6 +177,7 @@ const Tendencias = () => {
         })}
       </div>
     </div>
+    </PageTransition>
   );
 };
 

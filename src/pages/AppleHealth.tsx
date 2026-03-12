@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, Heart, Footprints, Moon, Weight, Timer, CheckCircle2, ArrowRight, X, AlertTriangle } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useHealth } from '@/contexts/HealthContext';
@@ -241,6 +242,7 @@ const AppleHealth = () => {
   const currentIdx = steps.findIndex(s => s.id === step);
 
   return (
+    <PageTransition>
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
@@ -434,6 +436,7 @@ const AppleHealth = () => {
         </div>
       )}
     </div>
+    </PageTransition>
   );
 };
 

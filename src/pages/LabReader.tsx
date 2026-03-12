@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, FileText, CheckCircle2, ArrowRight, Sparkles, X, Pencil, Loader2, Table2, Files } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -478,6 +479,7 @@ const LabReader = () => {
   const currentIdx = steps.findIndex(s => s.id === displayStep);
 
   return (
+    <PageTransition>
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
@@ -802,6 +804,7 @@ const LabReader = () => {
         </div>
       )}
     </div>
+    </PageTransition>
   );
 };
 

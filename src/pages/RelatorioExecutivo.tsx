@@ -4,6 +4,7 @@ import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainSco
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
 import { Printer, Download } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
@@ -52,6 +53,7 @@ const RelatorioExecutivo = () => {
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
+    <PageTransition>
     <div className="space-y-6 print:space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -235,6 +237,7 @@ const RelatorioExecutivo = () => {
         Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
       </div>
     </div>
+    </PageTransition>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { useMemo, useCallback, useRef, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { HealthData, Biomarker, Exam } from '@/types/health';
@@ -127,6 +128,7 @@ const Configuracoes = () => {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Configurações</h1>
@@ -280,6 +282,7 @@ const Configuracoes = () => {
         Não constitui diagnóstico ou recomendação médica. Consulte sempre profissionais de saúde qualificados.</p>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

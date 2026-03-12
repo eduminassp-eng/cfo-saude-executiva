@@ -4,6 +4,9 @@ import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
   green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
@@ -77,6 +80,7 @@ const Biomarcadores = () => {
   }, [data.biomarkers]);
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Biomarcadores</h1>
@@ -84,24 +88,21 @@ const Biomarcadores = () => {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono">{stats.total}</p>
-          <p className="text-xs text-muted-foreground">Total</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-green">{stats.green}</p>
-          <p className="text-xs text-muted-foreground">Normal</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-yellow">{stats.yellow}</p>
-          <p className="text-xs text-muted-foreground">Atenção</p>
-        </div>
-        <div className="glass-card rounded-xl p-4 text-center">
-          <p className="text-2xl font-bold font-mono status-red">{stats.red}</p>
-          <p className="text-xs text-muted-foreground">Ação</p>
-        </div>
-      </div>
+      <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { value: stats.total, label: 'Total', className: '' },
+          { value: stats.green, label: 'Normal', className: 'status-green' },
+          { value: stats.yellow, label: 'Atenção', className: 'status-yellow' },
+          { value: stats.red, label: 'Ação', className: 'status-red' },
+        ].map(s => (
+          <StaggerItem key={s.label}>
+            <div className="glass-card p-4 text-center">
+              <p className={`display-number text-2xl ${s.className}`}>{s.value}</p>
+              <p className="text-xs text-muted-foreground mt-1">{s.label}</p>
+            </div>
+          </StaggerItem>
+        ))}
+      </StaggerContainer>
 
       {/* Category filter */}
       <div className="flex flex-wrap gap-2">
@@ -122,21 +123,25 @@ const Biomarcadores = () => {
 
       {/* Biomarker list */}
       <div className="space-y-2">
-        {filtered.map(b => {
+        {filtered.map((b, i) => {
           const trend = getTrend(b);
           const isGoodUp = markersWhereUpIsGood.has(b.id);
           const isExpanded = expandedId === b.id;
           const config = statusConfig[b.status];
 
-          // Build chart data: history (oldest first) + current
           const chartData = [
             ...(b.history ?? []).slice().reverse().map(h => ({ date: h.date, value: h.value })),
             ...(b.value !== null && b.lastDate ? [{ date: b.lastDate, value: b.value }] : []),
           ];
 
           return (
-            <div key={b.id} className="glass-card rounded-xl overflow-hidden">
-              {/* Main row */}
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03, duration: 0.3 }}
+              className="glass-card overflow-hidden"
+            >
               <button
                 onClick={() => setExpandedId(isExpanded ? null : b.id)}
                 className="w-full p-4 flex items-center gap-3 text-left hover:bg-accent/30 transition-colors"
@@ -175,8 +180,15 @@ const Biomarcadores = () => {
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
               </button>
 
-              {/* Expanded detail */}
+              <AnimatePresence>
               {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
                 <div className="px-4 pb-4 pt-0 border-t border-border space-y-4">
                   {/* Info row */}
                   <div className="flex items-center justify-between pt-3">
@@ -274,8 +286,10 @@ const Biomarcadores = () => {
                     </div>
                   )}
                 </div>
+                </motion.div>
               )}
-            </div>
+              </AnimatePresence>
+            </motion.div>
           );
         })}
       </div>
@@ -297,6 +311,7 @@ const Biomarcadores = () => {
         />
       )}
     </div>
+    </PageTransition>
   );
 };
 
