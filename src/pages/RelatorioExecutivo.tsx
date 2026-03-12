@@ -39,7 +39,7 @@ const RelatorioExecutivo = () => {
         const diff = b.value! - prev;
         const pct = ((diff / prev) * 100).toFixed(1);
         const isUp = diff > 0;
-        const worsening = UP_IS_GOOD.has(b.id) ? !isUp : isUp;
+        const worsening = HIGHER_IS_BETTER.has(b.id) ? !isUp : isUp;
         if (Math.abs(diff / prev) < 0.02) return null;
         return { name: b.name, prev, current: b.value!, pct, worsening };
       })
