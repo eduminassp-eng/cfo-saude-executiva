@@ -180,44 +180,54 @@ const Dashboard = () => {
       )}
 
       {/* Health Priority Engine */}
-      <HealthPriorityEngine data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthPriorityEngine data={data} />
+      </Suspense>
 
       {/* Health Alerts */}
-      <HealthAlerts alerts={healthAlerts} maxVisible={4} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthAlerts alerts={healthAlerts} maxVisible={4} />
+      </Suspense>
 
       {/* Scores */}
-      <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
-            <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
-          </button>
-        </StaggerItem>
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
-            <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
-          </button>
-        </StaggerItem>
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
-            <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
-          </button>
-        </StaggerItem>
-      </StaggerContainer>
+      <Suspense fallback={<LazyFallback />}>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
+              <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
+            </button>
+          </StaggerItem>
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
+              <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
+            </button>
+          </StaggerItem>
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
+              <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
+            </button>
+          </StaggerItem>
+        </StaggerContainer>
+      </Suspense>
 
       {/* Score detail panel */}
       {showScoreDetail && (
-        <ScoreDetailPanel
-          type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
-          score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
-          onClose={() => setShowScoreDetail(null)}
-        />
+        <Suspense fallback={<LazyFallback />}>
+          <ScoreDetailPanel
+            type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
+            score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
+            onClose={() => setShowScoreDetail(null)}
+          />
+        </Suspense>
       )}
 
       {/* Health Radar + Domain Grid */}
       <div>
         <h2 className="section-header mb-4">Saúde por Domínio</h2>
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
-          <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
+          <Suspense fallback={<LazyFallback />}>
+            <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
+          </Suspense>
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
@@ -230,27 +240,39 @@ const Dashboard = () => {
       {/* KPIs */}
       <div>
         <h2 className="section-header mb-4">Indicadores-Chave</h2>
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {keyBiomarkers.map(b => (
-            <StaggerItem key={b.id}>
-              <KPICard biomarker={b} onClick={() => setEditingBiomarker(b)} />
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <Suspense fallback={<LazyFallback />}>
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {keyBiomarkers.map(b => (
+              <StaggerItem key={b.id}>
+                <KPICard biomarker={b} onClick={() => setEditingBiomarker(b)} />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </Suspense>
       </div>
 
       {/* Longevity Forecast */}
-      <LongevityForecast forecast={forecast} />
+      <Suspense fallback={<LazyFallback />}>
+        <LongevityForecast forecast={forecast} />
+      </Suspense>
 
       {/* What-If Simulator */}
-      <WhatIfSimulator />
+      <Suspense fallback={<LazyFallback />}>
+        <WhatIfSimulator />
+      </Suspense>
 
       {/* Health Risk Map */}
-      <HealthRiskMap data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthRiskMap data={data} />
+      </Suspense>
 
       {/* Preventive Compliance & Balance Sheet */}
-      <PreventiveComplianceScore data={data} />
-      <HealthBalanceSheet data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <PreventiveComplianceScore data={data} />
+      </Suspense>
+      <Suspense fallback={<LazyFallback />}>
+        <HealthBalanceSheet data={data} />
+      </Suspense>
 
       {/* Disclaimer */}
       <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground">
