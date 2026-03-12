@@ -62,11 +62,7 @@ const Dashboard = () => {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-pulse text-muted-foreground">Carregando dados...</div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
