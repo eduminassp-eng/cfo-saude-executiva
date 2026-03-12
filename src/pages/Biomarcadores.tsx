@@ -43,6 +43,9 @@ const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'tes
 
 const Biomarcadores = () => {
   const { data, loading, error, retry, updateData } = useHealth();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'tendencias' ? 'tendencias' : 'indicadores';
+  const [activeTab, setActiveTab] = useState<'indicadores' | 'tendencias'>(initialTab);
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
