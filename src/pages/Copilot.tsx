@@ -15,14 +15,15 @@ import { CopilotExamCard } from '@/components/copilot/ExamCard';
 import { CopilotDoctorQuestions } from '@/components/copilot/DoctorQuestions';
 import { CopilotActionPlan } from '@/components/copilot/ActionPlan';
 import { CopilotTrendPatterns } from '@/components/copilot/TrendPatterns';
+import { HealthChat } from '@/components/copilot/HealthChat';
 import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
-import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell } from 'lucide-react';
+import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Copilot = () => {
   const { data } = useHealth();
-  const [tab, setTab] = useState<'summary' | 'alerts' | 'trends' | 'biomarkers' | 'exams'>('summary');
+  const [tab, setTab] = useState<'summary' | 'alerts' | 'trends' | 'biomarkers' | 'exams' | 'chat'>('summary');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
@@ -120,6 +121,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   const alertCount = healthAlerts.filter(a => a.severity === 'critical').length;
   const tabs = [
     { id: 'summary' as const, label: 'Resumo', icon: ShieldAlert },
+    { id: 'chat' as const, label: 'Chat IA', icon: MessageCircle },
     { id: 'alerts' as const, label: `Alertas${alertCount > 0 ? ` (${alertCount})` : ''}`, icon: Bell },
     { id: 'trends' as const, label: 'Tendências', icon: TrendingUp },
     { id: 'biomarkers' as const, label: 'Biomarcadores', icon: Activity },
@@ -211,6 +213,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
           <CopilotDoctorQuestions data={data} />
           <CopilotActionPlan data={data} />
         </div>
+      )}
+
+      {tab === 'chat' && (
+        <HealthChat />
       )}
 
       {tab === 'alerts' && (
