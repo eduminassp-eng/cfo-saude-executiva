@@ -1,12 +1,19 @@
 import { ExamInsight } from '@/lib/copilot';
-import { ChevronDown, ChevronUp, ArrowRight, MessageCircleQuestion, Clock } from 'lucide-react';
+import { ChevronRight, ArrowRight, MessageCircleQuestion, Clock, Stethoscope, ShieldAlert, CalendarDays, FileText, ClipboardCheck } from 'lucide-react';
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const examStatusConfig: Record<string, { bg: string; text: string; dot: string }> = {
-  'Em dia': { bg: 'bg-status-green/10', text: 'text-status-green', dot: 'bg-status-green' },
-  'Próximo': { bg: 'bg-status-yellow/10', text: 'text-status-yellow', dot: 'bg-status-yellow' },
-  'Atrasado': { bg: 'bg-status-red/10', text: 'text-status-red', dot: 'bg-status-red' },
-  'Pendente': { bg: 'bg-secondary', text: 'text-muted-foreground', dot: 'bg-muted-foreground' },
+const examStatusConfig: Record<string, { colorVar: string; label: string }> = {
+  'Em dia': { colorVar: '--status-green', label: 'Em dia' },
+  'Próximo': { colorVar: '--status-yellow', label: 'Próximo' },
+  'Atrasado': { colorVar: '--status-red', label: 'Atrasado' },
+  'Pendente': { colorVar: '--muted-foreground', label: 'Pendente' },
+};
+
+const importanceConfig: Record<string, { colorVar: string }> = {
+  'Alta': { colorVar: '--status-red' },
+  'Média': { colorVar: '--status-yellow' },
+  'Baixa': { colorVar: '--status-green' },
 };
 
 interface Props {
@@ -18,87 +25,123 @@ export function CopilotExamCard({ insight, index }: Props) {
   const [expanded, setExpanded] = useState(false);
   const { exam: e } = insight;
   const cfg = examStatusConfig[e.status] ?? examStatusConfig['Pendente'];
+  const impCfg = importanceConfig[e.importance] ?? importanceConfig['Baixa'];
+  const statusColor = `hsl(var(${cfg.colorVar}))`;
+
+  const glowStyle = e.status === 'Atrasado' ? {
+    borderColor: `hsl(var(--status-red) / 0.25)`,
+    boxShadow: `0 0 24px -6px hsl(var(--status-red) / 0.12)`,
+  } : e.status === 'Próximo' ? {
+    borderColor: `hsl(var(--status-yellow) / 0.2)`,
+    boxShadow: `0 0 20px -6px hsl(var(--status-yellow) / 0.1)`,
+  } : {};
 
   return (
-    <div
-      className="glass-card rounded-xl overflow-hidden animate-fade-in"
-      style={{ animationDelay: `${index * 40}ms`, animationFillMode: 'backwards' }}
+    <motion.div
+      layout
+      className={`glass-card rounded-xl overflow-hidden transition-all ${expanded ? 'ring-1 ring-primary/30' : ''}`}
+      style={glowStyle}
     >
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center gap-4 p-4 text-left hover:bg-accent/30 transition-colors"
+        className="w-full flex items-center gap-4 p-4 lg:p-5 text-left hover:bg-accent/30 transition-colors"
       >
-        <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${cfg.dot}`} />
+        <div
+          className="shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+          style={{ backgroundColor: `${statusColor.replace(')', ' / 0.12)')}` }}
+        >
+          <ClipboardCheck className="w-5 h-5" style={{ color: statusColor }} />
+        </div>
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-sm">{e.name}</span>
-            <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${cfg.bg} ${cfg.text}`}>{e.status}</span>
-            <span className="text-[10px] text-muted-foreground">{e.category}</span>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider"
+              style={{
+                backgroundColor: `${statusColor.replace(')', ' / 0.12)')}`,
+                color: statusColor,
+              }}
+            >
+              {cfg.label}
+            </span>
+            <span
+              className="text-[10px] font-bold px-2 py-0.5 rounded-full hidden sm:inline"
+              style={{
+                backgroundColor: `hsl(var(${impCfg.colorVar}) / 0.1)`,
+                color: `hsl(var(${impCfg.colorVar}))`,
+              }}
+            >
+              {e.importance}
+            </span>
           </div>
-          <p className="text-xs text-muted-foreground mt-0.5 truncate">{insight.interpretation}</p>
+          <p className="text-xs text-muted-foreground mt-0.5 truncate leading-relaxed">{insight.interpretation}</p>
         </div>
+
         <div className="text-right shrink-0">
-          <p className="text-xs text-muted-foreground">{e.importance}</p>
-          <p className="text-[10px] text-muted-foreground">{e.suggestedFrequency}</p>
+          <p className="text-xs text-muted-foreground font-medium">{e.category}</p>
+          <p className="text-[10px] text-muted-foreground mt-0.5 font-mono">{e.suggestedFrequency}</p>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
+
+        <motion.div animate={{ rotate: expanded ? 90 : 0 }} transition={{ duration: 0.2 }} className="shrink-0">
+          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        </motion.div>
       </button>
 
-      {expanded && (
-        <div className="border-t border-border/50 p-4 space-y-4 animate-fade-in">
-          {/* Details */}
-          <div className="grid grid-cols-2 gap-3 text-xs">
-            <div className="bg-secondary/50 rounded-lg p-2.5">
-              <p className="text-muted-foreground">Tipo</p>
-              <p className="font-medium mt-0.5">{e.type}</p>
-            </div>
-            <div className="bg-secondary/50 rounded-lg p-2.5">
-              <p className="text-muted-foreground">Perigo Principal</p>
-              <p className="font-medium mt-0.5">{e.mainRisk}</p>
-            </div>
-            <div className="bg-secondary/50 rounded-lg p-2.5">
-              <p className="text-muted-foreground">Última Data</p>
-              <p className="font-mono font-medium mt-0.5">{e.lastDate ? new Date(e.lastDate).toLocaleDateString('pt-BR') : '—'}</p>
-            </div>
-            <div className="bg-secondary/50 rounded-lg p-2.5">
-              <p className="text-muted-foreground">Próxima Data</p>
-              <p className="font-mono font-medium mt-0.5">{e.nextDate ? new Date(e.nextDate).toLocaleDateString('pt-BR') : '—'}</p>
-            </div>
-          </div>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border/40 p-4 lg:p-5 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                <DetailItem icon={Stethoscope} label="Médico" value={e.doctor || 'Não informado'} />
+                <DetailItem icon={ShieldAlert} label="Perigo" value={e.mainRisk} />
+                <DetailItem icon={FileText} label="Tipo" value={e.type} />
+                <DetailItem icon={CalendarDays} label="Última Data" value={e.lastDate ? new Date(e.lastDate).toLocaleDateString('pt-BR') : '—'} />
+                <DetailItem icon={CalendarDays} label="Próxima Data" value={e.nextDate ? new Date(e.nextDate).toLocaleDateString('pt-BR') : '—'} />
+                {e.resultSummary && <DetailItem icon={ClipboardCheck} label="Resultado" value={e.resultSummary} />}
+              </div>
 
-          {e.resultSummary && (
-            <div className="bg-secondary/50 rounded-lg p-2.5 text-xs">
-              <p className="text-muted-foreground">Resultado</p>
-              <p className="font-medium mt-0.5">{e.resultSummary}</p>
-            </div>
-          )}
+              {/* Next step */}
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-primary/5 border border-primary/10">
+                <ArrowRight className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-primary font-semibold mb-1">Próximo passo</p>
+                  <p className="text-sm leading-relaxed">{insight.nextStep}</p>
+                </div>
+              </div>
 
-          {/* Next step */}
-          <div className="flex items-start gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/10">
-            <ArrowRight className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-medium text-primary mb-0.5">Próximo passo sugerido</p>
-              <p className="text-sm leading-relaxed">{insight.nextStep}</p>
+              {/* Doctor question */}
+              <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-secondary/50 border border-border/30">
+                <MessageCircleQuestion className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Pergunta para o médico</p>
+                  <p className="text-sm leading-relaxed italic">"{insight.doctorQuestion}"</p>
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
 
-          {/* Doctor question */}
-          <div className="flex items-start gap-2.5 p-3 rounded-lg bg-secondary/50 border border-border/30">
-            <MessageCircleQuestion className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-0.5">Pergunta para o médico</p>
-              <p className="text-sm leading-relaxed italic">"{insight.doctorQuestion}"</p>
-            </div>
-          </div>
-
-          {e.doctor && (
-            <p className="text-[10px] text-muted-foreground flex items-center gap-1.5">
-              <Clock className="w-3 h-3" />
-              Médico: {e.doctor}
-            </p>
-          )}
-        </div>
-      )}
+function DetailItem({ icon: Icon, label, value }: { icon: typeof Stethoscope; label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <div className="shrink-0 w-7 h-7 rounded-lg bg-secondary/80 flex items-center justify-center mt-0.5">
+        <Icon className="w-3.5 h-3.5 text-muted-foreground" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">{label}</p>
+        <p className="text-sm font-medium mt-0.5 leading-snug">{value}</p>
+      </div>
     </div>
   );
 }
