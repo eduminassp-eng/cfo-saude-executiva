@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Calendar, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const Timeline = () => {
   const { data } = useHealth();
