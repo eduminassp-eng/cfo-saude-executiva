@@ -1,6 +1,6 @@
 import { Biomarker, Status } from '@/types/health';
-import { ResponsiveContainer, LineChart, Line } from 'recharts';
-
+import { ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
+import { motion } from 'framer-motion';
 function statusBadge(status: Status) {
   const map = {
     green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
