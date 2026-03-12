@@ -259,6 +259,7 @@ const Dashboard = () => {
           onClose={() => setEditingBiomarker(null)}
         />
       )}
+    </div>
     </PageTransition>
   );
 };
