@@ -61,7 +61,8 @@ const Riscos = () => {
           const exams = group.examNames.map(name => data.exams.find(e => e.name === name)).filter(Boolean);
 
           return (
-            <div key={group.label} className="glass-card rounded-xl p-5">
+            <StaggerItem key={group.label}>
+            <div className="glass-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">{group.label}</h3>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
