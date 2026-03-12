@@ -225,7 +225,7 @@ const Dashboard = () => {
 
       {/* KPIs */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">Indicadores-Chave</h2>
+        <h2 className="section-header mb-4">Indicadores-Chave</h2>
         <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {keyBiomarkers.map(b => (
             <StaggerItem key={b.id}>
