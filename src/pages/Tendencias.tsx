@@ -88,19 +88,21 @@ const Tendencias = () => {
         <p className="text-muted-foreground mt-1">Evolução histórica dos biomarcadores-chave</p>
       </div>
 
-      <div className="grid grid-cols-3 gap-3">
+      <StaggerContainer className="grid grid-cols-3 gap-3">
         {(['improving', 'stable', 'worsening'] as const).map(d => {
           const count = trends.filter(t => t.direction === d).length;
           const cfg = directionConfig[d];
           return (
-            <div key={d} className="glass-card rounded-xl p-3 text-center">
-              <cfg.icon className="w-5 h-5 mx-auto mb-1" style={{ color: cfg.color }} />
-              <p className="text-xl font-bold font-mono" style={{ color: cfg.color }}>{count}</p>
-              <p className="text-xs text-muted-foreground">{cfg.label}</p>
-            </div>
+            <StaggerItem key={d}>
+              <div className="glass-card p-3 text-center">
+                <cfg.icon className="w-5 h-5 mx-auto mb-1" style={{ color: cfg.color }} />
+                <p className="display-number text-xl" style={{ color: cfg.color }}>{count}</p>
+                <p className="text-xs text-muted-foreground">{cfg.label}</p>
+              </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       <div className="space-y-4">
         {trends.map((t, i) => {
