@@ -32,6 +32,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { showOnboarding, setShowOnboarding } = useOnboarding();
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     return (localStorage.getItem('health-cfo-theme') as 'dark' | 'light') || 'dark';
   });
