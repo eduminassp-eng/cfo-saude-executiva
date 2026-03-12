@@ -259,6 +259,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         </p>
       </div>
     </div>
+    </PageTransition>
   );
 };
 
