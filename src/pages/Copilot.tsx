@@ -130,6 +130,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   ];
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
