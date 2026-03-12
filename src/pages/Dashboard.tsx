@@ -20,13 +20,7 @@ const KPICard = lazy(() => import('@/components/KPICard').then(m => ({ default: 
 const ScoreDetailPanel = lazy(() => import('@/components/ScoreDetailPanel').then(m => ({ default: m.ScoreDetailPanel })));
 const DomainDetailPanel = lazy(() => import('@/components/DomainDetailPanel').then(m => ({ default: m.DomainDetailPanel })));
 const HealthRadar = lazy(() => import('@/components/HealthRadar').then(m => ({ default: m.HealthRadar })));
-const PreventiveComplianceScore = lazy(() => import('@/components/PreventiveCompliance').then(m => ({ default: m.PreventiveComplianceScore })));
-const HealthBalanceSheet = lazy(() => import('@/components/HealthBalanceSheet').then(m => ({ default: m.HealthBalanceSheet })));
 const HealthAlerts = lazy(() => import('@/components/HealthAlerts').then(m => ({ default: m.HealthAlerts })));
-const LongevityForecast = lazy(() => import('@/components/LongevityForecast').then(m => ({ default: m.LongevityForecast })));
-const WhatIfSimulator = lazy(() => import('@/components/WhatIfSimulator').then(m => ({ default: m.WhatIfSimulator })));
-const HealthRiskMap = lazy(() => import('@/components/HealthRiskMap').then(m => ({ default: m.HealthRiskMap })));
-const HealthPriorityEngine = lazy(() => import('@/components/HealthPriorityEngine').then(m => ({ default: m.HealthPriorityEngine })));
 
 function LazyFallback() {
   return <div className="glass-card p-6"><Skeleton className="h-40 w-full rounded-xl" /></div>;
