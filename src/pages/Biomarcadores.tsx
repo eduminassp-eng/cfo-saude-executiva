@@ -344,6 +344,8 @@ const Biomarcadores = () => {
           onClose={() => setEditingHistory(null)}
         />
       )}
+      </>
+      )}
     </div>
     </PageTransition>
   );
