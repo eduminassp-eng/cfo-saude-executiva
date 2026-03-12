@@ -2,134 +2,135 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 210 11% 6%;
-    --foreground: 0 0% 96%;
+    /* Liquid Glass — deep violet / indigo / blue */
+    --background: 250 25% 5%;
+    --foreground: 240 10% 93%;
 
-    --card: 210 10% 9%;
-    --card-foreground: 0 0% 96%;
+    --card: 252 22% 9%;
+    --card-foreground: 240 10% 93%;
 
-    --popover: 210 10% 11%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 252 22% 11%;
+    --popover-foreground: 240 10% 93%;
 
-    --primary: 160 60% 45%;
-    --primary-foreground: 0 0% 4%;
+    --primary: 260 70% 65%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 8% 13%;
-    --secondary-foreground: 0 0% 80%;
+    --secondary: 250 18% 13%;
+    --secondary-foreground: 240 10% 78%;
 
-    --muted: 210 8% 15%;
-    --muted-foreground: 210 6% 50%;
+    --muted: 250 16% 16%;
+    --muted-foreground: 250 10% 52%;
 
-    --accent: 210 8% 16%;
-    --accent-foreground: 0 0% 96%;
+    --accent: 250 18% 17%;
+    --accent-foreground: 240 10% 93%;
 
     --destructive: 0 72% 55%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 210 8% 14%;
-    --input: 210 8% 16%;
-    --ring: 160 60% 45%;
+    --border: 252 16% 15%;
+    --input: 252 16% 17%;
+    --ring: 260 70% 65%;
 
-    --radius: 1rem;
+    --radius: 1.125rem;
 
-    /* Apple Health-inspired category colors */
-    --health-heart: 0 80% 62%;
-    --health-activity: 30 100% 50%;
-    --health-fitness: 145 65% 48%;
-    --health-mind: 210 80% 60%;
-    --health-nutrition: 38 90% 55%;
+    /* Status colors — slightly muted for neurodivergent comfort */
+    --status-green: 160 55% 45%;
+    --status-yellow: 42 80% 52%;
+    --status-red: 0 65% 55%;
+    --status-green-bg: 160 55% 45% / 0.10;
+    --status-yellow-bg: 42 80% 52% / 0.10;
+    --status-red-bg: 0 65% 55% / 0.10;
 
-    /* Status colors */
-    --status-green: 145 65% 48%;
-    --status-yellow: 38 90% 55%;
-    --status-red: 0 72% 58%;
-    --status-green-bg: 145 65% 48% / 0.10;
-    --status-yellow-bg: 38 90% 55% / 0.10;
-    --status-red-bg: 0 72% 58% / 0.10;
+    /* Liquid Glass surfaces */
+    --glass: 252 22% 9% / 0.65;
+    --glass-border: 260 20% 20%;
+    --glass-highlight: 260 60% 80% / 0.04;
 
-    --glass: 210 10% 9% / 0.75;
-    --glass-border: 210 8% 18%;
-    --glass-highlight: 0 0% 100% / 0.04;
+    /* Liquid gradient accents */
+    --liquid-violet: 270 65% 55%;
+    --liquid-blue: 220 70% 50%;
+    --liquid-indigo: 245 60% 58%;
 
-    --score-cardiac: 0 80% 62%;
-    --score-metabolic: 38 90% 55%;
-    --score-longevity: 145 65% 48%;
+    /* Score colors — violet/blue family */
+    --score-cardiac: 340 60% 58%;
+    --score-metabolic: 42 80% 52%;
+    --score-longevity: 160 55% 45%;
 
-    --sidebar-background: 210 11% 7%;
-    --sidebar-foreground: 210 6% 60%;
-    --sidebar-primary: 160 60% 45%;
-    --sidebar-primary-foreground: 0 0% 4%;
-    --sidebar-accent: 210 8% 13%;
-    --sidebar-accent-foreground: 0 0% 96%;
-    --sidebar-border: 210 8% 12%;
-    --sidebar-ring: 160 60% 45%;
+    /* Sidebar */
+    --sidebar-background: 250 25% 6%;
+    --sidebar-foreground: 250 10% 55%;
+    --sidebar-primary: 260 70% 65%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 250 18% 13%;
+    --sidebar-accent-foreground: 240 10% 93%;
+    --sidebar-border: 252 16% 12%;
+    --sidebar-ring: 260 70% 65%;
 
-    --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+    /* Fonts — neurodivergent-optimised */
+    --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
     --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
   }
 
   .light {
-    --background: 0 0% 97%;
-    --foreground: 210 11% 12%;
+    --background: 240 15% 96%;
+    --foreground: 250 20% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 11% 12%;
+    --card-foreground: 250 20% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 12%;
+    --popover-foreground: 250 20% 12%;
 
-    --primary: 160 60% 38%;
+    --primary: 260 65% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 8% 94%;
-    --secondary-foreground: 210 11% 25%;
+    --secondary: 250 12% 92%;
+    --secondary-foreground: 250 15% 30%;
 
-    --muted: 210 8% 95%;
-    --muted-foreground: 210 6% 45%;
+    --muted: 250 10% 93%;
+    --muted-foreground: 250 8% 45%;
 
-    --accent: 210 8% 92%;
-    --accent-foreground: 210 11% 12%;
+    --accent: 250 12% 90%;
+    --accent-foreground: 250 20% 12%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 8% 90%;
-    --input: 210 8% 90%;
-    --ring: 160 60% 38%;
+    --border: 250 10% 88%;
+    --input: 250 10% 88%;
+    --ring: 260 65% 55%;
 
-    --health-heart: 0 75% 55%;
-    --health-activity: 28 95% 48%;
-    --health-fitness: 145 60% 40%;
-    --health-mind: 210 75% 50%;
-    --health-nutrition: 38 85% 48%;
+    --status-green: 160 50% 38%;
+    --status-yellow: 42 75% 46%;
+    --status-red: 0 65% 48%;
+    --status-green-bg: 160 50% 38% / 0.08;
+    --status-yellow-bg: 42 75% 46% / 0.08;
+    --status-red-bg: 0 65% 48% / 0.08;
 
-    --status-green: 145 60% 40%;
-    --status-yellow: 38 85% 48%;
-    --status-red: 0 72% 50%;
-    --status-green-bg: 145 60% 40% / 0.08;
-    --status-yellow-bg: 38 85% 48% / 0.08;
-    --status-red-bg: 0 72% 50% / 0.08;
+    --glass: 0 0% 100% / 0.80;
+    --glass-border: 250 12% 86%;
+    --glass-highlight: 260 40% 50% / 0.03;
 
-    --glass: 0 0% 100% / 0.85;
-    --glass-border: 210 8% 88%;
-    --glass-highlight: 0 0% 0% / 0.02;
+    --liquid-violet: 270 55% 50%;
+    --liquid-blue: 220 60% 48%;
+    --liquid-indigo: 245 50% 52%;
 
-    --score-cardiac: 0 75% 55%;
-    --score-metabolic: 38 85% 48%;
-    --score-longevity: 145 60% 40%;
+    --score-cardiac: 340 55% 52%;
+    --score-metabolic: 42 75% 46%;
+    --score-longevity: 160 50% 38%;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 210 6% 40%;
-    --sidebar-primary: 160 60% 38%;
+    --sidebar-background: 240 15% 97%;
+    --sidebar-foreground: 250 8% 42%;
+    --sidebar-primary: 260 65% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 8% 94%;
-    --sidebar-accent-foreground: 210 11% 12%;
-    --sidebar-border: 210 8% 90%;
-    --sidebar-ring: 160 60% 38%;
+    --sidebar-accent: 250 12% 92%;
+    --sidebar-accent-foreground: 250 20% 12%;
+    --sidebar-border: 250 10% 88%;
+    --sidebar-ring: 260 65% 55%;
   }
 }
 
@@ -147,13 +148,16 @@
     font-family: var(--font-display);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-size: 16px;
+    line-height: 1.6;
+    letter-spacing: 0.01em;
   }
 
-  /* Focus visible styles for keyboard navigation */
+  /* Focus visible styles for keyboard navigation — larger, softer */
   :focus-visible {
-    outline: 2px solid hsl(var(--ring));
-    outline-offset: 2px;
-    border-radius: 4px;
+    outline: 3px solid hsl(var(--ring) / 0.5);
+    outline-offset: 3px;
+    border-radius: 6px;
   }
 
   /* Skip to main content link */
@@ -161,34 +165,46 @@
     @apply sr-only;
   }
   .skip-to-main:focus {
-    @apply not-sr-only fixed top-4 left-4 z-[9999] px-4 py-2 rounded-xl text-sm font-medium;
+    @apply not-sr-only fixed top-4 left-4 z-[9999] px-5 py-3 rounded-2xl text-base font-semibold;
     background: hsl(var(--primary));
     color: hsl(var(--primary-foreground));
   }
 }
 
 @layer utilities {
-  /* Apple Health-inspired card styles */
+  /* Liquid Glass card — frosted glass with violet tint */
   .glass-card {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border) / 0.6);
+    background: hsl(var(--glass));
+    border: 1px solid hsl(var(--glass-border) / 0.5);
     border-radius: var(--radius);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    box-shadow:
+      0 0 0 1px hsl(var(--glass-highlight)),
+      inset 0 1px 0 hsl(260 60% 80% / 0.06),
+      0 8px 32px -8px hsl(250 40% 4% / 0.4);
   }
 
   .glass-card-hover {
-    background: hsl(var(--card));
-    border: 1px solid hsl(var(--border) / 0.6);
+    background: hsl(var(--glass));
+    border: 1px solid hsl(var(--glass-border) / 0.5);
     border-radius: var(--radius);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    box-shadow:
+      0 0 0 1px hsl(var(--glass-highlight)),
+      inset 0 1px 0 hsl(260 60% 80% / 0.06),
+      0 8px 32px -8px hsl(250 40% 4% / 0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
   .glass-card-hover:hover {
-    border-color: hsl(var(--border));
-    box-shadow: 0 6px 28px -4px hsl(var(--background) / 0.6), 0 0 0 1px hsl(var(--primary) / 0.06);
+    border-color: hsl(var(--primary) / 0.25);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.1),
+      inset 0 1px 0 hsl(260 60% 80% / 0.08),
+      0 12px 40px -8px hsl(260 50% 20% / 0.35),
+      0 0 60px -20px hsl(var(--primary) / 0.15);
     transform: translateY(-2px);
   }
 
@@ -197,13 +213,13 @@
     transition-duration: 0.1s;
   }
 
-  /* Pressable button effect */
+  /* Pressable button effect — liquid glow */
   .btn-press {
-    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.15s ease;
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease;
   }
   .btn-press:hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 16px -4px hsl(var(--primary) / 0.25);
+    box-shadow: 0 6px 24px -6px hsl(var(--primary) / 0.3);
   }
   .btn-press:active {
     transform: scale(0.96) translateY(0);
@@ -223,33 +239,75 @@
   .bg-status-red { background-color: hsl(var(--status-red-bg)); }
 
   .score-ring {
-    filter: drop-shadow(0 0 6px currentColor);
+    filter: drop-shadow(0 0 8px currentColor);
   }
 
   .gradient-shine {
     background: linear-gradient(
       135deg,
-      hsl(var(--glass-highlight)),
+      hsl(var(--liquid-violet) / 0.05),
       transparent 40%,
       transparent 60%,
-      hsl(var(--glass-highlight))
+      hsl(var(--liquid-blue) / 0.05)
     );
   }
 
-  /* Apple-style large display number */
+  /* Liquid Glass background smoke effect */
+  .liquid-bg {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .liquid-bg::before {
+    content: '';
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background:
+      radial-gradient(ellipse at 20% 50%, hsl(var(--liquid-violet) / 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, hsl(var(--liquid-blue) / 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, hsl(var(--liquid-indigo) / 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+    animation: liquid-drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes liquid-drift {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    100% { transform: translate(3%, -2%) rotate(3deg); }
+  }
+
+  /* Neurodivergent-friendly: large display number */
   .display-number {
     font-family: var(--font-display);
     font-weight: 800;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.04em;
     line-height: 1;
   }
 
-  /* Apple-style section header */
+  /* Neurodivergent-friendly: section header — larger, bolder */
   .section-header {
-    font-weight: 700;
-    font-size: 1.25rem;
-    letter-spacing: -0.01em;
-    line-height: 1.3;
+    font-weight: 800;
+    font-size: 1.375rem;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  /* Liquid glow effect for important elements */
+  .liquid-glow {
+    box-shadow:
+      0 0 20px -4px hsl(var(--primary) / 0.2),
+      0 0 60px -12px hsl(var(--liquid-violet) / 0.15);
+  }
+
+  /* Liquid gradient text */
+  .liquid-text {
+    background: linear-gradient(135deg, hsl(var(--liquid-violet)), hsl(var(--primary)), hsl(var(--liquid-blue)));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
 
@@ -269,7 +327,7 @@
   }
 }
 
-/* Scrollbar - thinner, subtler */
+/* Scrollbar — thinner, violet-tinted */
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -284,10 +342,22 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground));
+  background: hsl(var(--primary) / 0.4);
 }
 
 /* Safe area for mobile bottom tab bar */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 8px);
+}
+
+/* Neurodivergent: reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .liquid-bg::before {
+    animation: none !important;
+  }
 }
