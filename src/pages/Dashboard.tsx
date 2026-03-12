@@ -194,7 +194,7 @@ const Dashboard = () => {
             </button>
           </StaggerItem>
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
+            <button onClick={() => handleShowScore('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
               <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
             </button>
           </StaggerItem>
