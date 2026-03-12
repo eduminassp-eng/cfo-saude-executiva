@@ -6,6 +6,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { OnboardingTour, useOnboarding } from '@/components/OnboardingTour';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
