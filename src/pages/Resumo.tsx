@@ -1,6 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from '@/lib/scoring';
 import { Printer } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const Resumo = () => {
   const { data } = useHealth();
