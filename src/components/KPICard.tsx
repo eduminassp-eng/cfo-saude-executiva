@@ -60,14 +60,28 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
         <div className="h-8 w-full my-1.5 animate-fade-in">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={sparkData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  padding: '4px 8px',
+                  color: 'hsl(var(--foreground))',
+                }}
+                formatter={(value: number) => [`${value} ${biomarker.unit}`, biomarker.name]}
+                labelFormatter={() => ''}
+              />
               <Line
                 type="monotone"
                 dataKey="v"
                 stroke={statusColor}
                 strokeWidth={1.5}
                 dot={false}
-                activeDot={false}
+                activeDot={{ r: 4, fill: statusColor, strokeWidth: 2, stroke: 'hsl(var(--card))' }}
                 isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
               />
             </LineChart>
           </ResponsiveContainer>
