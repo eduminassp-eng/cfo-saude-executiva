@@ -1,18 +1,24 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
-import { Send, Bot, User, Loader2, Sparkles, Trash2 } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { generateHealthAlerts } from '@/lib/healthAlerts';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-chat`;
 
-const SUGGESTIONS = [
-  'Quais biomarcadores estão fora do ideal?',
-  'Como melhorar meu colesterol?',
-  'Quais exames devo priorizar agora?',
+const FALLBACK_SUGGESTIONS = [
   'Resuma minha saúde em poucas frases',
+  'Quais exames devo priorizar agora?',
+  'Me dê dicas para melhorar meu estilo de vida',
 ];
+
+interface DynamicSuggestion {
+  text: string;
+  icon: 'alert' | 'clock' | 'trend' | 'default';
+  priority: number;
+}
 
 export function HealthChat() {
   const { data } = useHealth();
