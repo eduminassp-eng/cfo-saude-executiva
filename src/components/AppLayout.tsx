@@ -153,19 +153,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {navItems.map(item => {
             const active = location.pathname === item.path;
             return (
-              <Link
-                key={item.path}
-                to={item.path}
-                aria-current={active ? 'page' : undefined}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  active 
-                    ? 'bg-primary/12 text-primary' 
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                }`}
-              >
-                <item.icon className="w-4 h-4" aria-hidden="true" />
-                {item.label}
-              </Link>
+              <motion.div key={item.path} whileHover={{ x: 4 }} whileTap={{ scale: 0.97 }} transition={{ duration: 0.15 }}>
+                <Link
+                  to={item.path}
+                  aria-current={active ? 'page' : undefined}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    active 
+                      ? 'bg-primary/12 text-primary' 
+                      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                  }`}
+                >
+                  <item.icon className="w-4 h-4" aria-hidden="true" />
+                  {item.label}
+                </Link>
+              </motion.div>
             );
           })}
         </nav>
