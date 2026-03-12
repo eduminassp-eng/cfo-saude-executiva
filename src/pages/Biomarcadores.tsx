@@ -94,9 +94,33 @@ const Biomarcadores = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Biomarcadores</h1>
-        <p className="text-muted-foreground mt-1">Acompanhamento completo dos seus indicadores de saúde</p>
+        <p className="text-muted-foreground mt-1">Indicadores de saúde e tendências de risco</p>
       </div>
 
+      {/* Tab switcher */}
+      <div className="flex gap-2">
+        {([
+          { key: 'indicadores' as const, label: 'Indicadores' },
+          { key: 'tendencias' as const, label: 'Tendências' },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === tab.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-accent'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'tendencias' ? (
+        <TrendPanel data={data} />
+      ) : (
+      <>
       {/* Summary cards */}
       <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
