@@ -52,7 +52,7 @@ const Riscos = () => {
         <p className="text-muted-foreground mt-1">Visão consolidada por área de saúde</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {riskGroups.map(group => {
           const groupStatus = getGroupStatus(group);
           const config = statusConfig[groupStatus];
