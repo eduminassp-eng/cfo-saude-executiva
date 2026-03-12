@@ -191,19 +191,56 @@ export function HealthChat() {
     return `BIOMARCADORES:\n${bioLines || 'Nenhum'}\n\nEXAMES:\n${examLines || 'Nenhum'}\n\nESTILO DE VIDA:\n${lifestyleLine}`;
   }, [data]);
 
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const userMsg: Msg = { role: 'user', content: text.trim() };
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast.error('Arquivo muito grande. Máximo: 10MB.');
+      return;
+    }
+
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Formato não suportado. Use PDF, JPG, PNG ou WebP.');
+      return;
+    }
+
+    try {
+      const arrayBuf = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuf);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64 = btoa(binary);
+      setAttachment({ base64, mimeType: file.type, name: file.name });
+      toast.success(`Arquivo "${file.name}" anexado.`);
+    } catch {
+      toast.error('Erro ao ler o arquivo.');
+    }
+
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if ((!text.trim() && !attachment) || isLoading) return;
+
+    const displayText = text.trim() || (attachment ? `📎 ${attachment.name}` : '');
+    const userMsg: Msg = { role: 'user', content: displayText, attachmentName: attachment?.name };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput('');
+    const currentAttachment = attachment;
+    setAttachment(null);
     setIsLoading(true);
 
     // Create conversation if new
     let convId = activeConvId;
     if (!convId) {
-      convId = await createConversation(text.trim());
+      convId = await createConversation(displayText);
       if (!convId) {
         toast.error('Erro ao criar conversa.');
         setIsLoading(false);
@@ -212,21 +249,30 @@ export function HealthChat() {
     }
 
     // Save user message
-    await saveMessage(convId, 'user', text.trim());
+    await saveMessage(convId, 'user', displayText);
 
     let assistantSoFar = '';
 
     try {
+      const bodyPayload: any = {
+        messages: allMessages.map(m => ({ role: m.role, content: m.content })),
+        healthContext: buildHealthContext(),
+      };
+
+      if (currentAttachment) {
+        bodyPayload.attachment = {
+          base64: currentAttachment.base64,
+          mimeType: currentAttachment.mimeType,
+        };
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({
-          messages: allMessages.map(m => ({ role: m.role, content: m.content })),
-          healthContext: buildHealthContext(),
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!resp.ok) {
