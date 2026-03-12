@@ -18,7 +18,7 @@ import { CopilotTrendPatterns } from '@/components/copilot/TrendPatterns';
 import { HealthChat } from '@/components/copilot/HealthChat';
 import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
-import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell } from 'lucide-react';
+import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Copilot = () => {
