@@ -273,6 +273,16 @@ const Configuracoes = () => {
         </StaggerContainer>
       </div>
 
+      {/* Tour */}
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-2">Tour do App</h2>
+        <p className="text-xs text-muted-foreground mb-4">Reveja o tour de apresentação das funcionalidades do HealthCFO.</p>
+        <button onClick={() => { localStorage.removeItem('health-cfo-onboarding-done'); window.location.reload(); }}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+          <BookOpen className="w-4 h-4" /> Rever Tour Guiado
+        </button>
+      </div>
+
       {/* Reset */}
       <div className="glass-card p-5">
         <h2 className="text-sm font-semibold mb-2">Redefinir Dados</h2>
