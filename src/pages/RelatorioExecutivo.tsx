@@ -3,8 +3,9 @@ import { useMemo, useCallback } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
-import { Printer, Download } from 'lucide-react';
+import { Printer } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
@@ -50,6 +51,9 @@ const RelatorioExecutivo = () => {
   const handlePrint = useCallback(() => window.print(), []);
 
   const statusColor = (s: string) =>
+    s === 'green' ? 'text-[hsl(var(--status-green))]' : s === 'yellow' ? 'text-[hsl(var(--status-yellow))]' : 'text-[hsl(var(--status-red))]';
+
+  const statusBg = (s: string) =>
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
@@ -57,12 +61,12 @@ const RelatorioExecutivo = () => {
     <div className="space-y-6 print:space-y-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Relatório Executivo de Saúde</h1>
-          <p className="text-muted-foreground mt-1 print:text-black">Gerado em {new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Relatório Executivo</h1>
+          <p className="text-sm text-muted-foreground mt-1 print:text-black">Gerado em {new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
         </div>
         <button
           onClick={handlePrint}
-          className="shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors no-print"
+          className="shrink-0 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity no-print"
         >
           <Printer className="w-4 h-4" />
           <span className="hidden sm:inline">Imprimir / PDF</span>
@@ -70,28 +74,30 @@ const RelatorioExecutivo = () => {
       </div>
 
       {/* Scores */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 print:grid-cols-4">
+      <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3 print:grid-cols-4">
         {[
           { label: 'Cardíaco', value: cardiac.value, status: cardiac.status },
           { label: 'Metabólico', value: metabolic.value, status: metabolic.status },
           { label: 'Longevidade', value: longevity.value, status: longevity.status },
           { label: 'Compliance', value: compliance, status: compliance >= 75 ? 'green' : compliance >= 50 ? 'yellow' : 'red' },
         ].map(s => (
-          <div key={s.label} className="glass-card rounded-xl p-4 text-center print:border print:border-gray-200">
-            <p className="text-2xl font-bold font-mono" style={{ color: statusColor(s.status) }}>{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
-          </div>
+          <StaggerItem key={s.label}>
+            <div className="glass-card p-4 text-center print:border print:border-gray-200">
+              <p className={`display-number text-2xl ${statusColor(s.status)}`}>{s.value}</p>
+              <p className="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider">{s.label}</p>
+            </div>
+          </StaggerItem>
         ))}
-      </div>
+      </StaggerContainer>
 
       {/* Domains */}
-      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-        <h2 className="font-semibold mb-3">Domínios de Saúde</h2>
+      <div className="glass-card p-5 print:border print:border-gray-200">
+        <h2 className="text-sm font-semibold mb-3">Domínios de Saúde</h2>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {domains.map(d => (
-            <div key={d.id} className="text-center p-2 rounded-lg bg-secondary/50">
-              <p className="font-bold font-mono text-lg" style={{ color: statusColor(d.status) }}>{d.score}</p>
-              <p className="text-xs text-muted-foreground">{d.label}</p>
+            <div key={d.id} className="text-center p-3 rounded-xl bg-secondary/50">
+              <p className={`display-number text-lg ${statusColor(d.status)}`}>{d.score}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{d.label}</p>
             </div>
           ))}
         </div>
@@ -99,29 +105,29 @@ const RelatorioExecutivo = () => {
 
       {/* Strengths & Attention */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
-        <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-          <h2 className="font-semibold mb-3 text-status-green">✅ Pontos Fortes</h2>
+        <div className="glass-card p-5 print:border print:border-gray-200">
+          <h2 className="text-sm font-semibold mb-3 text-[hsl(var(--status-green))]">✅ Pontos Fortes</h2>
           <ul className="space-y-1.5 text-sm">
-            {summary.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-status-green">•</span>{s}</li>)}
+            {summary.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-[hsl(var(--status-green))]">•</span>{s}</li>)}
             {summary.strengths.length === 0 && <li className="text-muted-foreground">Nenhum identificado.</li>}
           </ul>
         </div>
-        <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-          <h2 className="font-semibold mb-3 text-status-yellow">⚠️ Pontos de Atenção</h2>
+        <div className="glass-card p-5 print:border print:border-gray-200">
+          <h2 className="text-sm font-semibold mb-3 text-[hsl(var(--status-yellow))]">⚠️ Pontos de Atenção</h2>
           <ul className="space-y-1.5 text-sm">
-            {summary.attentionPoints.map((s, i) => <li key={i} className="flex gap-2"><span className="text-status-yellow">•</span>{s}</li>)}
+            {summary.attentionPoints.map((s, i) => <li key={i} className="flex gap-2"><span className="text-[hsl(var(--status-yellow))]">•</span>{s}</li>)}
             {summary.attentionPoints.length === 0 && <li className="text-muted-foreground">Nenhum identificado.</li>}
           </ul>
         </div>
       </div>
 
       {/* Key Biomarkers */}
-      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-        <h2 className="font-semibold mb-3">Biomarcadores-Chave</h2>
+      <div className="glass-card p-5 print:border print:border-gray-200">
+        <h2 className="text-sm font-semibold mb-3">Biomarcadores-Chave</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs text-muted-foreground">
+              <tr className="border-b border-border text-left text-[10px] text-muted-foreground uppercase tracking-wider">
                 <th className="pb-2 pr-4">Biomarcador</th>
                 <th className="pb-2 pr-4">Valor</th>
                 <th className="pb-2 pr-4">Faixa</th>
@@ -130,14 +136,14 @@ const RelatorioExecutivo = () => {
             </thead>
             <tbody>
               {data.biomarkers.filter(b => b.value !== null).slice(0, 16).map(b => (
-                <tr key={b.id} className="border-b border-border/30">
-                  <td className="py-1.5 pr-4 font-medium">{b.name}</td>
-                  <td className="py-1.5 pr-4 font-mono">{b.value} {b.unit}</td>
-                  <td className="py-1.5 pr-4 text-muted-foreground text-xs">
+                <tr key={b.id} className="border-b border-border/20">
+                  <td className="py-2 pr-4 text-xs font-medium">{b.name}</td>
+                  <td className="py-2 pr-4 font-mono text-xs tabular-nums">{b.value} {b.unit}</td>
+                  <td className="py-2 pr-4 text-muted-foreground text-[10px]">
                     {b.targetMin ?? '—'} – {b.targetMax ?? '—'}
                   </td>
-                  <td className="py-1.5">
-                    <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: statusColor(b.status) }} />
+                  <td className="py-2">
+                    <span className="w-2 h-2 rounded-full inline-block" style={{ backgroundColor: statusBg(b.status) }} />
                   </td>
                 </tr>
               ))}
@@ -148,8 +154,8 @@ const RelatorioExecutivo = () => {
 
       {/* Risk Alerts */}
       {(redBiomarkers.length > 0 || overdue.length > 0) && (
-        <div className="glass-card rounded-xl p-5 border-l-4 print:border print:border-gray-200" style={{ borderLeftColor: 'hsl(var(--status-red))' }}>
-          <h2 className="font-semibold mb-3">🔴 Alertas de Risco</h2>
+        <div className="glass-card p-5 border-l-4 border-l-[hsl(var(--status-red))] print:border print:border-gray-200">
+          <h2 className="text-sm font-semibold mb-3">🔴 Alertas de Risco</h2>
           <ul className="space-y-1 text-sm">
             {redBiomarkers.map(b => <li key={b.id}>• {b.name}: {b.value} {b.unit} — nível crítico</li>)}
             {overdue.map(e => <li key={e.id}>• {e.name} atrasado — rastreamento de {e.mainRisk.toLowerCase()}</li>)}
@@ -159,14 +165,14 @@ const RelatorioExecutivo = () => {
 
       {/* Trend Highlights */}
       {trendHighlights.length > 0 && (
-        <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-          <h2 className="font-semibold mb-3">📈 Destaques de Tendência</h2>
+        <div className="glass-card p-5 print:border print:border-gray-200">
+          <h2 className="text-sm font-semibold mb-3">📈 Destaques de Tendência</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {trendHighlights.map((t, i) => t && (
-              <div key={i} className="flex items-center justify-between text-xs bg-secondary/50 rounded-lg px-3 py-2">
+              <div key={i} className="flex items-center justify-between text-xs bg-secondary/50 rounded-xl px-3 py-2.5">
                 <span className="truncate mr-2">{t.name}</span>
-                <span className="font-mono shrink-0">
-                  {t.prev} → {t.current} <span className={t.worsening ? 'text-status-red' : 'text-status-green'}>({t.pct}%)</span>
+                <span className="font-mono shrink-0 tabular-nums">
+                  {t.prev} → {t.current} <span className={t.worsening ? 'text-[hsl(var(--status-red))]' : 'text-[hsl(var(--status-green))]'}>({t.pct}%)</span>
                 </span>
               </div>
             ))}
@@ -175,8 +181,8 @@ const RelatorioExecutivo = () => {
       )}
 
       {/* Suggested Appointments */}
-      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-        <h2 className="font-semibold mb-3">📋 Próximas Consultas Sugeridas</h2>
+      <div className="glass-card p-5 print:border print:border-gray-200">
+        <h2 className="text-sm font-semibold mb-3">📋 Próximas Consultas Sugeridas</h2>
         <ul className="space-y-1.5 text-sm">
           {summary.suggestedAppointments.map((s, i) => <li key={i}>• {s}</li>)}
           {summary.suggestedAppointments.length === 0 && <li className="text-muted-foreground">Nenhuma sugerida.</li>}
@@ -184,8 +190,8 @@ const RelatorioExecutivo = () => {
       </div>
 
       {/* Doctor Questions */}
-      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200">
-        <h2 className="font-semibold mb-3">❓ Perguntas para o Médico</h2>
+      <div className="glass-card p-5 print:border print:border-gray-200">
+        <h2 className="text-sm font-semibold mb-3">❓ Perguntas para o Médico</h2>
         <ul className="space-y-1.5 text-sm">
           {insights.filter(i => i.biomarker.status !== 'green').slice(0, 6).map((ins, i) => (
             <li key={i}>• {ins.doctorQuestion}</li>
@@ -193,10 +199,9 @@ const RelatorioExecutivo = () => {
         </ul>
       </div>
 
-
       {/* Action Plan */}
-      <div className="glass-card rounded-xl p-5 print:border print:border-gray-200 print:break-before-page">
-        <h2 className="font-semibold mb-4">🎯 Plano de Ação</h2>
+      <div className="glass-card p-5 print:border print:border-gray-200 print:break-before-page">
+        <h2 className="text-sm font-semibold mb-4">🎯 Plano de Ação</h2>
         <div className="space-y-4">
           {[
             { label: 'Próximos 30 dias', items: actionPlan.thirtyDays },
@@ -204,13 +209,13 @@ const RelatorioExecutivo = () => {
             { label: 'Próximos 180 dias', items: actionPlan.oneEightyDays },
           ].map(horizon => (
             <div key={horizon.label}>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{horizon.label}</h3>
+              <h3 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">{horizon.label}</h3>
               {horizon.items.length > 0 ? (
                 <ul className="space-y-1.5 text-sm">
                   {horizon.items.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
                       <span
-                        className="shrink-0 mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold uppercase"
+                        className="shrink-0 mt-0.5 px-1.5 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider"
                         style={{
                           backgroundColor: item.priority === 'alta' ? 'hsl(var(--status-red) / 0.1)' : item.priority === 'média' ? 'hsl(var(--status-yellow) / 0.1)' : 'hsl(var(--status-green) / 0.1)',
                           color: item.priority === 'alta' ? 'hsl(var(--status-red))' : item.priority === 'média' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-green))',
@@ -233,7 +238,7 @@ const RelatorioExecutivo = () => {
         </div>
       </div>
 
-      <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground text-center print:border print:border-gray-200">
+      <div className="glass-card p-4 text-[10px] text-muted-foreground text-center print:border print:border-gray-200">
         Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
       </div>
     </div>

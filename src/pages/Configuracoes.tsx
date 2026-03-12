@@ -1,6 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload } from 'lucide-react';
+import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload, Settings2 } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { useMemo, useCallback, useRef, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { HealthData, Biomarker, Exam } from '@/types/health';
@@ -132,37 +133,36 @@ const Configuracoes = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Configurações</h1>
-        <p className="text-muted-foreground mt-1">Gerencie seus dados e hábitos</p>
+        <p className="text-sm text-muted-foreground mt-1">Gerencie seus dados e hábitos</p>
       </div>
 
       {/* Lifestyle */}
-      <div className="glass-card rounded-xl p-5">
-        <h2 className="font-semibold mb-4">Estilo de Vida</h2>
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-4">Estilo de Vida</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { label: 'Exercício (dias/semana)', field: 'exerciseFrequency', type: 'number', min: 0, max: 7, step: 1, value: data.lifestyle.exerciseFrequency },
+            { label: 'Sono (horas/noite)', field: 'sleepHours', type: 'number', min: 0, max: 14, step: 0.5, value: data.lifestyle.sleepHours },
+          ].map(item => (
+            <div key={item.field}>
+              <label className="text-xs font-medium text-muted-foreground block mb-1.5 uppercase tracking-wider">{item.label}</label>
+              <input
+                type={item.type}
+                min={item.min}
+                max={item.max}
+                step={item.step}
+                value={item.value}
+                onChange={e => handleLifestyleChange(item.field, item.type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
+                className="w-full bg-secondary/60 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              />
+            </div>
+          ))}
           <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-1.5">Exercício (dias/semana)</label>
-            <input
-              type="number" min="0" max="7"
-              value={data.lifestyle.exerciseFrequency}
-              onChange={e => handleLifestyleChange('exerciseFrequency', parseInt(e.target.value) || 0)}
-              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-1.5">Sono (horas/noite)</label>
-            <input
-              type="number" min="0" max="14" step="0.5"
-              value={data.lifestyle.sleepHours}
-              onChange={e => handleLifestyleChange('sleepHours', parseFloat(e.target.value) || 0)}
-              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-1.5">Tabagismo</label>
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5 uppercase tracking-wider">Tabagismo</label>
             <select
               value={data.lifestyle.smokingStatus}
               onChange={e => handleLifestyleChange('smokingStatus', e.target.value)}
-              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-secondary/60 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             >
               <option value="never">Nunca fumou</option>
               <option value="former">Ex-fumante</option>
@@ -170,23 +170,23 @@ const Configuracoes = () => {
             </select>
           </div>
           <div>
-            <label className="text-sm font-medium text-muted-foreground block mb-1.5">Álcool (doses/semana)</label>
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5 uppercase tracking-wider">Álcool (doses/semana)</label>
             <input
               type="number" min="0" max="50"
               value={data.lifestyle.alcoholWeekly}
               onChange={e => handleLifestyleChange('alcoholWeekly', parseInt(e.target.value) || 0)}
-              className="w-full bg-secondary rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full bg-secondary/60 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
           </div>
         </div>
       </div>
 
       {/* Import */}
-      <div className="glass-card rounded-xl p-5">
-        <h2 className="font-semibold mb-2">Importar Dados</h2>
-        <p className="text-sm text-muted-foreground mb-3">
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-2">Importar Dados</h2>
+        <p className="text-xs text-muted-foreground mb-3">
           Importe um arquivo JSON exportado anteriormente. Os dados importados <strong>substituirão</strong> os dados atuais.
-          O arquivo deve conter pelo menos <code>biomarkers</code> ou <code>exams</code>.
+          O arquivo deve conter pelo menos <code className="bg-secondary/80 px-1 py-0.5 rounded text-[10px]">biomarkers</code> ou <code className="bg-secondary/80 px-1 py-0.5 rounded text-[10px]">exams</code>.
         </p>
         <input
           ref={fileInputRef}
@@ -239,7 +239,7 @@ const Configuracoes = () => {
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={importing}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary/80 text-sm font-medium hover:bg-accent transition-colors disabled:opacity-50"
         >
           <Upload className="w-4 h-4" />
           {importing ? 'Importando...' : 'Importar JSON'}
@@ -247,36 +247,43 @@ const Configuracoes = () => {
       </div>
 
       {/* Export */}
-      <div className="glass-card rounded-xl p-5">
-        <h2 className="font-semibold mb-4">Exportar Dados</h2>
-        <p className="text-sm text-muted-foreground mb-3">Exportação simples (biomarcadores) ou completa (com scores, exames e compliance).</p>
-        <div className="flex flex-wrap gap-3">
-          <button onClick={exportJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileJson className="w-4 h-4" /> JSON Básico
-          </button>
-          <button onClick={exportCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-secondary text-sm font-medium hover:bg-accent transition-colors">
-            <FileText className="w-4 h-4" /> CSV Básico
-          </button>
-          <button onClick={exportFullJSON} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-            <FileJson className="w-4 h-4" /> JSON Completo
-          </button>
-          <button onClick={exportFullCSV} className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-            <FileSpreadsheet className="w-4 h-4" /> CSV Completo
-          </button>
-        </div>
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-2">Exportar Dados</h2>
+        <p className="text-xs text-muted-foreground mb-4">Exportação simples (biomarcadores) ou completa (com scores, exames e compliance).</p>
+        <StaggerContainer className="flex flex-wrap gap-3">
+          {[
+            { onClick: exportJSON, icon: FileJson, label: 'JSON Básico', primary: false },
+            { onClick: exportCSV, icon: FileText, label: 'CSV Básico', primary: false },
+            { onClick: exportFullJSON, icon: FileJson, label: 'JSON Completo', primary: true },
+            { onClick: exportFullCSV, icon: FileSpreadsheet, label: 'CSV Completo', primary: true },
+          ].map(btn => (
+            <StaggerItem key={btn.label}>
+              <button
+                onClick={btn.onClick}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  btn.primary
+                    ? 'bg-primary text-primary-foreground hover:opacity-90'
+                    : 'bg-secondary/80 hover:bg-accent'
+                }`}
+              >
+                <btn.icon className="w-4 h-4" /> {btn.label}
+              </button>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
       </div>
 
       {/* Reset */}
-      <div className="glass-card rounded-xl p-5">
-        <h2 className="font-semibold mb-2">Redefinir Dados</h2>
-        <p className="text-sm text-muted-foreground mb-4">Restaura todos os dados para o exemplo inicial. Esta ação não pode ser desfeita.</p>
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-2">Redefinir Dados</h2>
+        <p className="text-xs text-muted-foreground mb-4">Restaura todos os dados para o exemplo inicial. Esta ação não pode ser desfeita.</p>
         <button onClick={() => { if (confirm('Tem certeza? Todos os dados serão substituídos pelo exemplo inicial.')) resetData(); }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90 transition-opacity">
           <RotateCcw className="w-4 h-4" /> Redefinir para Dados Iniciais
         </button>
       </div>
 
-      <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground">
+      <div className="glass-card p-4 text-[10px] text-muted-foreground">
         <p><strong>HealthCFO Dashboard v1.0</strong></p>
         <p className="mt-1">Ferramenta de organização pessoal para acompanhamento preventivo de saúde. 
         Não constitui diagnóstico ou recomendação médica. Consulte sempre profissionais de saúde qualificados.</p>
