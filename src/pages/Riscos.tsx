@@ -24,7 +24,7 @@ const statusConfig: Record<Status, { dot: string; label: string; badge: string }
 };
 
 const Riscos = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
 
   const getGroupStatus = (group: typeof riskGroups[0]): Status => {
     const statuses: Status[] = [];
