@@ -54,6 +54,7 @@ const Riscos = () => {
   const actionCount = groupStatuses.filter(s => s === 'red').length;
 
   if (loading) return <GridPageSkeleton cards={8} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>

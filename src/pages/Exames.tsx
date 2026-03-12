@@ -109,6 +109,7 @@ const Exames = () => {
   };
 
   if (loading) return <ListPageSkeleton cards={6} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>
