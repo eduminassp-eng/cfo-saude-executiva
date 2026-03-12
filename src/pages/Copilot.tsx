@@ -163,19 +163,19 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1">
+      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 overflow-x-auto">
         {tabs.map(t => (
           <button
             key={t.id}
             onClick={() => { setTab(t.id); setSearch(''); setStatusFilter(''); }}
-            className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all flex-1 justify-center ${
+            className={`flex items-center gap-1.5 px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               tab === t.id
                 ? 'bg-primary text-primary-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            <t.icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{t.label}</span>
+            <t.icon className="w-4 h-4 shrink-0" />
+            {t.label}
           </button>
         ))}
       </div>
