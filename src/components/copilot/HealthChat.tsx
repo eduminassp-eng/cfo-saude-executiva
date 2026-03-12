@@ -33,8 +33,10 @@ export function HealthChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [loadingConvs, setLoadingConvs] = useState(true);
+  const [attachment, setAttachment] = useState<FileAttachment | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const savingRef = useRef(false);
 
   // Load conversations on mount
