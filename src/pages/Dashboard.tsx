@@ -112,8 +112,9 @@ const Dashboard = () => {
             <svg className="w-full h-full -rotate-90 relative z-10" viewBox="0 0 120 120">
               <defs>
                 <linearGradient id="hero-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="hsl(var(--primary))" />
-                  <stop offset="100%" stopColor={`hsl(var(--status-${overallStatus}))`} />
+                  <stop offset="0%" stopColor="hsl(var(--liquid-violet))" />
+                  <stop offset="50%" stopColor="hsl(var(--primary))" />
+                  <stop offset="100%" stopColor="hsl(var(--liquid-blue))" />
                 </linearGradient>
               </defs>
               <circle cx="60" cy="60" r="50" fill="none" stroke="hsl(var(--border))" strokeWidth="10" strokeLinecap="round" opacity={0.4} />
