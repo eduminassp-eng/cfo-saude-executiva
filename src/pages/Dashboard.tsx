@@ -69,6 +69,7 @@ const Dashboard = () => {
   }
 
   return (
+    <PageTransition>
     <div className="space-y-8">
       {/* Header */}
       <div>
