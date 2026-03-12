@@ -37,10 +37,19 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
     ...(biomarker.value !== null ? [{ v: biomarker.value }] : []),
   ];
 
-  const statusColor = biomarker.status === 'green' ? 'hsl(var(--status-green))'
-    : biomarker.status === 'yellow' ? 'hsl(var(--status-yellow))'
-    : biomarker.status === 'red' ? 'hsl(var(--status-red))'
-    : 'hsl(var(--muted-foreground))';
+  const statusColorMap = {
+    green: 'var(--status-green)',
+    yellow: 'var(--status-yellow)',
+    red: 'var(--status-red)',
+    unknown: 'var(--muted-foreground)',
+  };
+  const statusVar = statusColorMap[biomarker.status];
+  const statusColor = `hsl(${statusVar})`;
+
+  const glowStyle = biomarker.status !== 'unknown' ? {
+    borderColor: `hsl(${statusVar} / 0.25)`,
+    boxShadow: `0 0 16px -4px hsl(${statusVar} / 0.15), inset 0 1px 0 hsl(${statusVar} / 0.06)`,
+  } : {};
 
   return (
     <motion.button
@@ -48,7 +57,8 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
       whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2, ease: 'easeOut' } }}
       whileTap={{ scale: 0.97, y: 0, transition: { duration: 0.1 } }}
       transition={{ duration: 0.2 }}
-      className="glass-card-hover p-4 text-left w-full"
+      className="glass-card-hover p-4 text-left w-full border"
+      style={glowStyle}
       aria-label={`${biomarker.name}: ${biomarker.value ?? 'sem valor'} ${biomarker.unit}. Status: ${biomarker.status === 'green' ? 'normal' : biomarker.status === 'yellow' ? 'atenção' : biomarker.status === 'red' ? 'crítico' : 'desconhecido'}`}
     >
       <div className="flex items-start justify-between mb-3">
