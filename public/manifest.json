@@ -1,0 +1,17 @@
+{
+  "name": "HealthCFO — Painel Executivo de Saúde",
+  "short_name": "HealthCFO",
+  "description": "Gerencie sua saúde preventiva como um CFO gerencia KPIs.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1114",
+  "theme_color": "#2db87f",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
