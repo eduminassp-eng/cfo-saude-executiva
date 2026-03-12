@@ -266,7 +266,7 @@ export function useHealthData() {
     URL.revokeObjectURL(url);
   }, [data]);
 
-  return { data, loading, updateData, resetData, exportJSON, exportCSV };
+  return { data, loading, error, retry: loadData, updateData, resetData, exportJSON, exportCSV };
 }
 
 async function seedSampleData(userId: string) {
