@@ -2,6 +2,8 @@ import { useHealth } from '@/contexts/HealthContext';
 import { useMemo } from 'react';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, ReferenceLine } from 'recharts';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const TRACKED_IDS = ['ldl', 'hdl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ggt', 'vitd', 'imc', 'cintura'];
 const UP_IS_GOOD = new Set(['hdl', 'vitd']);
