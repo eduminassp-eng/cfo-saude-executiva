@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
@@ -9,6 +10,7 @@ import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tool
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TrendPanel } from '@/components/TrendPanel';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
   green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
