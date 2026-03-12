@@ -38,7 +38,16 @@ serve(async (req) => {
 
     // Convert to base64 for AI
     const arrayBuf = await fileData.arrayBuffer();
-    const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuf)));
+    const bytes = new Uint8Array(arrayBuf);
+    let binary = "";
+    const chunkSize = 8192;
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      for (let j = 0; j < chunk.length; j++) {
+        binary += String.fromCharCode(chunk[j]);
+      }
+    }
+    const base64 = btoa(binary);
     const mimeType = filePath.toLowerCase().endsWith(".pdf")
       ? "application/pdf"
       : filePath.toLowerCase().endsWith(".png")
