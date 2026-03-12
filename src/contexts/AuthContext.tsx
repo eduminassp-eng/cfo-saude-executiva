@@ -18,8 +18,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      // Ignore premature INITIAL_SESSION events before storage hydration finishes
-      if (!hydratedRef.current && event === 'INITIAL_SESSION') return;
+      // getSession() já trata sessão inicial; evita sobrescrever com null em INITIAL_SESSION
+      if (event === 'INITIAL_SESSION') return;
       setSession(nextSession);
       setLoading(false);
     });
