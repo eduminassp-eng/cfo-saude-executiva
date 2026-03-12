@@ -4,7 +4,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo, lazy, Suspense, useTransition, useCallback } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
@@ -36,6 +36,15 @@ const Dashboard = () => {
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+
+  const handleShowScore = useCallback((id: string) => {
+    startTransition(() => setShowScoreDetail(id));
+  }, []);
+
+  const handleShowDomain = useCallback((id: string | null) => {
+    startTransition(() => setShowDomainDetail(id));
+  }, []);
 
   const overdueCount = data.exams.filter(e => e.status === 'Atrasado').length;
   const yellowCount = data.biomarkers.filter(b => b.status === 'yellow').length;
@@ -180,17 +189,17 @@ const Dashboard = () => {
       <Suspense fallback={<LazyFallback />}>
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
+            <button onClick={() => handleShowScore('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
               <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
             </button>
           </StaggerItem>
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
+            <button onClick={() => handleShowScore('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
               <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
             </button>
           </StaggerItem>
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
+            <button onClick={() => handleShowScore('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
               <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
             </button>
           </StaggerItem>
@@ -203,7 +212,7 @@ const Dashboard = () => {
           <ScoreDetailPanel
             type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
             score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
-            onClose={() => setShowScoreDetail(null)}
+            onClose={() => startTransition(() => setShowScoreDetail(null))}
           />
         </Suspense>
       )}
@@ -218,7 +227,7 @@ const Dashboard = () => {
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
-            setShowDomainDetail={setShowDomainDetail}
+            setShowDomainDetail={handleShowDomain}
             data={data}
           />
         </div>
@@ -309,15 +318,17 @@ function DomainGrid({ domainScores, showDomainDetail, setShowDomainDetail, data 
             </button>
             {isActive && (
               <div className="col-span-full">
-                <DomainDetailPanel
-                  domainId={d.id}
-                  label={d.label}
-                  score={d.score}
-                  status={d.status}
-                  summary={d.summary}
-                  data={data}
-                  onClose={() => setShowDomainDetail(null)}
-                />
+                <Suspense fallback={<div className="glass-card p-6"><div className="h-40 w-full rounded-xl bg-secondary animate-pulse" /></div>}>
+                  <DomainDetailPanel
+                    domainId={d.id}
+                    label={d.label}
+                    score={d.score}
+                    status={d.status}
+                    summary={d.summary}
+                    data={data}
+                    onClose={() => setShowDomainDetail(null)}
+                  />
+                </Suspense>
               </div>
             )}
           </div>
