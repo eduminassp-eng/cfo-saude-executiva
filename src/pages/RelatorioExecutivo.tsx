@@ -1,9 +1,9 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
-import { Printer } from 'lucide-react';
+import { Printer, Pill, MessageCircleQuestion, TrendingDown, AlertTriangle, CheckCircle2, CalendarClock, Stethoscope } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
@@ -11,6 +11,7 @@ const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona'
 
 const RelatorioExecutivo = () => {
   const { data } = useHealth();
+  const [medications, setMedications] = useState(() => localStorage.getItem('health-cfo-medications') || '');
 
   const cardiac = useMemo(() => calcCardiacScore(data), [data]);
   const metabolic = useMemo(() => calcMetabolicScore(data), [data]);
@@ -48,21 +49,43 @@ const RelatorioExecutivo = () => {
       .slice(0, 6);
   }, [data.biomarkers]);
 
+  const doctorQuestions = useMemo(() => {
+    const qs: string[] = [];
+    redBiomarkers.forEach(b => qs.push(`${b.name} está em ${b.value} ${b.unit} — quais exames complementares?`));
+    if (overdue.length > 0) qs.push(`Tenho ${overdue.length} exame(s) atrasado(s) — qual priorizar?`);
+    if (yellowBiomarkers.length >= 3) qs.push('Vários indicadores no limite — existe padrão entre eles?');
+    const worseningNames = trendHighlights.filter(t => t && t.worsening).map(t => t!.name);
+    if (worseningNames.length > 0) qs.push(`${worseningNames.join(', ')} pioraram — devo investigar?`);
+    // Add AI-generated questions from insights
+    insights.filter(i => i.biomarker.status !== 'green').slice(0, 3).forEach(ins => {
+      if (!qs.some(q => q.includes(ins.biomarker.name))) {
+        qs.push(ins.doctorQuestion);
+      }
+    });
+    return qs.slice(0, 6);
+  }, [redBiomarkers, overdue, yellowBiomarkers, trendHighlights, insights]);
+
   const handlePrint = useCallback(() => window.print(), []);
 
+  const saveMedications = (val: string) => {
+    setMedications(val);
+    localStorage.setItem('health-cfo-medications', val);
+  };
+
   const statusColor = (s: string) =>
-    s === 'green' ? 'text-[hsl(var(--status-green))]' : s === 'yellow' ? 'text-[hsl(var(--status-yellow))]' : 'text-[hsl(var(--status-red))]';
+    s === 'green' ? 'text-status-green' : s === 'yellow' ? 'text-status-yellow' : 'text-status-red';
 
   const statusBg = (s: string) =>
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
     <PageTransition>
-    <div className="space-y-6 print:space-y-4">
+    <div className="space-y-6 max-w-3xl mx-auto print:space-y-4 print:max-w-none">
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Relatório Executivo</h1>
-          <p className="text-sm text-muted-foreground mt-1 print:text-black">Gerado em {new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
+          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Relatório de Saúde</h1>
+          <p className="text-[10px] text-muted-foreground mt-0.5">{new Date().toLocaleDateString('pt-BR')} • Health CFO</p>
         </div>
         <button
           onClick={handlePrint}
@@ -103,25 +126,75 @@ const RelatorioExecutivo = () => {
         </div>
       </div>
 
+      {/* Risk Alerts */}
+      {(redBiomarkers.length > 0 || overdue.length > 0) && (
+        <div className="glass-card p-5 border-l-4 border-l-destructive print:border print:border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-4 h-4 text-status-red" />
+            <h2 className="text-sm font-semibold">Alertas Principais</h2>
+          </div>
+          <ul className="space-y-1 text-sm">
+            {redBiomarkers.map(b => <li key={b.id}>• <strong>{b.name}</strong>: {b.value} {b.unit} — nível crítico</li>)}
+            {overdue.map(e => <li key={e.id}>• <strong>{e.name}</strong> atrasado — rastreamento de {e.mainRisk.toLowerCase()}</li>)}
+          </ul>
+        </div>
+      )}
+
       {/* Strengths & Attention */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
         <div className="glass-card p-5 print:border print:border-gray-200">
-          <h2 className="text-sm font-semibold mb-3 text-[hsl(var(--status-green))]">✅ Pontos Fortes</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle2 className="w-4 h-4 text-status-green" />
+            <h2 className="text-sm font-semibold">Pontos Fortes</h2>
+          </div>
           <ul className="space-y-1.5 text-sm">
-            {summary.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-[hsl(var(--status-green))]">•</span>{s}</li>)}
+            {summary.strengths.map((s, i) => <li key={i} className="flex gap-2"><span className="text-status-green">•</span>{s}</li>)}
             {summary.strengths.length === 0 && <li className="text-muted-foreground">Nenhum identificado.</li>}
           </ul>
         </div>
         <div className="glass-card p-5 print:border print:border-gray-200">
-          <h2 className="text-sm font-semibold mb-3 text-[hsl(var(--status-yellow))]">⚠️ Pontos de Atenção</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <AlertTriangle className="w-4 h-4 text-status-yellow" />
+            <h2 className="text-sm font-semibold">Pontos de Atenção</h2>
+          </div>
           <ul className="space-y-1.5 text-sm">
-            {summary.attentionPoints.map((s, i) => <li key={i} className="flex gap-2"><span className="text-[hsl(var(--status-yellow))]">•</span>{s}</li>)}
+            {summary.attentionPoints.map((s, i) => <li key={i} className="flex gap-2"><span className="text-status-yellow">•</span>{s}</li>)}
             {summary.attentionPoints.length === 0 && <li className="text-muted-foreground">Nenhum identificado.</li>}
           </ul>
         </div>
       </div>
 
-      {/* Key Biomarkers */}
+      {/* Attention biomarkers inline */}
+      {yellowBiomarkers.length > 0 && (
+        <div className="glass-card p-4 print:border print:border-gray-200">
+          <p className="text-sm text-muted-foreground">
+            <span className="font-medium text-foreground">Em atenção:</span>{' '}
+            {yellowBiomarkers.map(b => `${b.name} (${b.value} ${b.unit})`).join(' • ')}
+          </p>
+        </div>
+      )}
+
+      {/* Trend Highlights */}
+      {trendHighlights.length > 0 && (
+        <div className="glass-card p-5 print:border print:border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingDown className="w-4 h-4 text-status-red" />
+            <h2 className="text-sm font-semibold">Destaques de Tendência</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {trendHighlights.map((t, i) => t && (
+              <div key={i} className="flex items-center justify-between text-xs bg-secondary/50 rounded-xl px-3 py-2.5">
+                <span className="truncate mr-2">{t.name}</span>
+                <span className="font-mono shrink-0 tabular-nums">
+                  {t.prev} → {t.current} <span className={t.worsening ? 'text-status-red' : 'text-status-green'}>({t.pct}%)</span>
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Biomarkers Table */}
       <div className="glass-card p-5 print:border print:border-gray-200">
         <h2 className="text-sm font-semibold mb-3">Biomarcadores-Chave</h2>
         <div className="overflow-x-auto">
@@ -152,50 +225,50 @@ const RelatorioExecutivo = () => {
         </div>
       </div>
 
-      {/* Risk Alerts */}
-      {(redBiomarkers.length > 0 || overdue.length > 0) && (
-        <div className="glass-card p-5 border-l-4 border-l-[hsl(var(--status-red))] print:border print:border-gray-200">
-          <h2 className="text-sm font-semibold mb-3">🔴 Alertas de Risco</h2>
-          <ul className="space-y-1 text-sm">
-            {redBiomarkers.map(b => <li key={b.id}>• {b.name}: {b.value} {b.unit} — nível crítico</li>)}
-            {overdue.map(e => <li key={e.id}>• {e.name} atrasado — rastreamento de {e.mainRisk.toLowerCase()}</li>)}
-          </ul>
+      {/* Medications */}
+      <div className="glass-card p-4 no-print">
+        <div className="flex items-center gap-2 mb-2">
+          <Pill className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-semibold">Medicamentos Atuais</h2>
         </div>
-      )}
-
-      {/* Trend Highlights */}
-      {trendHighlights.length > 0 && (
-        <div className="glass-card p-5 print:border print:border-gray-200">
-          <h2 className="text-sm font-semibold mb-3">📈 Destaques de Tendência</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {trendHighlights.map((t, i) => t && (
-              <div key={i} className="flex items-center justify-between text-xs bg-secondary/50 rounded-xl px-3 py-2.5">
-                <span className="truncate mr-2">{t.name}</span>
-                <span className="font-mono shrink-0 tabular-nums">
-                  {t.prev} → {t.current} <span className={t.worsening ? 'text-[hsl(var(--status-red))]' : 'text-[hsl(var(--status-green))]'}>({t.pct}%)</span>
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Suggested Appointments */}
-      <div className="glass-card p-5 print:border print:border-gray-200">
-        <h2 className="text-sm font-semibold mb-3">📋 Próximas Consultas Sugeridas</h2>
-        <ul className="space-y-1.5 text-sm">
-          {summary.suggestedAppointments.map((s, i) => <li key={i}>• {s}</li>)}
-          {summary.suggestedAppointments.length === 0 && <li className="text-muted-foreground">Nenhuma sugerida.</li>}
-        </ul>
+        <textarea
+          value={medications}
+          onChange={e => saveMedications(e.target.value)}
+          placeholder="Liste seus medicamentos atuais aqui..."
+          className="w-full bg-secondary/60 rounded-xl px-3 py-2.5 text-sm min-h-[60px] focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none transition-all"
+        />
       </div>
+      {medications && (
+        <div className="glass-card p-4 hidden print:block print:border print:border-gray-200">
+          <div className="flex items-center gap-2 mb-2">
+            <Pill className="w-4 h-4" />
+            <h2 className="text-sm font-semibold">Medicamentos Atuais</h2>
+          </div>
+          <p className="text-sm whitespace-pre-wrap">{medications}</p>
+        </div>
+      )}
 
       {/* Doctor Questions */}
       <div className="glass-card p-5 print:border print:border-gray-200">
-        <h2 className="text-sm font-semibold mb-3">❓ Perguntas para o Médico</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <MessageCircleQuestion className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-semibold">Perguntas para o Médico</h2>
+        </div>
+        <ol className="text-sm space-y-1.5 list-decimal list-inside">
+          {doctorQuestions.map((q, i) => <li key={i}>{q}</li>)}
+          {doctorQuestions.length === 0 && <li className="text-muted-foreground list-none">Nenhuma pergunta gerada.</li>}
+        </ol>
+      </div>
+
+      {/* Suggested Appointments */}
+      <div className="glass-card p-5 print:border print:border-gray-200">
+        <div className="flex items-center gap-2 mb-3">
+          <Stethoscope className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-semibold">Próximas Consultas Sugeridas</h2>
+        </div>
         <ul className="space-y-1.5 text-sm">
-          {insights.filter(i => i.biomarker.status !== 'green').slice(0, 6).map((ins, i) => (
-            <li key={i}>• {ins.doctorQuestion}</li>
-          ))}
+          {summary.suggestedAppointments.map((s, i) => <li key={i}>• {s}</li>)}
+          {summary.suggestedAppointments.length === 0 && <li className="text-muted-foreground">Nenhuma sugerida.</li>}
         </ul>
       </div>
 

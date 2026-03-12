@@ -49,10 +49,10 @@ function AnimatedRoutes() {
         <Route path="/copilot" element={<Copilot />} />
         <Route path="/tendencias" element={<Tendencias />} />
         <Route path="/relatorio" element={<RelatorioExecutivo />} />
-        <Route path="/resumo-consulta" element={<ResumoConsulta />} />
+        <Route path="/resumo-consulta" element={<Navigate to="/relatorio" replace />} />
+        <Route path="/resumo" element={<Navigate to="/relatorio" replace />} />
         <Route path="/lab-reader" element={<LabReader />} />
         <Route path="/apple-health" element={<AppleHealth />} />
-        <Route path="/resumo" element={<Resumo />} />
         <Route path="/configuracoes" element={<Configuracoes />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

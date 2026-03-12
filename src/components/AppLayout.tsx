@@ -17,10 +17,8 @@ const navItems = [
   { path: '/timeline', label: 'Timeline', icon: Calendar },
   { path: '/riscos', label: 'Riscos', icon: AlertTriangle },
   { path: '/relatorio', label: 'Relatório', icon: FileBarChart },
-  { path: '/resumo-consulta', label: 'P/ Consulta', icon: Stethoscope },
   { path: '/lab-reader', label: 'Lab Reader', icon: FlaskConical },
   { path: '/apple-health', label: 'Apple Health', icon: Heart },
-  { path: '/resumo', label: 'Resumo', icon: FileText },
   { path: '/configuracoes', label: 'Configurações', icon: Settings },
 ];
 
