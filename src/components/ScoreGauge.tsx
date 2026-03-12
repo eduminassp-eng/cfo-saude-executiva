@@ -16,7 +16,7 @@ export function ScoreGauge({ label, value, status, subtitle, colorVar }: ScoreGa
   const statusLabel = status === 'green' ? 'Bom' : status === 'yellow' ? 'Atenção' : status === 'red' ? 'Crítico' : 'Sem dados';
 
   return (
-    <div className="glass-card rounded-xl p-5 flex flex-col items-center gap-3 animate-slide-up">
+    <div className="glass-card rounded-xl p-5 flex flex-col items-center gap-3" role="meter" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100} aria-label={`${label}: ${value} de 100, ${statusLabel}`}>
       <p className="text-sm font-medium text-muted-foreground tracking-wide uppercase">{label}</p>
       <div className="relative w-32 h-32">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
