@@ -247,13 +247,14 @@ export function HealthChat() {
               </p>
             </div>
             <div className="flex flex-wrap gap-2 justify-center max-w-md">
-              {SUGGESTIONS.map(s => (
+              {dynamicSuggestions.map(s => (
                 <button
-                  key={s}
-                  onClick={() => sendMessage(s)}
-                  className="text-xs px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all"
+                  key={s.text}
+                  onClick={() => sendMessage(s.text)}
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border border-border/50 bg-secondary/50 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all text-left"
                 >
-                  {s}
+                  {suggestionIcon(s.icon)}
+                  {s.text}
                 </button>
               ))}
             </div>
