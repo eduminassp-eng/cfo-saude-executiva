@@ -52,5 +52,6 @@ const Timeline = () => {
     </div>
     </PageTransition>
   );
+};
 
 export default Timeline;

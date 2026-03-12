@@ -127,5 +127,6 @@ const Riscos = () => {
     </div>
     </PageTransition>
   );
+};
 
 export default Riscos;

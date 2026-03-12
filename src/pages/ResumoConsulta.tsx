@@ -158,5 +158,6 @@ const ResumoConsulta = () => {
     </div>
     </PageTransition>
   );
+};
 
 export default ResumoConsulta;
