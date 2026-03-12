@@ -43,8 +43,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Check if current path matches one of the bottom tabs
   const isTabActive = (tabPath: string) => {
     if (tabPath === '/configuracoes') {
-      // "More" tab is active for any non-main route
-      return !['/','biomarcadores','/copilot','/tendencias'].some(p => location.pathname === p)
+      return !['/','biomarcadores','/copilot','/exames'].some(p => location.pathname === p)
         && location.pathname !== '/biomarcadores';
     }
     return location.pathname === tabPath;
