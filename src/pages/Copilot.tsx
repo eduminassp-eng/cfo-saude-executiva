@@ -121,6 +121,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   const alertCount = healthAlerts.filter(a => a.severity === 'critical').length;
   const tabs = [
     { id: 'summary' as const, label: 'Resumo', icon: ShieldAlert },
+    { id: 'chat' as const, label: 'Chat IA', icon: MessageCircle },
     { id: 'alerts' as const, label: `Alertas${alertCount > 0 ? ` (${alertCount})` : ''}`, icon: Bell },
     { id: 'trends' as const, label: 'Tendências', icon: TrendingUp },
     { id: 'biomarkers' as const, label: 'Biomarcadores', icon: Activity },
