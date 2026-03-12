@@ -294,7 +294,7 @@ export function HealthChat() {
   };
 
   return (
-    <div className="flex h-[600px] glass-card rounded-xl overflow-hidden border border-border/50">
+    <div className="relative flex h-[600px] glass-card rounded-xl overflow-hidden border border-border/50">
       {/* Sidebar - overlay on mobile, inline on desktop */}
       {showSidebar && (
         <div className="fixed inset-0 z-40 bg-black/40 sm:hidden" onClick={() => setShowSidebar(false)} />
