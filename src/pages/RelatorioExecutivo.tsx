@@ -4,6 +4,7 @@ import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainSco
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
 import { Printer, Download } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
