@@ -318,15 +318,17 @@ function DomainGrid({ domainScores, showDomainDetail, setShowDomainDetail, data 
             </button>
             {isActive && (
               <div className="col-span-full">
-                <DomainDetailPanel
-                  domainId={d.id}
-                  label={d.label}
-                  score={d.score}
-                  status={d.status}
-                  summary={d.summary}
-                  data={data}
-                  onClose={() => setShowDomainDetail(null)}
-                />
+                <Suspense fallback={<div className="glass-card p-6"><div className="h-40 w-full rounded-xl bg-secondary animate-pulse" /></div>}>
+                  <DomainDetailPanel
+                    domainId={d.id}
+                    label={d.label}
+                    score={d.score}
+                    status={d.status}
+                    summary={d.summary}
+                    data={data}
+                    onClose={() => setShowDomainDetail(null)}
+                  />
+                </Suspense>
               </div>
             )}
           </div>
