@@ -286,8 +286,10 @@ const Biomarcadores = () => {
                     </div>
                   )}
                 </div>
+                </motion.div>
               )}
-            </div>
+              </AnimatePresence>
+            </motion.div>
           );
         })}
       </div>
