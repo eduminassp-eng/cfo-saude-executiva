@@ -66,6 +66,11 @@ export default {
           yellow: "hsl(var(--status-yellow))",
           red: "hsl(var(--status-red))",
         },
+        liquid: {
+          violet: "hsl(var(--liquid-violet))",
+          blue: "hsl(var(--liquid-blue))",
+          indigo: "hsl(var(--liquid-indigo))",
+        },
       },
       borderRadius: {
         radius: "var(--radius)",
