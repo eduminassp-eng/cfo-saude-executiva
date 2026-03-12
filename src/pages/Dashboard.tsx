@@ -4,7 +4,7 @@ import { ErrorState } from '@/components/ErrorState';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
-import { useState, useMemo, lazy, Suspense } from 'react';
+import { useState, useMemo, lazy, Suspense, useTransition, useCallback } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
