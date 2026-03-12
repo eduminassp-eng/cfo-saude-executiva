@@ -188,8 +188,26 @@
 
   .glass-card-hover:hover {
     border-color: hsl(var(--border));
-    box-shadow: 0 4px 24px -4px hsl(var(--background) / 0.5);
+    box-shadow: 0 6px 28px -4px hsl(var(--background) / 0.6), 0 0 0 1px hsl(var(--primary) / 0.06);
+    transform: translateY(-2px);
+  }
+
+  .glass-card-hover:active {
+    transform: scale(0.985) translateY(0);
+    transition-duration: 0.1s;
+  }
+
+  /* Pressable button effect */
+  .btn-press {
+    transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.15s ease;
+  }
+  .btn-press:hover {
     transform: translateY(-1px);
+    box-shadow: 0 4px 16px -4px hsl(var(--primary) / 0.25);
+  }
+  .btn-press:active {
+    transform: scale(0.96) translateY(0);
+    box-shadow: none;
   }
 
   .text-mono {
