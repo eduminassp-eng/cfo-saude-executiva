@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
@@ -65,6 +65,11 @@ export default {
           green: "hsl(var(--status-green))",
           yellow: "hsl(var(--status-yellow))",
           red: "hsl(var(--status-red))",
+        },
+        liquid: {
+          violet: "hsl(var(--liquid-violet))",
+          blue: "hsl(var(--liquid-blue))",
+          indigo: "hsl(var(--liquid-indigo))",
         },
       },
       borderRadius: {

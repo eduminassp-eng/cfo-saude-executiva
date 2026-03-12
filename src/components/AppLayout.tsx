@@ -52,7 +52,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row liquid-bg">
       {/* Skip to main content (a11y) */}
       <a href="#main-content" className="skip-to-main">
         Pular para o conteúdo principal
