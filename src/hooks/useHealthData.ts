@@ -117,6 +117,10 @@ export function useHealthData() {
       });
     } catch (err: any) {
       console.error('Error loading health data:', err);
+      const msg = err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')
+        ? 'network'
+        : err?.message || 'Erro ao carregar dados';
+      setError(msg);
       toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
