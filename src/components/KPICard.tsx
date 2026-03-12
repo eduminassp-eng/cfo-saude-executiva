@@ -39,9 +39,12 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
     : 'hsl(var(--muted-foreground))';
 
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className="glass-card-hover rounded-lg p-4 text-left w-full transition-all"
+      aria-label={`${biomarker.name}: ${biomarker.value ?? 'sem valor'} ${biomarker.unit}. Status: ${biomarker.status === 'green' ? 'normal' : biomarker.status === 'yellow' ? 'atenção' : biomarker.status === 'red' ? 'crítico' : 'desconhecido'}`}
     >
       <div className="flex items-start justify-between mb-2">
         <p className="text-xs text-muted-foreground font-medium truncate pr-2">{biomarker.name}</p>
