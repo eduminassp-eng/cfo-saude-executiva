@@ -45,8 +45,8 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
   return (
     <motion.button
       onClick={onClick}
-      whileHover={{ y: -2 }}
-      whileTap={{ scale: 0.98 }}
+      whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2, ease: 'easeOut' } }}
+      whileTap={{ scale: 0.97, y: 0, transition: { duration: 0.1 } }}
       transition={{ duration: 0.2 }}
       className="glass-card-hover p-4 text-left w-full"
       aria-label={`${biomarker.name}: ${biomarker.value ?? 'sem valor'} ${biomarker.unit}. Status: ${biomarker.status === 'green' ? 'normal' : biomarker.status === 'yellow' ? 'atenção' : biomarker.status === 'red' ? 'crítico' : 'desconhecido'}`}
