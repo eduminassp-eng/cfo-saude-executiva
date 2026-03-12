@@ -189,7 +189,7 @@ const Dashboard = () => {
       <Suspense fallback={<LazyFallback />}>
         <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <StaggerItem>
-            <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
+            <button onClick={() => handleShowScore('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
               <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
             </button>
           </StaggerItem>
