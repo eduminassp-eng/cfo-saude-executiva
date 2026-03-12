@@ -1,5 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
-import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload, Settings2 } from 'lucide-react';
+import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload, Settings2, BookOpen } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { useMemo, useCallback, useRef, useState } from 'react';
@@ -271,6 +271,16 @@ const Configuracoes = () => {
             </StaggerItem>
           ))}
         </StaggerContainer>
+      </div>
+
+      {/* Tour */}
+      <div className="glass-card p-5">
+        <h2 className="text-sm font-semibold mb-2">Tour do App</h2>
+        <p className="text-xs text-muted-foreground mb-4">Reveja o tour de apresentação das funcionalidades do HealthCFO.</p>
+        <button onClick={() => { localStorage.removeItem('health-cfo-onboarding-done'); window.location.reload(); }}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+          <BookOpen className="w-4 h-4" /> Rever Tour Guiado
+        </button>
       </div>
 
       {/* Reset */}

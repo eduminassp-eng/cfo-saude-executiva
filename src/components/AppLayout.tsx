@@ -6,6 +6,7 @@ import {
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { OnboardingTour, useOnboarding } from '@/components/OnboardingTour';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,6 +32,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const { signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { showOnboarding, setShowOnboarding } = useOnboarding();
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     return (localStorage.getItem('health-cfo-theme') as 'dark' | 'light') || 'dark';
   });
@@ -244,6 +246,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <MessageCircle className="w-6 h-6" aria-hidden="true" />
             </Link>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Onboarding Tour */}
+      <AnimatePresence>
+        {showOnboarding && (
+          <OnboardingTour onComplete={() => setShowOnboarding(false)} />
         )}
       </AnimatePresence>
     </div>
