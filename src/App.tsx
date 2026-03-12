@@ -1,11 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { AppLayout } from "@/components/AppLayout";
+import { AnimatePresence } from "framer-motion";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Biomarcadores from "./pages/Biomarcadores";
@@ -36,6 +37,31 @@ function LoadingScreen() {
   );
 }
 
+function AnimatedRoutes() {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/biomarcadores" element={<Biomarcadores />} />
+        <Route path="/exames" element={<Exames />} />
+        <Route path="/timeline" element={<Timeline />} />
+        <Route path="/riscos" element={<Riscos />} />
+        <Route path="/copilot" element={<Copilot />} />
+        <Route path="/tendencias" element={<Tendencias />} />
+        <Route path="/relatorio" element={<RelatorioExecutivo />} />
+        <Route path="/resumo-consulta" element={<ResumoConsulta />} />
+        <Route path="/lab-reader" element={<LabReader />} />
+        <Route path="/apple-health" element={<AppleHealth />} />
+        <Route path="/resumo" element={<Resumo />} />
+        <Route path="/configuracoes" element={<Configuracoes />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+}
+
 function ProtectedRoutes() {
   const { user, loading } = useAuth();
 
@@ -45,22 +71,7 @@ function ProtectedRoutes() {
   return (
     <HealthProvider>
       <AppLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/biomarcadores" element={<Biomarcadores />} />
-          <Route path="/exames" element={<Exames />} />
-          <Route path="/timeline" element={<Timeline />} />
-          <Route path="/riscos" element={<Riscos />} />
-          <Route path="/copilot" element={<Copilot />} />
-          <Route path="/tendencias" element={<Tendencias />} />
-          <Route path="/relatorio" element={<RelatorioExecutivo />} />
-          <Route path="/resumo-consulta" element={<ResumoConsulta />} />
-          <Route path="/lab-reader" element={<LabReader />} />
-          <Route path="/apple-health" element={<AppleHealth />} />
-          <Route path="/resumo" element={<Resumo />} />
-          <Route path="/configuracoes" element={<Configuracoes />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimatedRoutes />
       </AppLayout>
     </HealthProvider>
   );
