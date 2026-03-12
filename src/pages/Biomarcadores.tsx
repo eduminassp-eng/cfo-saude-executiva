@@ -81,6 +81,7 @@ const Biomarcadores = () => {
   }, [data.biomarkers]);
 
   if (loading) return <ListPageSkeleton cards={8} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>
