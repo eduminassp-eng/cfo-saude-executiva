@@ -16,6 +16,7 @@ export function useHealthData() {
   const { user } = useAuth();
   const [data, setData] = useState<HealthData>(EMPTY_DATA);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load data from Supabase
   const loadData = useCallback(async () => {
