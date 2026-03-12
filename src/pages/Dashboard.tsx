@@ -238,29 +238,6 @@ const Dashboard = () => {
         </Suspense>
       </div>
 
-      {/* Longevity Forecast */}
-      <Suspense fallback={<LazyFallback />}>
-        <LongevityForecast forecast={forecast} />
-      </Suspense>
-
-      {/* What-If Simulator */}
-      <Suspense fallback={<LazyFallback />}>
-        <WhatIfSimulator />
-      </Suspense>
-
-      {/* Health Risk Map */}
-      <Suspense fallback={<LazyFallback />}>
-        <HealthRiskMap data={data} />
-      </Suspense>
-
-      {/* Preventive Compliance & Balance Sheet */}
-      <Suspense fallback={<LazyFallback />}>
-        <PreventiveComplianceScore data={data} />
-      </Suspense>
-      <Suspense fallback={<LazyFallback />}>
-        <HealthBalanceSheet data={data} />
-      </Suspense>
-
       {/* Disclaimer */}
       <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground">
         <p><strong>Aviso:</strong> Este painel é uma ferramenta de organização e acompanhamento preventivo. 
