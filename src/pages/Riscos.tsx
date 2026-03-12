@@ -1,5 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Status } from '@/types/health';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 
 const riskGroups = [
   { label: 'Cardiovascular', biomarkerIds: ['pa-sys', 'pa-dia', 'ldl', 'hdl', 'trig', 'pcr', 'apob'], examNames: ['Eletrocardiograma', 'Teste Ergométrico', 'Ecocardiograma', 'Score de Cálcio Coronariano'] },
