@@ -97,9 +97,10 @@ const Riscos = () => {
                 ))}
               </div>
             </div>
+            </StaggerItem>
           );
         })}
-      </div>
+      </StaggerContainer>
 
       {/* Lifestyle */}
       <div className="glass-card rounded-xl p-5">
