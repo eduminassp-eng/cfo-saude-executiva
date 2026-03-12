@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';

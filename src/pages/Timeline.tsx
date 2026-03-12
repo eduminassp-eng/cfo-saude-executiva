@@ -4,6 +4,7 @@ import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion } from 'framer-motion';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 
 const Timeline = () => {
   const { data, loading, error, retry } = useHealth();

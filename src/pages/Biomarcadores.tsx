@@ -3,6 +3,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
+import { ErrorState } from '@/components/ErrorState';
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
 import { PageTransition } from '@/components/motion/PageTransition';
