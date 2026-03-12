@@ -1,8 +1,8 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  FileText, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
-  TrendingUp, FileBarChart, Stethoscope, FlaskConical, LogOut, Heart, MessageCircle
+  Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
+  TrendingUp, FileBarChart, FlaskConical, LogOut, Heart, MessageCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,10 +17,8 @@ const navItems = [
   { path: '/timeline', label: 'Timeline', icon: Calendar },
   { path: '/riscos', label: 'Riscos', icon: AlertTriangle },
   { path: '/relatorio', label: 'Relatório', icon: FileBarChart },
-  { path: '/resumo-consulta', label: 'P/ Consulta', icon: Stethoscope },
   { path: '/lab-reader', label: 'Lab Reader', icon: FlaskConical },
   { path: '/apple-health', label: 'Apple Health', icon: Heart },
-  { path: '/resumo', label: 'Resumo', icon: FileText },
   { path: '/configuracoes', label: 'Configurações', icon: Settings },
 ];
 
