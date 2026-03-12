@@ -25,7 +25,7 @@ const importanceColors: Record<string, string> = {
 type SortKey = 'category' | 'name' | 'importance' | 'lastDate' | 'nextDate' | 'status';
 
 const Exames = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
