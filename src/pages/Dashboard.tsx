@@ -19,6 +19,9 @@ import { generateForecast } from '@/lib/forecast';
 import { WhatIfSimulator } from '@/components/WhatIfSimulator';
 import { HealthRiskMap } from '@/components/HealthRiskMap';
 import { HealthPriorityEngine } from '@/components/HealthPriorityEngine';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
+import { AnimatedCard } from '@/components/motion/AnimatedCard';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
