@@ -45,7 +45,12 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md space-y-8">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="w-full max-w-md space-y-8"
+      >
         <div className="text-center space-y-2">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Activity className="w-8 h-8 text-primary" />
