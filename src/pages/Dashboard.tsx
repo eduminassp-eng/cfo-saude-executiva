@@ -10,7 +10,7 @@ import { Biomarker, HealthData } from '@/types/health';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
-import { AnimatedCard } from '@/components/motion/AnimatedCard';
+
 import { Skeleton } from '@/components/ui/skeleton';
 
 // Lazy load heavy components
