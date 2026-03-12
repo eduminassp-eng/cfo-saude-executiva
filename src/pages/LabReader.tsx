@@ -804,6 +804,7 @@ const LabReader = () => {
         </div>
       )}
     </div>
+    </PageTransition>
   );
 };
 
