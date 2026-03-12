@@ -16,30 +16,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, nextSession) => {
-      // getSession() já trata sessão inicial; evita sobrescrever com null em INITIAL_SESSION
-      if (event === 'INITIAL_SESSION') return;
-      setSession(nextSession);
+    let subscription: { unsubscribe: () => void } | null = null;
+
+    // 1. Restore session from storage FIRST
+    supabase.auth.getSession().then(({ data: { session: restored } }) => {
+      console.log('[Auth] getSession resolved:', restored ? `user=${restored.user.email}` : 'no session');
+      setSession(restored);
       setLoading(false);
+
+      // 2. ONLY AFTER hydration, start listening for changes
+      const { data } = supabase.auth.onAuthStateChange((event, nextSession) => {
+        console.log('[Auth] onAuthStateChange:', event, nextSession ? `user=${nextSession.user.email}` : 'no session');
+        setSession(nextSession);
+      });
+      subscription = data.subscription;
     });
 
-    supabase.auth.getSession().then(({ data: { session: restoredSession } }) => {
-      setSession(restoredSession);
-      setLoading(false);
-    });
-
-    // Safety timeout to prevent infinite loading screen
+    // Safety timeout
     const timeout = setTimeout(() => {
+      console.warn('[Auth] Timeout reached — forcing loading=false');
       setLoading(false);
     }, 5000);
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
 
   const signOut = async () => {
+    console.log('[Auth] signOut called');
     await supabase.auth.signOut();
   };
 
@@ -55,4 +61,3 @@ export function useAuth() {
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');
   return ctx;
 }
-
