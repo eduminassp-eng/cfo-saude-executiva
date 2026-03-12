@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { HealthProvider } from "@/contexts/HealthContext";
 import { AppLayout } from "@/components/AppLayout";
 import { AnimatePresence } from "framer-motion";
+import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Biomarcadores from "./pages/Biomarcadores";
 import Exames from "./pages/Exames";
