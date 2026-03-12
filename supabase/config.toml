@@ -2,3 +2,6 @@ project_id = "ypakfcyzuvpjsjvuupig"
 
 [functions.extract-biomarkers]
 verify_jwt = false
+
+[functions.health-chat]
+verify_jwt = false
