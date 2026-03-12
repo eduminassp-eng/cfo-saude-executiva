@@ -436,6 +436,7 @@ const AppleHealth = () => {
         </div>
       )}
     </div>
+    </PageTransition>
   );
 };
 

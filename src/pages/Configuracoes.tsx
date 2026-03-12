@@ -282,6 +282,7 @@ const Configuracoes = () => {
         Não constitui diagnóstico ou recomendação médica. Consulte sempre profissionais de saúde qualificados.</p>
       </div>
     </div>
+    </PageTransition>
   );
 };
 
