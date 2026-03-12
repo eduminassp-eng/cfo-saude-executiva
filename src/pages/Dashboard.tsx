@@ -171,11 +171,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Health Priority Engine */}
-      <Suspense fallback={<LazyFallback />}>
-        <HealthPriorityEngine data={data} />
-      </Suspense>
-
       {/* Health Alerts */}
       <Suspense fallback={<LazyFallback />}>
         <HealthAlerts alerts={healthAlerts} maxVisible={4} />
