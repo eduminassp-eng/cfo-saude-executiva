@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Activity, Mail, Lock, User } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
