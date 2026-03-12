@@ -212,7 +212,7 @@ const Dashboard = () => {
           <ScoreDetailPanel
             type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
             score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
-            onClose={() => setShowScoreDetail(null)}
+            onClose={() => startTransition(() => setShowScoreDetail(null))}
           />
         </Suspense>
       )}
