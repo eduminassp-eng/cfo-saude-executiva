@@ -20,7 +20,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // 1. Restore session from storage FIRST
     supabase.auth.getSession().then(({ data: { session: restored } }) => {
-      console.log('[Auth] getSession resolved:', restored ? `user=${restored.user.email}` : 'no session');
       setSession(restored);
       setLoading(false);
 
