@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown, Plus, MessageSquare, ChevronLeft } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown, Plus, MessageSquare, ChevronLeft, Paperclip, X, FileText, Image as ImageIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { toast } from 'sonner';
 
-type Msg = { role: 'user' | 'assistant'; content: string };
+type Msg = { role: 'user' | 'assistant'; content: string; attachmentName?: string };
+type FileAttachment = { base64: string; mimeType: string; name: string };
 type Conversation = { id: string; title: string; updated_at: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-chat`;
@@ -32,8 +33,10 @@ export function HealthChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [loadingConvs, setLoadingConvs] = useState(true);
+  const [attachment, setAttachment] = useState<FileAttachment | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const savingRef = useRef(false);
 
   // Load conversations on mount
@@ -188,19 +191,56 @@ export function HealthChat() {
     return `BIOMARCADORES:\n${bioLines || 'Nenhum'}\n\nEXAMES:\n${examLines || 'Nenhum'}\n\nESTILO DE VIDA:\n${lifestyleLine}`;
   }, [data]);
 
-  const sendMessage = useCallback(async (text: string) => {
-    if (!text.trim() || isLoading) return;
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    const userMsg: Msg = { role: 'user', content: text.trim() };
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      toast.error('Arquivo muito grande. Máximo: 10MB.');
+      return;
+    }
+
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Formato não suportado. Use PDF, JPG, PNG ou WebP.');
+      return;
+    }
+
+    try {
+      const arrayBuf = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuf);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      const base64 = btoa(binary);
+      setAttachment({ base64, mimeType: file.type, name: file.name });
+      toast.success(`Arquivo "${file.name}" anexado.`);
+    } catch {
+      toast.error('Erro ao ler o arquivo.');
+    }
+
+    // Reset input so the same file can be selected again
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }, []);
+
+  const sendMessage = useCallback(async (text: string) => {
+    if ((!text.trim() && !attachment) || isLoading) return;
+
+    const displayText = text.trim() || (attachment ? `📎 ${attachment.name}` : '');
+    const userMsg: Msg = { role: 'user', content: displayText, attachmentName: attachment?.name };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput('');
+    const currentAttachment = attachment;
+    setAttachment(null);
     setIsLoading(true);
 
     // Create conversation if new
     let convId = activeConvId;
     if (!convId) {
-      convId = await createConversation(text.trim());
+      convId = await createConversation(displayText);
       if (!convId) {
         toast.error('Erro ao criar conversa.');
         setIsLoading(false);
@@ -209,21 +249,30 @@ export function HealthChat() {
     }
 
     // Save user message
-    await saveMessage(convId, 'user', text.trim());
+    await saveMessage(convId, 'user', displayText);
 
     let assistantSoFar = '';
 
     try {
+      const bodyPayload: any = {
+        messages: allMessages.map(m => ({ role: m.role, content: m.content })),
+        healthContext: buildHealthContext(),
+      };
+
+      if (currentAttachment) {
+        bodyPayload.attachment = {
+          base64: currentAttachment.base64,
+          mimeType: currentAttachment.mimeType,
+        };
+      }
+
       const resp = await fetch(CHAT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({
-          messages: allMessages.map(m => ({ role: m.role, content: m.content })),
-          healthContext: buildHealthContext(),
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!resp.ok) {
@@ -400,6 +449,12 @@ export function HealthChat() {
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-secondary/60 text-foreground'
               }`}>
+                {msg.role === 'user' && msg.attachmentName && (
+                  <div className="flex items-center gap-1.5 mb-1.5 text-xs opacity-80">
+                    <Paperclip className="w-3 h-3" />
+                    <span className="truncate max-w-[200px]">{msg.attachmentName}</span>
+                  </div>
+                )}
                 {msg.role === 'assistant' ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:my-1 [&>ul]:my-1 [&>ol]:my-1 [&>h3]:mt-2 [&>h3]:mb-1">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -433,20 +488,51 @@ export function HealthChat() {
 
         {/* Input */}
         <div className="border-t border-border/50 px-3 py-2.5 bg-secondary/20">
+          {attachment && (
+            <div className="flex items-center gap-2 mb-2 px-2 py-1.5 bg-primary/10 rounded-lg text-xs">
+              {attachment.mimeType === 'application/pdf' ? (
+                <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+              ) : (
+                <ImageIcon className="w-3.5 h-3.5 text-primary shrink-0" />
+              )}
+              <span className="truncate flex-1 text-foreground">{attachment.name}</span>
+              <button
+                onClick={() => setAttachment(null)}
+                className="p-0.5 rounded hover:bg-destructive/20 transition-colors"
+              >
+                <X className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+              </button>
+            </div>
+          )}
           <div className="flex gap-2 items-end">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp"
+              className="hidden"
+              onChange={handleFileSelect}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              className="shrink-0 w-9 h-9 rounded-lg bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Anexar resultado de exame (PDF ou imagem)"
+            >
+              <Paperclip className="w-4 h-4 text-muted-foreground" />
+            </button>
             <textarea
               ref={inputRef}
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Pergunte sobre seus exames, biomarcadores..."
+              placeholder={attachment ? "Descreva o que quer saber sobre o exame..." : "Pergunte sobre seus exames, biomarcadores..."}
               rows={1}
               className="flex-1 bg-secondary/50 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary min-h-[38px] max-h-[100px]"
               disabled={isLoading}
             />
             <button
               onClick={() => sendMessage(input)}
-              disabled={!input.trim() || isLoading}
+              disabled={(!input.trim() && !attachment) || isLoading}
               className="shrink-0 w-9 h-9 rounded-lg bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send className="w-4 h-4" />
