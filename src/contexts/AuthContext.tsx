@@ -17,12 +17,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
-
-    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      if (!isMounted) return;
-      setSession(nextSession);
-      setLoading(false);
-    });
+    let subscription: { unsubscribe: () => void } | null = null;
 
     const restoreSession = async () => {
       try {
@@ -38,14 +33,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
 
           if (isMounted) setSession(null);
-          return;
+        } else if (isMounted) {
+          setSession(sessionData.session ?? null);
         }
-
-        if (isMounted) setSession(sessionData.session ?? null);
       } catch {
         if (isMounted) setSession(null);
       } finally {
-        if (isMounted) setLoading(false);
+        if (!isMounted) return;
+
+        setLoading(false);
+
+        const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+          if (!isMounted) return;
+          setSession(nextSession);
+        });
+
+        subscription = data.subscription;
       }
     };
 
@@ -57,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       isMounted = false;
-      data.subscription.unsubscribe();
+      subscription?.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
