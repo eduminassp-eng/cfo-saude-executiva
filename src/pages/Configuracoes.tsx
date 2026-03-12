@@ -128,6 +128,7 @@ const Configuracoes = () => {
   };
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Configurações</h1>
