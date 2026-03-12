@@ -180,8 +180,15 @@ const Biomarcadores = () => {
                 {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
               </button>
 
-              {/* Expanded detail */}
+              <AnimatePresence>
               {isExpanded && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="overflow-hidden"
+                >
                 <div className="px-4 pb-4 pt-0 border-t border-border space-y-4">
                   {/* Info row */}
                   <div className="flex items-center justify-between pt-3">
