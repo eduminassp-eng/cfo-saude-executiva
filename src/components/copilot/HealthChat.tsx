@@ -449,6 +449,12 @@ export function HealthChat() {
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-secondary/60 text-foreground'
               }`}>
+                {msg.role === 'user' && msg.attachmentName && (
+                  <div className="flex items-center gap-1.5 mb-1.5 text-xs opacity-80">
+                    <Paperclip className="w-3 h-3" />
+                    <span className="truncate max-w-[200px]">{msg.attachmentName}</span>
+                  </div>
+                )}
                 {msg.role === 'assistant' ? (
                   <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:my-1 [&>ul]:my-1 [&>ol]:my-1 [&>h3]:mt-2 [&>h3]:mb-1">
                     <ReactMarkdown>{msg.content}</ReactMarkdown>
