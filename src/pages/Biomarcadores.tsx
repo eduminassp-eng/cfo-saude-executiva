@@ -123,21 +123,25 @@ const Biomarcadores = () => {
 
       {/* Biomarker list */}
       <div className="space-y-2">
-        {filtered.map(b => {
+        {filtered.map((b, i) => {
           const trend = getTrend(b);
           const isGoodUp = markersWhereUpIsGood.has(b.id);
           const isExpanded = expandedId === b.id;
           const config = statusConfig[b.status];
 
-          // Build chart data: history (oldest first) + current
           const chartData = [
             ...(b.history ?? []).slice().reverse().map(h => ({ date: h.date, value: h.value })),
             ...(b.value !== null && b.lastDate ? [{ date: b.lastDate, value: b.value }] : []),
           ];
 
           return (
-            <div key={b.id} className="glass-card rounded-xl overflow-hidden">
-              {/* Main row */}
+            <motion.div
+              key={b.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.03, duration: 0.3 }}
+              className="glass-card overflow-hidden"
+            >
               <button
                 onClick={() => setExpandedId(isExpanded ? null : b.id)}
                 className="w-full p-4 flex items-center gap-3 text-left hover:bg-accent/30 transition-colors"
