@@ -11,11 +11,8 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Biomarcadores from "./pages/Biomarcadores";
 import Exames from "./pages/Exames";
-import Timeline from "./pages/Timeline";
-import Riscos from "./pages/Riscos";
 import Configuracoes from "./pages/Configuracoes";
 import Copilot from "./pages/Copilot";
-import Tendencias from "./pages/Tendencias";
 import RelatorioExecutivo from "./pages/RelatorioExecutivo";
 import LabReader from "./pages/LabReader";
 import AppleHealth from "./pages/AppleHealth";
@@ -44,13 +41,13 @@ function AnimatedRoutes() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/biomarcadores" element={<Biomarcadores />} />
         <Route path="/exames" element={<Exames />} />
-        <Route path="/timeline" element={<Timeline />} />
-        <Route path="/riscos" element={<Riscos />} />
         <Route path="/copilot" element={<Copilot />} />
-        <Route path="/tendencias" element={<Tendencias />} />
         <Route path="/relatorio" element={<RelatorioExecutivo />} />
         <Route path="/resumo-consulta" element={<Navigate to="/relatorio" replace />} />
         <Route path="/resumo" element={<Navigate to="/relatorio" replace />} />
+        <Route path="/tendencias" element={<Navigate to="/biomarcadores?tab=tendencias" replace />} />
+        <Route path="/timeline" element={<Navigate to="/exames" replace />} />
+        <Route path="/riscos" element={<Navigate to="/" replace />} />
         <Route path="/lab-reader" element={<LabReader />} />
         <Route path="/apple-health" element={<AppleHealth />} />
         <Route path="/configuracoes" element={<Configuracoes />} />

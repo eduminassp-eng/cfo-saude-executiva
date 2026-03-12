@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
@@ -9,6 +10,7 @@ import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tool
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion, AnimatePresence } from 'framer-motion';
+import { TrendPanel } from '@/components/TrendPanel';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
   green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
@@ -41,6 +43,9 @@ const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'tes
 
 const Biomarcadores = () => {
   const { data, loading, error, retry, updateData } = useHealth();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get('tab') === 'tendencias' ? 'tendencias' : 'indicadores';
+  const [activeTab, setActiveTab] = useState<'indicadores' | 'tendencias'>(initialTab);
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
@@ -89,9 +94,33 @@ const Biomarcadores = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Biomarcadores</h1>
-        <p className="text-muted-foreground mt-1">Acompanhamento completo dos seus indicadores de saúde</p>
+        <p className="text-muted-foreground mt-1">Indicadores de saúde e tendências de risco</p>
       </div>
 
+      {/* Tab switcher */}
+      <div className="flex gap-2">
+        {([
+          { key: 'indicadores' as const, label: 'Indicadores' },
+          { key: 'tendencias' as const, label: 'Tendências' },
+        ]).map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeTab === tab.key
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary text-secondary-foreground hover:bg-accent'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'tendencias' ? (
+        <TrendPanel data={data} />
+      ) : (
+      <>
       {/* Summary cards */}
       <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
@@ -314,6 +343,8 @@ const Biomarcadores = () => {
           onSave={(entry) => handleSaveHistory(editingHistory.biomarkerId, editingHistory.index, entry)}
           onClose={() => setEditingHistory(null)}
         />
+      )}
+      </>
       )}
     </div>
     </PageTransition>

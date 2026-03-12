@@ -1,8 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, ClipboardList, Calendar, AlertTriangle, 
-  Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
-  TrendingUp, FileBarChart, FlaskConical, LogOut, Heart, MessageCircle
+  LayoutDashboard, ClipboardList, Settings, Menu, X, Activity, BrainCircuit, Sun, Moon,
+  FileBarChart, FlaskConical, LogOut, Heart, MessageCircle
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,9 +12,6 @@ const navItems = [
   { path: '/biomarcadores', label: 'Biomarcadores', icon: Activity },
   { path: '/exames', label: 'Exames', icon: ClipboardList },
   { path: '/copilot', label: 'AI Copilot', icon: BrainCircuit },
-  { path: '/tendencias', label: 'Tendências', icon: TrendingUp },
-  { path: '/timeline', label: 'Timeline', icon: Calendar },
-  { path: '/riscos', label: 'Riscos', icon: AlertTriangle },
   { path: '/relatorio', label: 'Relatório', icon: FileBarChart },
   { path: '/lab-reader', label: 'Lab Reader', icon: FlaskConical },
   { path: '/apple-health', label: 'Apple Health', icon: Heart },
@@ -27,7 +23,7 @@ const mobileTabItems = [
   { path: '/', label: 'Resumo', icon: LayoutDashboard },
   { path: '/biomarcadores', label: 'Dados', icon: Activity },
   { path: '/copilot', label: 'Copilot', icon: BrainCircuit },
-  { path: '/tendencias', label: 'Tendências', icon: TrendingUp },
+  { path: '/exames', label: 'Exames', icon: ClipboardList },
   { path: '/configuracoes', label: 'Mais', icon: Menu },
 ];
 
@@ -47,8 +43,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   // Check if current path matches one of the bottom tabs
   const isTabActive = (tabPath: string) => {
     if (tabPath === '/configuracoes') {
-      // "More" tab is active for any non-main route
-      return !['/','biomarcadores','/copilot','/tendencias'].some(p => location.pathname === p)
+      return !['/','biomarcadores','/copilot','/exames'].some(p => location.pathname === p)
         && location.pathname !== '/biomarcadores';
     }
     return location.pathname === tabPath;
@@ -211,7 +206,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-around px-2 pt-1.5 pb-1">
           {mobileTabItems.map(item => {
             const active = item.path === '/configuracoes'
-              ? !['/', '/biomarcadores', '/copilot', '/tendencias'].includes(location.pathname)
+              ? !['/', '/biomarcadores', '/copilot', '/exames'].includes(location.pathname)
               : location.pathname === item.path;
             return (
               <motion.div key={item.path} whileTap={{ scale: 0.85, y: -2 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
