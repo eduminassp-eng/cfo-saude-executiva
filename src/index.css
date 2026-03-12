@@ -125,9 +125,30 @@
     @apply border-border;
   }
 
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-display);
+  }
+
+  /* Focus visible styles for keyboard navigation */
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Skip to main content link */
+  .skip-to-main {
+    @apply sr-only;
+  }
+  .skip-to-main:focus {
+    @apply not-sr-only fixed top-4 left-4 z-[9999] px-4 py-2 rounded-lg text-sm font-medium;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
   }
 }
 
