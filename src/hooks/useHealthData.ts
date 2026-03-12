@@ -16,11 +16,13 @@ export function useHealthData() {
   const { user } = useAuth();
   const [data, setData] = useState<HealthData>(EMPTY_DATA);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Load data from Supabase
   const loadData = useCallback(async () => {
-    if (!user) { setData(EMPTY_DATA); setLoading(false); return; }
+    if (!user) { setData(EMPTY_DATA); setLoading(false); setError(null); return; }
     
+    setError(null);
     try {
       // Check if user has data
       const { data: biomarkers, error: bErr } = await supabase
@@ -115,6 +117,10 @@ export function useHealthData() {
       });
     } catch (err: any) {
       console.error('Error loading health data:', err);
+      const msg = err?.message?.includes('Failed to fetch') || err?.message?.includes('NetworkError')
+        ? 'network'
+        : err?.message || 'Erro ao carregar dados';
+      setError(msg);
       toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
@@ -260,7 +266,7 @@ export function useHealthData() {
     URL.revokeObjectURL(url);
   }, [data]);
 
-  return { data, loading, updateData, resetData, exportJSON, exportCSV };
+  return { data, loading, error, retry: loadData, updateData, resetData, exportJSON, exportCSV };
 }
 
 async function seedSampleData(userId: string) {

@@ -1,31 +1,39 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
-import { ScoreGauge } from '@/components/ScoreGauge';
-import { KPICard } from '@/components/KPICard';
 import { AlertTriangle, CheckCircle2, Info, TrendingDown, Heart, Flame, Droplets, Bean, Zap, Apple, ShieldCheck, CalendarClock, ArrowRight } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, lazy, Suspense } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
-import { ScoreDetailPanel } from '@/components/ScoreDetailPanel';
-import { DomainDetailPanel } from '@/components/DomainDetailPanel';
-import { HealthRadar } from '@/components/HealthRadar';
-import { PreventiveComplianceScore } from '@/components/PreventiveCompliance';
-import { HealthBalanceSheet } from '@/components/HealthBalanceSheet';
-import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
-import { LongevityForecast } from '@/components/LongevityForecast';
 import { generateForecast } from '@/lib/forecast';
-import { WhatIfSimulator } from '@/components/WhatIfSimulator';
-import { HealthRiskMap } from '@/components/HealthRiskMap';
-import { HealthPriorityEngine } from '@/components/HealthPriorityEngine';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { AnimatedCard } from '@/components/motion/AnimatedCard';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Lazy load heavy components
+const ScoreGauge = lazy(() => import('@/components/ScoreGauge').then(m => ({ default: m.ScoreGauge })));
+const KPICard = lazy(() => import('@/components/KPICard').then(m => ({ default: m.KPICard })));
+const ScoreDetailPanel = lazy(() => import('@/components/ScoreDetailPanel').then(m => ({ default: m.ScoreDetailPanel })));
+const DomainDetailPanel = lazy(() => import('@/components/DomainDetailPanel').then(m => ({ default: m.DomainDetailPanel })));
+const HealthRadar = lazy(() => import('@/components/HealthRadar').then(m => ({ default: m.HealthRadar })));
+const PreventiveComplianceScore = lazy(() => import('@/components/PreventiveCompliance').then(m => ({ default: m.PreventiveComplianceScore })));
+const HealthBalanceSheet = lazy(() => import('@/components/HealthBalanceSheet').then(m => ({ default: m.HealthBalanceSheet })));
+const HealthAlerts = lazy(() => import('@/components/HealthAlerts').then(m => ({ default: m.HealthAlerts })));
+const LongevityForecast = lazy(() => import('@/components/LongevityForecast').then(m => ({ default: m.LongevityForecast })));
+const WhatIfSimulator = lazy(() => import('@/components/WhatIfSimulator').then(m => ({ default: m.WhatIfSimulator })));
+const HealthRiskMap = lazy(() => import('@/components/HealthRiskMap').then(m => ({ default: m.HealthRiskMap })));
+const HealthPriorityEngine = lazy(() => import('@/components/HealthPriorityEngine').then(m => ({ default: m.HealthPriorityEngine })));
+
+function LazyFallback() {
+  return <div className="glass-card p-6"><Skeleton className="h-40 w-full rounded-xl" /></div>;
+}
 
 const Dashboard = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
   const cardiac = calcCardiacScore(data);
   const metabolic = calcMetabolicScore(data);
   const longevity = calcLongevityScore(data);
@@ -61,9 +69,8 @@ const Dashboard = () => {
     ['pa-sys', 'glicemia', 'hba1c', 'ldl', 'hdl', 'trig', 'creatinina', 'tsh', 'tgo', 'tgp', 'ggt', 'vitd', 'ferritina', 'imc', 'cintura', 'psa'].includes(b.id)
   );
 
-  if (loading) {
-    return <DashboardSkeleton />;
-  }
+  if (loading) return <DashboardSkeleton />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>
@@ -173,44 +180,54 @@ const Dashboard = () => {
       )}
 
       {/* Health Priority Engine */}
-      <HealthPriorityEngine data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthPriorityEngine data={data} />
+      </Suspense>
 
       {/* Health Alerts */}
-      <HealthAlerts alerts={healthAlerts} maxVisible={4} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthAlerts alerts={healthAlerts} maxVisible={4} />
+      </Suspense>
 
       {/* Scores */}
-      <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
-            <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
-          </button>
-        </StaggerItem>
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
-            <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
-          </button>
-        </StaggerItem>
-        <StaggerItem>
-          <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
-            <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
-          </button>
-        </StaggerItem>
-      </StaggerContainer>
+      <Suspense fallback={<LazyFallback />}>
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
+              <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
+            </button>
+          </StaggerItem>
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
+              <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
+            </button>
+          </StaggerItem>
+          <StaggerItem>
+            <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
+              <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
+            </button>
+          </StaggerItem>
+        </StaggerContainer>
+      </Suspense>
 
       {/* Score detail panel */}
       {showScoreDetail && (
-        <ScoreDetailPanel
-          type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
-          score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
-          onClose={() => setShowScoreDetail(null)}
-        />
+        <Suspense fallback={<LazyFallback />}>
+          <ScoreDetailPanel
+            type={showScoreDetail as 'cardiac' | 'metabolic' | 'longevity'}
+            score={showScoreDetail === 'cardiac' ? cardiac : showScoreDetail === 'metabolic' ? metabolic : longevity}
+            onClose={() => setShowScoreDetail(null)}
+          />
+        </Suspense>
       )}
 
       {/* Health Radar + Domain Grid */}
       <div>
         <h2 className="section-header mb-4">Saúde por Domínio</h2>
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-4">
-          <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
+          <Suspense fallback={<LazyFallback />}>
+            <HealthRadar domainScores={domainScores} previousScores={previousDomainScores} />
+          </Suspense>
           <DomainGrid
             domainScores={domainScores}
             showDomainDetail={showDomainDetail}
@@ -223,27 +240,39 @@ const Dashboard = () => {
       {/* KPIs */}
       <div>
         <h2 className="section-header mb-4">Indicadores-Chave</h2>
-        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {keyBiomarkers.map(b => (
-            <StaggerItem key={b.id}>
-              <KPICard biomarker={b} onClick={() => setEditingBiomarker(b)} />
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <Suspense fallback={<LazyFallback />}>
+          <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {keyBiomarkers.map(b => (
+              <StaggerItem key={b.id}>
+                <KPICard biomarker={b} onClick={() => setEditingBiomarker(b)} />
+              </StaggerItem>
+            ))}
+          </StaggerContainer>
+        </Suspense>
       </div>
 
       {/* Longevity Forecast */}
-      <LongevityForecast forecast={forecast} />
+      <Suspense fallback={<LazyFallback />}>
+        <LongevityForecast forecast={forecast} />
+      </Suspense>
 
       {/* What-If Simulator */}
-      <WhatIfSimulator />
+      <Suspense fallback={<LazyFallback />}>
+        <WhatIfSimulator />
+      </Suspense>
 
       {/* Health Risk Map */}
-      <HealthRiskMap data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <HealthRiskMap data={data} />
+      </Suspense>
 
       {/* Preventive Compliance & Balance Sheet */}
-      <PreventiveComplianceScore data={data} />
-      <HealthBalanceSheet data={data} />
+      <Suspense fallback={<LazyFallback />}>
+        <PreventiveComplianceScore data={data} />
+      </Suspense>
+      <Suspense fallback={<LazyFallback />}>
+        <HealthBalanceSheet data={data} />
+      </Suspense>
 
       {/* Disclaimer */}
       <div className="glass-card rounded-xl p-4 text-xs text-muted-foreground">

@@ -1,6 +1,7 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Status } from '@/types/health';
 import { GridPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { Shield, Activity, Droplets, Brain, Eye, Scan, Heart, Pill } from 'lucide-react';
@@ -24,7 +25,7 @@ const statusConfig: Record<Status, { dot: string; label: string; badge: string }
 };
 
 const Riscos = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
 
   const getGroupStatus = (group: typeof riskGroups[0]): Status => {
     const statuses: Status[] = [];
@@ -53,6 +54,7 @@ const Riscos = () => {
   const actionCount = groupStatuses.filter(s => s === 'red').length;
 
   if (loading) return <GridPageSkeleton cards={8} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>

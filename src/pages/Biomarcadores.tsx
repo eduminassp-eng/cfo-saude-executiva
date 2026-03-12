@@ -3,6 +3,7 @@ import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
+import { ErrorState } from '@/components/ErrorState';
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
 import { PageTransition } from '@/components/motion/PageTransition';
@@ -39,7 +40,7 @@ function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoo
 const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const Biomarcadores = () => {
-  const { data, loading, updateData } = useHealth();
+  const { data, loading, error, retry, updateData } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
@@ -81,6 +82,7 @@ const Biomarcadores = () => {
   }, [data.biomarkers]);
 
   if (loading) return <ListPageSkeleton cards={8} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>

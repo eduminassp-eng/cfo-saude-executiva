@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
@@ -25,7 +26,7 @@ const importanceColors: Record<string, string> = {
 type SortKey = 'category' | 'name' | 'importance' | 'lastDate' | 'nextDate' | 'status';
 
 const Exames = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -108,6 +109,7 @@ const Exames = () => {
   };
 
   if (loading) return <ListPageSkeleton cards={6} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>

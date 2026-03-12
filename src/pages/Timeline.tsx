@@ -4,9 +4,10 @@ import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion } from 'framer-motion';
 import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
+import { ErrorState } from '@/components/ErrorState';
 
 const Timeline = () => {
-  const { data, loading } = useHealth();
+  const { data, loading, error, retry } = useHealth();
 
   const overdue = data.exams.filter(e => e.status === 'Atrasado').sort((a, b) => (a.nextDate ?? '').localeCompare(b.nextDate ?? ''));
   const upcoming = data.exams.filter(e => e.status === 'Em dia' || e.status === 'Próximo').filter(e => e.nextDate).sort((a, b) => (a.nextDate!).localeCompare(b.nextDate!));
@@ -21,6 +22,7 @@ const Timeline = () => {
   ];
 
   if (loading) return <ListPageSkeleton cards={6} />;
+  if (error) return <ErrorState type={error === 'network' ? 'network' : 'error'} onRetry={retry} />;
 
   return (
     <PageTransition>
