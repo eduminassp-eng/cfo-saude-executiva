@@ -4,6 +4,9 @@ import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
 import { ResponsiveContainer, LineChart, Line, ReferenceLine, YAxis, XAxis, Tooltip } from 'recharts';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const statusConfig: Record<Status, { bg: string; text: string; label: string }> = {
   green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
