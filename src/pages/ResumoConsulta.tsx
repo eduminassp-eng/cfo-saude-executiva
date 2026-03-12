@@ -51,6 +51,7 @@ const ResumoConsulta = () => {
     s === 'green' ? 'hsl(var(--status-green))' : s === 'yellow' ? 'hsl(var(--status-yellow))' : 'hsl(var(--status-red))';
 
   return (
+    <PageTransition>
     <div className="space-y-5 max-w-2xl mx-auto print:space-y-3">
       <div className="flex items-start justify-between gap-4">
         <div>
