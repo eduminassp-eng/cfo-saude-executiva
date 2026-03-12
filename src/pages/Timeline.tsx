@@ -3,6 +3,7 @@ import { Calendar, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion } from 'framer-motion';
+import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 
 const Timeline = () => {
   const { data } = useHealth();

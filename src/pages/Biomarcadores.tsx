@@ -80,6 +80,8 @@ const Biomarcadores = () => {
     return { green, yellow, red, total: data.biomarkers.length };
   }, [data.biomarkers]);
 
+  if (loading) return <ListPageSkeleton cards={8} />;
+
   return (
     <PageTransition>
     <div className="space-y-6">
