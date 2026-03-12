@@ -52,6 +52,8 @@ const Riscos = () => {
   const attentionCount = groupStatuses.filter(s => s === 'yellow').length;
   const actionCount = groupStatuses.filter(s => s === 'red').length;
 
+  if (loading) return <GridPageSkeleton cards={8} />;
+
   return (
     <PageTransition>
     <div className="space-y-6">

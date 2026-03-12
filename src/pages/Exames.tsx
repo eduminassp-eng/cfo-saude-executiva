@@ -107,6 +107,8 @@ const Exames = () => {
     return sortAsc ? <ChevronUp className="w-3 h-3 inline ml-0.5" /> : <ChevronDown className="w-3 h-3 inline ml-0.5" />;
   };
 
+  if (loading) return <ListPageSkeleton cards={6} />;
+
   return (
     <PageTransition>
     <div className="space-y-6">

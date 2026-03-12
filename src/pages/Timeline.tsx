@@ -20,6 +20,8 @@ const Timeline = () => {
     { title: 'Últimos Realizados', icon: CheckCircle2, items: completed, iconClass: 'text-[hsl(var(--status-green))]', accentClass: '' },
   ];
 
+  if (loading) return <ListPageSkeleton cards={6} />;
+
   return (
     <PageTransition>
     <div className="space-y-8">
