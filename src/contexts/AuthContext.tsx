@@ -16,24 +16,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let subscription: { unsubscribe: () => void } | null = null;
+    let isMounted = true;
 
-    supabase.auth.getSession().then(({ data: { session: restored } }) => {
-      setSession(restored);
+    const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!isMounted) return;
+      setSession(nextSession);
       setLoading(false);
-
-      const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-        setSession(nextSession);
-      });
-      subscription = data.subscription;
     });
 
+    const restoreSession = async () => {
+      try {
+        const { data: sessionData, error } = await supabase.auth.getSession();
+
+        if (error) {
+          const isRefreshTokenError =
+            error.message?.includes('Refresh Token Not Found') ||
+            error.message?.includes('Invalid Refresh Token');
+
+          if (isRefreshTokenError) {
+            await supabase.auth.signOut({ scope: 'local' });
+          }
+
+          if (isMounted) setSession(null);
+          return;
+        }
+
+        if (isMounted) setSession(sessionData.session ?? null);
+      } catch {
+        if (isMounted) setSession(null);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    restoreSession();
+
     const timeout = setTimeout(() => {
-      setLoading(false);
+      if (isMounted) setLoading(false);
     }, 5000);
 
     return () => {
-      subscription?.unsubscribe();
+      isMounted = false;
+      data.subscription.unsubscribe();
       clearTimeout(timeout);
     };
   }, []);
