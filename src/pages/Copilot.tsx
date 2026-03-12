@@ -215,6 +215,10 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         </div>
       )}
 
+      {tab === 'chat' && (
+        <HealthChat />
+      )}
+
       {tab === 'alerts' && (
         <HealthAlerts alerts={healthAlerts} maxVisible={20} />
       )}
