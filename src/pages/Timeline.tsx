@@ -3,9 +3,10 @@ import { Calendar, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { motion } from 'framer-motion';
+import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 
 const Timeline = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
 
   const overdue = data.exams.filter(e => e.status === 'Atrasado').sort((a, b) => (a.nextDate ?? '').localeCompare(b.nextDate ?? ''));
   const upcoming = data.exams.filter(e => e.status === 'Em dia' || e.status === 'Próximo').filter(e => e.nextDate).sort((a, b) => (a.nextDate!).localeCompare(b.nextDate!));
@@ -18,6 +19,8 @@ const Timeline = () => {
     { title: 'Próximos Agendamentos', icon: Calendar, items: upcoming, iconClass: 'text-[hsl(var(--status-yellow))]', accentClass: '' },
     { title: 'Últimos Realizados', icon: CheckCircle2, items: completed, iconClass: 'text-[hsl(var(--status-green))]', accentClass: '' },
   ];
+
+  if (loading) return <ListPageSkeleton cards={6} />;
 
   return (
     <PageTransition>

@@ -1,4 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
+import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Search, ChevronDown, ChevronUp, Plus } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
@@ -24,7 +25,7 @@ const importanceColors: Record<string, string> = {
 type SortKey = 'category' | 'name' | 'importance' | 'lastDate' | 'nextDate' | 'status';
 
 const Exames = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
@@ -105,6 +106,8 @@ const Exames = () => {
     if (sortKey !== col) return null;
     return sortAsc ? <ChevronUp className="w-3 h-3 inline ml-0.5" /> : <ChevronDown className="w-3 h-3 inline ml-0.5" />;
   };
+
+  if (loading) return <ListPageSkeleton cards={6} />;
 
   return (
     <PageTransition>

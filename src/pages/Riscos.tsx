@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Status } from '@/types/health';
+import { GridPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { Shield, Activity, Droplets, Brain, Eye, Scan, Heart, Pill } from 'lucide-react';
@@ -23,7 +24,7 @@ const statusConfig: Record<Status, { dot: string; label: string; badge: string }
 };
 
 const Riscos = () => {
-  const { data } = useHealth();
+  const { data, loading } = useHealth();
 
   const getGroupStatus = (group: typeof riskGroups[0]): Status => {
     const statuses: Status[] = [];
@@ -50,6 +51,8 @@ const Riscos = () => {
   const okCount = groupStatuses.filter(s => s === 'green').length;
   const attentionCount = groupStatuses.filter(s => s === 'yellow').length;
   const actionCount = groupStatuses.filter(s => s === 'red').length;
+
+  if (loading) return <GridPageSkeleton cards={8} />;
 
   return (
     <PageTransition>

@@ -1,4 +1,5 @@
 import { useHealth } from '@/contexts/HealthContext';
+import { DashboardSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, DomainScore } from '@/lib/scoring';
 import { calcPreviousDomainScores } from '@/lib/historicalScoring';
 import { ScoreGauge } from '@/components/ScoreGauge';
@@ -61,11 +62,7 @@ const Dashboard = () => {
   );
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="animate-pulse text-muted-foreground">Carregando dados...</div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (

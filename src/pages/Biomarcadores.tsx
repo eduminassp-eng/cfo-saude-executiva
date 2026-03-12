@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
+import { ListPageSkeleton } from '@/components/skeletons/DashboardSkeleton';
 import { Biomarker, BiomarkerHistoryEntry, Status } from '@/types/health';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { TrendingUp, TrendingDown, Minus, ChevronDown, ChevronUp, Pencil, Trash2, X } from 'lucide-react';
@@ -38,7 +39,7 @@ function TrendIcon({ trend, isGoodUp }: { trend: 'up' | 'down' | 'stable'; isGoo
 const markersWhereUpIsGood = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const Biomarcadores = () => {
-  const { data, updateData } = useHealth();
+  const { data, loading, updateData } = useHealth();
   const [categoryFilter, setCategoryFilter] = useState('Todos');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
@@ -78,6 +79,8 @@ const Biomarcadores = () => {
     const red = data.biomarkers.filter(b => b.status === 'red').length;
     return { green, yellow, red, total: data.biomarkers.length };
   }, [data.biomarkers]);
+
+  if (loading) return <ListPageSkeleton cards={8} />;
 
   return (
     <PageTransition>
