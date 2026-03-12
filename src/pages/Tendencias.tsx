@@ -177,7 +177,7 @@ const Tendencias = () => {
         })}
       </div>
     </div>
+    </PageTransition>
   );
-};
 
 export default Tendencias;

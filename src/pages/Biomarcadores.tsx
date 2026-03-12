@@ -311,6 +311,7 @@ const Biomarcadores = () => {
         />
       )}
     </div>
+    </PageTransition>
   );
 };
 

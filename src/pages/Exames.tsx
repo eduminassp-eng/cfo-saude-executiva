@@ -250,6 +250,7 @@ const Exames = () => {
       {editingExam && <ExamEditDialog exam={editingExam} onClose={() => setEditingExam(null)} />}
       {showCreate && <ExamCreateDialog onClose={() => setShowCreate(false)} />}
     </div>
+    </PageTransition>
   );
 };
 

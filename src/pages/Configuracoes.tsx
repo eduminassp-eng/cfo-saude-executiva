@@ -1,5 +1,6 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { Download, RotateCcw, FileJson, FileText, FileSpreadsheet, Upload } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { useMemo, useCallback, useRef, useState } from 'react';
 import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
 import { HealthData, Biomarker, Exam } from '@/types/health';

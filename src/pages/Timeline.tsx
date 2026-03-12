@@ -50,7 +50,7 @@ const Timeline = () => {
       <Section title="Próximos Agendamentos" icon={Calendar} items={upcoming} iconClass="status-yellow" />
       <Section title="Últimos Realizados" icon={CheckCircle2} items={completed} iconClass="status-green" />
     </div>
+    </PageTransition>
   );
-};
 
 export default Timeline;

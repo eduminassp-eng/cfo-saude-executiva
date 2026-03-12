@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { Upload, Heart, Footprints, Moon, Weight, Timer, CheckCircle2, ArrowRight, X, AlertTriangle } from 'lucide-react';
+import { PageTransition } from '@/components/motion/PageTransition';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useHealth } from '@/contexts/HealthContext';

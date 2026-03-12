@@ -111,7 +111,7 @@ const Resumo = () => {
         <p className="mt-1">Este documento é para fins de organização pessoal. Não substitui orientação médica.</p>
       </div>
     </div>
+    </PageTransition>
   );
-};
 
 export default Resumo;

@@ -156,7 +156,7 @@ const ResumoConsulta = () => {
         Documento para uso pessoal em consultas. Não substitui orientação médica.
       </p>
     </div>
+    </PageTransition>
   );
-};
 
 export default ResumoConsulta;

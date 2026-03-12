@@ -237,7 +237,7 @@ const RelatorioExecutivo = () => {
         Este relatório é para organização e acompanhamento preventivo. Não substitui avaliação, diagnóstico ou orientação médica.
       </div>
     </div>
+    </PageTransition>
   );
-};
 
 export default RelatorioExecutivo;
