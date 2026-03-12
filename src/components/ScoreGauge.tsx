@@ -1,5 +1,5 @@
 import { Status } from '@/types/health';
-
+import { motion } from 'framer-motion';
 interface ScoreGaugeProps {
   label: string;
   value: number;
@@ -16,20 +16,22 @@ export function ScoreGauge({ label, value, status, subtitle, colorVar }: ScoreGa
   const statusLabel = status === 'green' ? 'Bom' : status === 'yellow' ? 'Atenção' : status === 'red' ? 'Crítico' : 'Sem dados';
 
   return (
-    <div className="glass-card rounded-xl p-5 flex flex-col items-center gap-3 animate-slide-up">
+    <div className="glass-card rounded-xl p-5 flex flex-col items-center gap-3" role="meter" aria-valuenow={value} aria-valuemin={0} aria-valuemax={100} aria-label={`${label}: ${value} de 100, ${statusLabel}`}>
       <p className="text-sm font-medium text-muted-foreground tracking-wide uppercase">{label}</p>
       <div className="relative w-32 h-32">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r={radius} fill="none" stroke="hsl(var(--border))" strokeWidth="8" />
-          <circle
+          <motion.circle
             cx="60" cy="60" r={radius}
             fill="none"
             stroke={`hsl(var(--${colorVar}))`}
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={circumference}
-            strokeDashoffset={circumference - progress}
-            className="transition-all duration-1000 ease-out score-ring"
+            initial={{ strokeDashoffset: circumference }}
+            animate={{ strokeDashoffset: circumference - progress }}
+            transition={{ duration: 1.2, ease: [0.25, 0.46, 0.45, 0.94], delay: 0.2 }}
+            className="score-ring"
             style={{ color: `hsl(var(--${colorVar}))` }}
           />
         </svg>

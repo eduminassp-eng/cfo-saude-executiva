@@ -20,6 +20,7 @@ import { HealthAlerts } from '@/components/HealthAlerts';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { ShieldAlert, Search, Activity, ClipboardList, Download, TrendingUp, Bell, MessageCircle } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageTransition } from '@/components/motion/PageTransition';
 
 const Copilot = () => {
   const { data } = useHealth();
@@ -129,6 +130,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
   ];
 
   return (
+    <PageTransition>
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
@@ -257,6 +259,7 @@ ${summary.suggestedAppointments.length === 0 ? '<div class="item">Nenhuma consul
         </p>
       </div>
     </div>
+    </PageTransition>
   );
 };
 

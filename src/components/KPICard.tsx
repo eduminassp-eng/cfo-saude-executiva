@@ -1,6 +1,6 @@
 import { Biomarker, Status } from '@/types/health';
-import { ResponsiveContainer, LineChart, Line } from 'recharts';
-
+import { ResponsiveContainer, LineChart, Line, Tooltip } from 'recharts';
+import { motion } from 'framer-motion';
 function statusBadge(status: Status) {
   const map = {
     green: { bg: 'bg-status-green', text: 'status-green', label: 'Normal' },
@@ -39,9 +39,12 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
     : 'hsl(var(--muted-foreground))';
 
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       className="glass-card-hover rounded-lg p-4 text-left w-full transition-all"
+      aria-label={`${biomarker.name}: ${biomarker.value ?? 'sem valor'} ${biomarker.unit}. Status: ${biomarker.status === 'green' ? 'normal' : biomarker.status === 'yellow' ? 'atenção' : biomarker.status === 'red' ? 'crítico' : 'desconhecido'}`}
     >
       <div className="flex items-start justify-between mb-2">
         <p className="text-xs text-muted-foreground font-medium truncate pr-2">{biomarker.name}</p>
@@ -57,14 +60,28 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
         <div className="h-8 w-full my-1.5 animate-fade-in">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={sparkData} margin={{ top: 2, right: 2, bottom: 2, left: 2 }}>
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                  fontSize: '11px',
+                  padding: '4px 8px',
+                  color: 'hsl(var(--foreground))',
+                }}
+                formatter={(value: number) => [`${value} ${biomarker.unit}`, biomarker.name]}
+                labelFormatter={() => ''}
+              />
               <Line
                 type="monotone"
                 dataKey="v"
                 stroke={statusColor}
                 strokeWidth={1.5}
                 dot={false}
-                activeDot={false}
+                activeDot={{ r: 4, fill: statusColor, strokeWidth: 2, stroke: 'hsl(var(--card))' }}
                 isAnimationActive={true}
+                animationDuration={800}
+                animationEasing="ease-out"
               />
             </LineChart>
           </ResponsiveContainer>
@@ -78,6 +95,6 @@ export function KPICard({ biomarker, onClick }: KPICardProps) {
         </p>
       )}
       {biomarker.note && <p className="text-xs text-muted-foreground mt-1 italic">{biomarker.note}</p>}
-    </button>
+    </motion.button>
   );
 }

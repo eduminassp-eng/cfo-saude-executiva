@@ -19,6 +19,9 @@ import { generateForecast } from '@/lib/forecast';
 import { WhatIfSimulator } from '@/components/WhatIfSimulator';
 import { HealthRiskMap } from '@/components/HealthRiskMap';
 import { HealthPriorityEngine } from '@/components/HealthPriorityEngine';
+import { PageTransition } from '@/components/motion/PageTransition';
+import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
+import { AnimatedCard } from '@/components/motion/AnimatedCard';
 
 const Dashboard = () => {
   const { data, loading } = useHealth();
@@ -66,6 +69,7 @@ const Dashboard = () => {
   }
 
   return (
+    <PageTransition>
     <div className="space-y-8">
       {/* Header */}
       <div>
@@ -176,35 +180,23 @@ const Dashboard = () => {
       <HealthAlerts alerts={healthAlerts} maxVisible={4} />
 
       {/* Scores */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <button onClick={() => setShowScoreDetail('cardiac')} className="text-left">
-          <ScoreGauge
-            label="Risco Cardíaco"
-            value={cardiac.value}
-            status={cardiac.status}
-            subtitle="Pressão, lipídios, inflamação"
-            colorVar="score-cardiac"
-          />
-        </button>
-        <button onClick={() => setShowScoreDetail('metabolic')} className="text-left">
-          <ScoreGauge
-            label="Score Metabólico"
-            value={metabolic.value}
-            status={metabolic.status}
-            subtitle="Glicemia, composição, fígado"
-            colorVar="score-metabolic"
-          />
-        </button>
-        <button onClick={() => setShowScoreDetail('longevity')} className="text-left">
-          <ScoreGauge
-            label="Score de Longevidade"
-            value={longevity.value}
-            status={longevity.status}
-            subtitle="Saúde global + hábitos"
-            colorVar="score-longevity"
-          />
-        </button>
-      </div>
+      <StaggerContainer className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <StaggerItem>
+          <button onClick={() => setShowScoreDetail('cardiac')} className="text-left w-full" aria-label="Ver detalhes do risco cardíaco">
+            <ScoreGauge label="Risco Cardíaco" value={cardiac.value} status={cardiac.status} subtitle="Pressão, lipídios, inflamação" colorVar="score-cardiac" />
+          </button>
+        </StaggerItem>
+        <StaggerItem>
+          <button onClick={() => setShowScoreDetail('metabolic')} className="text-left w-full" aria-label="Ver detalhes do score metabólico">
+            <ScoreGauge label="Score Metabólico" value={metabolic.value} status={metabolic.status} subtitle="Glicemia, composição, fígado" colorVar="score-metabolic" />
+          </button>
+        </StaggerItem>
+        <StaggerItem>
+          <button onClick={() => setShowScoreDetail('longevity')} className="text-left w-full" aria-label="Ver detalhes do score de longevidade">
+            <ScoreGauge label="Score de Longevidade" value={longevity.value} status={longevity.status} subtitle="Saúde global + hábitos" colorVar="score-longevity" />
+          </button>
+        </StaggerItem>
+      </StaggerContainer>
 
       {/* Score detail panel */}
       {showScoreDetail && (
@@ -232,11 +224,13 @@ const Dashboard = () => {
       {/* KPIs */}
       <div>
         <h2 className="text-lg font-semibold mb-4">Indicadores-Chave</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <StaggerContainer className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
           {keyBiomarkers.map(b => (
-            <KPICard key={b.id} biomarker={b} onClick={() => setEditingBiomarker(b)} />
+            <StaggerItem key={b.id}>
+              <KPICard biomarker={b} onClick={() => setEditingBiomarker(b)} />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerContainer>
       </div>
 
       {/* Longevity Forecast */}
@@ -266,6 +260,7 @@ const Dashboard = () => {
         />
       )}
     </div>
+    </PageTransition>
   );
 };
 
