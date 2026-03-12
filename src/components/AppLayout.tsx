@@ -206,7 +206,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center justify-around px-2 pt-1.5 pb-1">
           {mobileTabItems.map(item => {
             const active = item.path === '/configuracoes'
-              ? !['/', '/biomarcadores', '/copilot', '/tendencias'].includes(location.pathname)
+              ? !['/', '/biomarcadores', '/copilot', '/exames'].includes(location.pathname)
               : location.pathname === item.path;
             return (
               <motion.div key={item.path} whileTap={{ scale: 0.85, y: -2 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
