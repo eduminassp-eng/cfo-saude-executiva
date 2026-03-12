@@ -239,5 +239,6 @@ const RelatorioExecutivo = () => {
     </div>
     </PageTransition>
   );
+};
 
 export default RelatorioExecutivo;

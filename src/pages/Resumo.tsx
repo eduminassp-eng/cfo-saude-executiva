@@ -113,5 +113,6 @@ const Resumo = () => {
     </div>
     </PageTransition>
   );
+};
 
 export default Resumo;
