@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useHealth } from '@/contexts/HealthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown, Plus, MessageSquare, ChevronLeft } from 'lucide-react';
+import { Send, Bot, User, Loader2, Sparkles, Trash2, AlertTriangle, Clock, TrendingDown, Plus, MessageSquare, ChevronLeft, Paperclip, X, FileText, Image as ImageIcon } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
 import { toast } from 'sonner';
 
-type Msg = { role: 'user' | 'assistant'; content: string };
+type Msg = { role: 'user' | 'assistant'; content: string; attachmentName?: string };
+type FileAttachment = { base64: string; mimeType: string; name: string };
 type Conversation = { id: string; title: string; updated_at: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-chat`;
