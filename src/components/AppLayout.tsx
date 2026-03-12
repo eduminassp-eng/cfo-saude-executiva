@@ -24,7 +24,7 @@ const mobileTabItems = [
   { path: '/', label: 'Resumo', icon: LayoutDashboard },
   { path: '/biomarcadores', label: 'Dados', icon: Activity },
   { path: '/copilot', label: 'Copilot', icon: BrainCircuit },
-  { path: '/tendencias', label: 'Tendências', icon: TrendingUp },
+  { path: '/exames', label: 'Exames', icon: ClipboardList },
   { path: '/configuracoes', label: 'Mais', icon: Menu },
 ];
 
