@@ -295,8 +295,11 @@ export function HealthChat() {
 
   return (
     <div className="flex h-[600px] glass-card rounded-xl overflow-hidden border border-border/50">
-      {/* Sidebar */}
-      <div className={`${showSidebar ? 'flex' : 'hidden'} sm:flex flex-col w-full sm:w-56 shrink-0 border-r border-border/50 bg-secondary/20`}>
+      {/* Sidebar - overlay on mobile, inline on desktop */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-40 bg-black/40 sm:hidden" onClick={() => setShowSidebar(false)} />
+      )}
+      <div className={`${showSidebar ? 'flex absolute inset-y-0 left-0 z-50 w-64' : 'hidden'} sm:relative sm:flex sm:w-56 flex-col shrink-0 border-r border-border/50 bg-background sm:bg-secondary/20`}>
         <div className="flex items-center justify-between px-3 py-2.5 border-b border-border/50">
           <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Conversas</span>
           <button onClick={startNewChat} className="p-1 rounded hover:bg-secondary transition-colors" title="Nova conversa">
