@@ -479,6 +479,7 @@ const LabReader = () => {
   const currentIdx = steps.findIndex(s => s.id === displayStep);
 
   return (
+    <PageTransition>
     <div className="space-y-6 max-w-2xl mx-auto">
       <div>
         <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">
