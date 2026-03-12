@@ -36,6 +36,15 @@ const Dashboard = () => {
   const [editingBiomarker, setEditingBiomarker] = useState<Biomarker | null>(null);
   const [showScoreDetail, setShowScoreDetail] = useState<string | null>(null);
   const [showDomainDetail, setShowDomainDetail] = useState<string | null>(null);
+  const [, startTransition] = useTransition();
+
+  const handleShowScore = useCallback((id: string) => {
+    startTransition(() => setShowScoreDetail(id));
+  }, []);
+
+  const handleShowDomain = useCallback((id: string | null) => {
+    startTransition(() => setShowDomainDetail(id));
+  }, []);
 
   const overdueCount = data.exams.filter(e => e.status === 'Atrasado').length;
   const yellowCount = data.biomarkers.filter(b => b.status === 'yellow').length;
