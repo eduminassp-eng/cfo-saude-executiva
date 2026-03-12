@@ -8,7 +8,6 @@ import { useState, useMemo, lazy, Suspense } from 'react';
 import { BiomarkerEditDialog } from '@/components/BiomarkerEditDialog';
 import { Biomarker, HealthData } from '@/types/health';
 import { generateHealthAlerts } from '@/lib/healthAlerts';
-import { generateForecast } from '@/lib/forecast';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
 import { AnimatedCard } from '@/components/motion/AnimatedCard';
