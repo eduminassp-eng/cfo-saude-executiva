@@ -71,10 +71,12 @@ const Dashboard = () => {
   return (
     <PageTransition>
     <div className="space-y-8">
-      {/* Header */}
+      {/* Header - Apple Health style */}
       <div>
-        <h1 className="text-2xl lg:text-3xl font-bold tracking-tight">Painel Executivo de Saúde</h1>
-        <p className="text-muted-foreground mt-1">Última atualização: {new Date(data.lastUpdated).toLocaleDateString('pt-BR')}</p>
+        <p className="text-sm text-muted-foreground font-medium mb-1">
+          {new Date(data.lastUpdated).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
+        <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">Resumo de Saúde</h1>
       </div>
 
       {/* Overdue & Upcoming Exam Alert Cards */}
