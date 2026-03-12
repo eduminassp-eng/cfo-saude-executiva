@@ -1,13 +1,11 @@
 import { useHealth } from '@/contexts/HealthContext';
 import { useMemo, useCallback, useState } from 'react';
-import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores } from '@/lib/scoring';
+import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, calcDomainScores, HIGHER_IS_BETTER } from '@/lib/scoring';
 import { generateExecutiveSummary, generateBiomarkerInsights } from '@/lib/copilot';
 import { generateActionPlan } from '@/lib/actionPlan';
 import { Printer, Pill, MessageCircleQuestion, TrendingDown, AlertTriangle, CheckCircle2, CalendarClock, Stethoscope } from 'lucide-react';
 import { PageTransition } from '@/components/motion/PageTransition';
 import { StaggerContainer, StaggerItem } from '@/components/motion/StaggerContainer';
-
-const UP_IS_GOOD = new Set(['hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona']);
 
 const RelatorioExecutivo = () => {
   const { data } = useHealth();
@@ -41,7 +39,7 @@ const RelatorioExecutivo = () => {
         const diff = b.value! - prev;
         const pct = ((diff / prev) * 100).toFixed(1);
         const isUp = diff > 0;
-        const worsening = UP_IS_GOOD.has(b.id) ? !isUp : isUp;
+        const worsening = HIGHER_IS_BETTER.has(b.id) ? !isUp : isUp;
         if (Math.abs(diff / prev) < 0.02) return null;
         return { name: b.name, prev, current: b.value!, pct, worsening };
       })

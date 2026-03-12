@@ -1,5 +1,5 @@
 import { HealthData, Biomarker, Exam, Status } from '@/types/health';
-import { calcCardiacScore, calcMetabolicScore, calcLongevityScore } from './scoring';
+import { calcCardiacScore, calcMetabolicScore, calcLongevityScore, HIGHER_IS_BETTER, LOWER_IS_BETTER } from './scoring';
 
 // ── Trend Pattern Detection ──
 
@@ -18,17 +18,6 @@ export interface TrendPattern {
   insight: string;
   dataPoints: number;
 }
-
-// Biomarkers where lower is better (rising = bad)
-const LOWER_IS_BETTER = new Set([
-  'pa-sys', 'pa-dia', 'ldl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ureia',
-  'tgo', 'tgp', 'ggt', 'pcr', 'apob', 'insulina', 'psa', 'imc', 'cintura', 'acido-urico',
-]);
-
-// Biomarkers where higher is better (falling = bad)
-const HIGHER_IS_BETTER = new Set([
-  'hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona', 'ferro', 't4-livre',
-]);
 
 const trendInsights: Record<string, { rising: string; falling: string; stable: string }> = {
   'ldl': {

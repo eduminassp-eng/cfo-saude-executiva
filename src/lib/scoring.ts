@@ -1,5 +1,15 @@
 import { HealthData, HealthScore, ScoreBreakdown, Status } from '@/types/health';
 
+// Canonical sets for trend direction logic — import these instead of duplicating
+export const HIGHER_IS_BETTER = new Set([
+  'hdl', 'vitd', 'vitb12', 'ferritina', 'testosterona', 'ferro', 't4-livre',
+]);
+
+export const LOWER_IS_BETTER = new Set([
+  'pa-sys', 'pa-dia', 'ldl', 'trig', 'glicemia', 'hba1c', 'creatinina', 'ureia',
+  'tgo', 'tgp', 'ggt', 'pcr', 'apob', 'insulina', 'psa', 'imc', 'cintura', 'acido-urico',
+]);
+
 export interface DomainScore {
   id: string;
   label: string;
